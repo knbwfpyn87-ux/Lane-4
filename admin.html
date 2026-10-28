@@ -40,6 +40,27 @@ td.m{font:700 17px "Barlow Condensed",sans-serif;text-align:right;white-space:no
 .msg{min-height:1.4em;color:var(--red);font-size:14px;font-weight:600}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:#fff;padding:10px 16px;border-radius:24px;font-size:14px}
 [hidden]{display:none!important}
+/* Lane 4 UI kit: same look as the app; dark follows the device setting */
+:root{--bg:#F3F1F1;--surface:#FFFFFF;--soft:#F5F2F2;--ink:#1C1717;--muted:#6E6463;--line:#E7E1E0;--accent:#C62832;--shadow:0 1px 2px rgba(70,20,20,.05),0 8px 24px rgba(70,20,20,.07);color-scheme:light;
+  --curves:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.22' stroke-width='2'%3E%3Cpath d='M110 210 Q 210 40 420 18'/%3E%3Cpath d='M165 210 Q 255 70 420 52'/%3E%3Cpath d='M220 210 Q 300 100 420 86'/%3E%3Cpath d='M275 210 Q 345 130 420 120'/%3E%3Cpath d='M330 210 Q 385 160 420 154'/%3E%3C/g%3E%3C/svg%3E")}
+@media (prefers-color-scheme:dark){:root{--bg:#110E0E;--surface:#1E1919;--soft:#2A2222;--ink:#F5EFEE;--muted:#ADA2A0;--line:#362C2B;--accent:#F2676E;--good:#3CC48A;--shadow:none;color-scheme:dark}
+  .panel,.stat{border:1px solid var(--line)!important}
+  .tag.no{background:var(--soft);border-color:var(--soft)}
+  .toast{background:#F5EFEE;color:#1C1717}}
+header{margin:12px 12px 0;border-radius:24px;background:var(--red) var(--curves) center/100% 100% no-repeat}
+header button{background:#fff;color:#1C1717;border:0;border-radius:20px;padding:8px 14px}
+.panel,.stat{background:var(--surface);border:0;border-radius:20px;box-shadow:var(--shadow)}
+.stat{border-radius:16px}.stats .stat:first-child b{color:var(--accent)}
+input{background:var(--soft);color:var(--ink);border:1.5px solid transparent;border-radius:12px}
+input:focus{border-color:var(--red)}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{border-radius:14px;padding:13px;box-shadow:0 4px 14px rgba(198,40,50,.22)}
+.btn.alt{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent);box-shadow:none}
+.btn.g{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.tabs button{background:var(--surface);color:var(--ink);border:0;box-shadow:var(--shadow)}
+.tabs button[aria-pressed=true]{background:var(--red);color:#fff}
+.tag{background:var(--soft);border-color:transparent}
+a,.msg{color:var(--accent)}
 @media (max-width:380px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>

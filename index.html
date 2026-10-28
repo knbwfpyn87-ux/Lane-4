@@ -282,6 +282,99 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
 .authcard .small{background:none;border:0;color:#fff;text-decoration:underline;font:600 15px "Barlow",sans-serif;padding:10px 0;display:block;margin:4px auto 0}
 .agecheck{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:600}
 .agecheck input{width:20px;height:20px;accent-color:#fff}
+/* ---------- Lane 4 UI kit: light and dark. The athlete card below keeps its own look. ---------- */
+:root{--bg:#F3F1F1;--surface:#FFFFFF;--soft:#F5F2F2;--ink:#1C1717;--muted:#6E6463;--line:#E7E1E0;--track:#C62832;--accent:#C62832;--board:#141010;--on-board:#FFFFFF;--good:#1B8A5A;--icon:#2A2424;
+  --shadow:0 1px 2px rgba(70,20,20,.05),0 8px 24px rgba(70,20,20,.07);
+  --curves:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.22' stroke-width='2'%3E%3Cpath d='M110 210 Q 210 40 420 18'/%3E%3Cpath d='M165 210 Q 255 70 420 52'/%3E%3Cpath d='M220 210 Q 300 100 420 86'/%3E%3Cpath d='M275 210 Q 345 130 420 120'/%3E%3Cpath d='M330 210 Q 385 160 420 154'/%3E%3C/g%3E%3C/svg%3E")}
+:root[data-theme="dark"]{--bg:#110E0E;--surface:#1E1919;--soft:#2A2222;--ink:#F5EFEE;--muted:#ADA2A0;--line:#362C2B;--track:#C62832;--accent:#F2676E;--board:#F5EFEE;--on-board:#141010;--good:#3CC48A;--icon:#EDE5E4;--shadow:0 1px 2px rgba(0,0,0,.5)}
+a,.linkbtn,.score,.tl li.plantype,.pstats b.hot,details.panel summary::after{color:var(--accent)}
+.score{border-color:var(--accent)}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{padding-bottom:120px}
+/* header: red tile with track curves and a round settings button */
+header.top{margin:12px 12px 0;border-radius:24px;padding:22px 80px 22px 20px;background:var(--track) var(--curves) center/100% 100% no-repeat}
+header.top .lanes{display:none}
+.themebtn{top:50%;right:16px;transform:translateY(-50%);width:48px;height:48px;border:0;background:#fff;color:#1C1717;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.demo-pill{background:none;border:1.5px solid rgba(255,255,255,.7)}
+/* surfaces */
+.panel,.pr,.stat,.acard,.phead{border:0;border-radius:20px;box-shadow:var(--shadow)}
+.pr,.stat{border-radius:16px}
+:root[data-theme="dark"] .panel,:root[data-theme="dark"] .pr,:root[data-theme="dark"] .stat,:root[data-theme="dark"] .acard,:root[data-theme="dark"] .phead{border:1px solid var(--line);box-shadow:none}
+.prs .pr:first-child .num,.stats .stat:first-child b,.pstats div:first-child b{color:var(--accent)}
+.pbanner{background:var(--track) var(--curves) center/100% 100% no-repeat}
+.pcurves{display:none}
+.avcam{background:#fff;color:var(--track);border:0;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+/* fields */
+input,select,textarea{background:var(--soft);border:1.5px solid transparent;border-radius:12px;padding:11px 14px}
+input:focus,select:focus,textarea:focus{border-color:var(--track)}
+/* buttons */
+.go{border-radius:14px;padding:13px;letter-spacing:.3px;box-shadow:0 4px 14px rgba(198,40,50,.22)}
+.go.alt{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent);box-shadow:none}
+button.ghost{background:var(--soft);border:0;color:var(--ink);border-radius:20px;padding:6px 14px;font-weight:600}
+.iconbtn{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--surface);color:var(--icon);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+:root[data-theme="dark"] .iconbtn{background:var(--soft);box-shadow:none}
+.chips button{border:0;background:var(--surface);box-shadow:var(--shadow)}
+:root[data-theme="dark"] .chips button:not([aria-pressed="true"]){background:var(--soft);box-shadow:none}
+.chips button[aria-pressed="true"]{background:var(--track);color:#fff}
+.segIn{background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.segIn button{border:0;border-radius:10px;color:var(--muted)}
+.segIn button[aria-pressed="true"]{background:var(--track);color:#fff}
+.tag{background:var(--soft);border-color:transparent}
+.tier{background:var(--soft);border:1.5px solid transparent;border-radius:12px}
+.tier.hit{border-color:var(--good)}
+/* toggle switch */
+input.switch{-webkit-appearance:none;appearance:none;width:52px;height:30px;flex:none;border-radius:15px;background:var(--line);border:0;padding:0;margin:0;position:relative;cursor:pointer;transition:background .2s}
+input.switch::before{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+input.switch:checked{background:var(--track)}
+input.switch:checked::before{transform:translateX(22px)}
+.check.toggle{justify-content:space-between;border:0;padding:4px 0}
+.check.toggle input.switch{width:52px;height:30px}
+@media (prefers-reduced-motion:reduce){input.switch,input.switch::before{transition:none}}
+/* slider: thin track, red fill, ring thumb */
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;border:0;padding:0;height:30px}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(var(--track),var(--track)) 0/var(--p,50%) 100% no-repeat,var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-9px;border-radius:50%;background:var(--surface);border:4px solid var(--track);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--line)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--track)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--surface);border:4px solid var(--track)}
+.bar{height:6px;border:0;background:var(--line);border-radius:3px}
+.bar i{border-radius:3px}
+/* search: red pill, text sits right on the red */
+.searchbar{display:flex;align-items:center;gap:8px;background:var(--track);color:#fff;border-radius:28px;padding:2px 10px 2px 18px;box-shadow:0 6px 16px rgba(198,40,50,.22)}
+.searchbar svg{flex:none}
+.searchbar input{background:transparent;border:0;color:#fff;font-weight:600;padding:11px 4px}
+.searchbar input::placeholder{color:rgba(255,255,255,.85)}
+.searchbar input:focus{border:0}
+.searchbar input:focus-visible{outline:0}
+.searchbar:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+/* list rows end in a chevron */
+.cmain{position:relative;padding-right:22px}
+.cmain::after{content:"";position:absolute;right:6px;top:50%;width:8px;height:8px;border-right:2px solid var(--muted);border-top:2px solid var(--muted);transform:translateY(-50%) rotate(45deg)}
+/* floating tab bar: icons, red underline on the active tab */
+nav.tabs{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:456px;margin:0 auto;padding:0;border:0;border-radius:24px;background:var(--surface);box-shadow:0 8px 30px rgba(60,20,20,.16)}
+:root[data-theme="dark"] nav.tabs{border:1px solid var(--line);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+nav.tabs .in{max-width:none}
+nav.tabs button{position:relative;font-size:0;padding:16px 2px 18px;color:var(--icon)}
+nav.tabs button span{height:26px}
+nav.tabs button svg{width:26px;height:26px}
+nav.tabs button[aria-selected="true"]{color:var(--accent)}
+nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:9px;width:26px;height:3px;margin-left:-13px;border-radius:2px;background:var(--accent)}
+.toast{bottom:calc(92px + env(safe-area-inset-bottom,0px));background:#1C1717;border-radius:24px}
+:root[data-theme="dark"] .toast{background:#F5EFEE;color:#1C1717}
+/* sheets */
+.sheet{background:rgba(20,10,10,.5)}
+.sheetbox{border-radius:24px 24px 0 0}
+.coming .ci .ic{flex:none;width:44px;height:44px;border-radius:50%;background:var(--soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+/* red screens: curves instead of stripes, see-through fields instead of white boxes */
+.welcome,.authgate{background:var(--track) var(--curves) right bottom/100% 45% no-repeat}
+.welcome::before,.authgate::before{display:none}
+.prrow select,.prrow input,.authcard input:not([type=radio]):not([type=checkbox]){background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.5)}
+.prrow input::placeholder,.authcard input::placeholder{color:rgba(255,255,255,.75)}
+.prrow option{color:#1C1717}
+/* empty-state drawings follow the theme */
+.empty-art [fill="#EADFDD"]{fill:var(--line)}.empty-art [stroke="#EADFDD"]{stroke:var(--line)}
+.empty-art [fill="#FAF8F6"]{fill:var(--surface)}.empty-art [stroke="#141010"]{stroke:var(--ink)}
+:root[data-theme="dark"] .empty-art{opacity:1}
 .tc-wrap{container-type:inline-size;max-width:380px;margin:0 auto;perspective:1400px}
 .tcard{position:relative;aspect-ratio:5/7;transition:transform .6s;transform-style:preserve-3d}
 .tcard.flipped{transform:rotateY(180deg)}
@@ -396,7 +489,6 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
 
 <div class="app">
   <header class="top">
-    <div class="lanes" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span class="l4">4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
     <button class="themebtn" id="settingsBtn" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
     <h1 class="brandh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="40" height="40" class="logo" aria-hidden="true"><defs><clipPath id="lgh"><rect width="1024" height="1024" rx="228"/></clipPath></defs><g clip-path="url(#lgh)"><rect width="1024" height="1024" fill="#C62832"/><path d="M332 1024 L440.0 -10 L584.0 -10 L692 1024Z" fill="#fff" opacity="0.16"/><path d="M-748.0 1024 L7.7 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-388.0 1024 L151.8 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-28.0 1024 L295.9 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M332.0 1024 L440.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M692.0 1024 L584.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1052.0 1024 L728.1 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1412.0 1024 L872.2 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><rect x="0" y="872" width="1024" height="28" fill="#fff"/><path d="M313.2 -193.2V-109.2Q313.2 -105.0 310.79999999999995 -102.6Q308.4 -100.2 304.2 -100.2H286.2Q282.59999999999997 -100.2 282.59999999999997 -96.6V-9.0Q282.59999999999997 -4.8 280.2 -2.4Q277.8 0.0 273.59999999999997 0.0H178.79999999999998Q174.6 0.0 172.2 -2.4Q169.79999999999998 -4.8 169.79999999999998 -9.0V-96.6Q169.79999999999998 -100.2 166.2 -100.2H13.799999999999999Q9.6 -100.2 7.199999999999999 -102.6Q4.8 -105.0 4.8 -109.2V-175.79999999999998Q4.8 -181.2 6.6 -186.6L79.2 -412.8Q81.6 -420.0 89.39999999999999 -420.0H190.79999999999998Q195.6 -420.0 197.7 -417.29999999999995Q199.79999999999998 -414.59999999999997 198.6 -409.8L136.79999999999998 -206.4Q136.2 -202.2 139.79999999999998 -202.2H166.2Q169.79999999999998 -202.2 169.79999999999998 -205.79999999999998V-246.6Q169.79999999999998 -250.79999999999998 172.2 -253.2Q174.6 -255.6 178.79999999999998 -255.6H273.59999999999997Q277.8 -255.6 280.2 -253.2Q282.59999999999997 -250.79999999999998 282.59999999999997 -246.6V-205.79999999999998Q282.59999999999997 -202.2 286.2 -202.2H304.2Q308.4 -202.2 310.79999999999995 -199.8Q313.2 -197.4 313.2 -193.2Z" transform="translate(353.0 822)" fill="#fff"/></g></svg><span>Lane 4</span></h1>
     <p>Your season, your splits, your race day.</p>
@@ -506,7 +598,7 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
     <section class="view" id="v-colleges">
       <h2>Colleges</h2>
       <div id="cTools">
-        <input id="cSearch" type="search" placeholder="Search by school, state, or conference" autocomplete="off" aria-label="Search colleges">
+        <div class="searchbar"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input id="cSearch" type="search" placeholder="School, state, or conference" autocomplete="off" aria-label="Search colleges"></div>
         <div class="chips" id="cChips" role="group" aria-label="Filter"><button data-d="All">All</button><button data-d="D1">D1</button><button data-d="D2">D2</button><button data-d="D3">D3</button><button data-d="Mine">★ Mine</button></div>
         <div class="sortrow"><span class="hint" id="cCount" style="margin:0"></span><div id="cSort" class="chips small" role="group" aria-label="Sort"><button data-s="fit">Best match</button><button data-s="az">A–Z</button></div></div>
       </div>
@@ -585,11 +677,11 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
 </div>
 
 <div class="sheet" id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-  <div class="sheethead"><h3 id="sheetTitle" style="margin:0"></h3><button class="ghost" id="sheetClose">Close</button></div>
+  <div class="sheethead"><h3 id="sheetTitle" style="margin:0"></h3><button class="iconbtn" id="sheetClose" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div id="sheetBody"></div></div></div>
 <div class="sheet" id="setSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="setTitle">
-  <div class="sheethead"><h3 id="setTitle" style="margin:0">Settings</h3><button class="ghost" data-close>Close</button></div>
-  <div class="panel"><button class="go alt" id="themeBtn" style="margin-top:0">☾ Switch to dark mode</button>
+  <div class="sheethead"><h3 id="setTitle" style="margin:0">Settings</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="panel"><label class="check toggle"><span>Dark mode</span><input type="checkbox" class="switch" id="themeBtn" role="switch"></label>
     <p class="hint" id="syncLine2" style="margin-top:10px"></p></div>
   <details class="panel" id="backupBox">
         <summary>Back up or move my data</summary>
@@ -604,7 +696,7 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
   <div class="panel" id="pubBox">
     <h3 style="margin:0 0 4px">Public times</h3>
     <p class="hint" style="margin:0 0 8px">Share your PRs in Rankings. An admin checks every time against your Athletic.net or MileSplit page before it shows up. Workouts, contact info, and goals always stay private.</p>
-    <label class="check" style="border:0;padding:4px 0"><input type="checkbox" id="pubOn"> Show my verified PRs in Rankings</label>
+    <label class="check toggle"><span>Show my verified PRs in Rankings</span><input type="checkbox" class="switch" id="pubOn" role="switch"></label>
     <div id="pubFields" hidden>
       <label for="pubName">Name shown</label><input id="pubName" placeholder="First name and last initial, like Xavier R." autocomplete="off">
       <p class="hint" style="margin:6px 0 0">Your school and class year come from your card. Add your results link on the Card tab so the admin can verify.</p>
@@ -621,32 +713,32 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
   <div style="text-align:center;margin-top:16px"><button class="ghost" id="restart">Restart demo</button></div>
 </div></div>
 <div class="sheet" id="rankSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
-  <div class="sheethead"><h3 id="rankTitle" style="margin:0">Rankings</h3><button class="ghost" data-close>Close</button></div>
+  <div class="sheethead"><h3 id="rankTitle" style="margin:0">Rankings</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="segIn" style="margin-bottom:10px" role="group" aria-label="Division"><button data-rg="Men">Boys</button><button data-rg="Women">Girls</button></div>
   <label for="rankEvent">Event</label><select id="rankEvent"></select>
   <div class="panel" id="rankList" style="margin-top:12px"></div>
   <p class="hint">Only times an admin has verified appear here. Athletes choose to share, and can stop sharing anytime in Settings.</p>
 </div></div>
 <div class="sheet" id="adminSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
-  <div class="sheethead"><h3 id="adminTitle" style="margin:0">Verify times</h3><button class="ghost" data-close>Close</button></div>
+  <div class="sheethead"><h3 id="adminTitle" style="margin:0">Verify times</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <p class="hint" style="margin:0 0 10px">Check each athlete’s times against their results page, then approve or reject. Only approved times appear in Rankings.</p>
   <div id="adminList"></div>
 </div></div>
 <div class="sheet" id="comingSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="comingTitle">
-  <div class="sheethead"><h3 id="comingTitle" style="margin:0">Coming soon</h3><button class="ghost" data-close>Close</button></div>
+  <div class="sheethead"><h3 id="comingTitle" style="margin:0">Coming soon</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <p class="hint" style="margin:0 0 12px">This is a demo of Lane 4. These features are being built into the iPhone app.</p>
   <div class="panel coming">
-    <div class="ci"><span>☁️</span><div><strong>iCloud sync</strong><p>Your data saves to your own iCloud and follows you to every Apple device. No sign-up needed.</p></div></div>
-    <div class="ci"><span>❤️</span><div><strong>Apple Health and Strava</strong><p>Runs from Strava, Garmin, and Apple Watch come in automatically through Apple Health.</p></div></div>
-    <div class="ci"><span>🔔</span><div><strong>Race-day reminders</strong><p>Your phone tells you when to eat, warm up, and check in, based on your event time.</p></div></div>
-    <div class="ci"><span>📲</span><div><strong>Share your athlete card</strong><p>Send your card or a coach email straight from your phone’s share menu or Mail.</p></div></div>
-    <div class="ci"><span>🏅</span><div><strong>Nike and adidas Nationals, plus state standards</strong><p>See how close you are to Nike and adidas Nationals and your state meet, next to New Balance.</p></div></div>
-    <div class="ci"><span>🏫</span><div><strong>More colleges</strong><p>More conferences across D1, D2, and D3 beyond the 148 schools in this demo.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18z"/></svg></span><div><strong>iCloud sync</strong><p>Your data saves to your own iCloud and follows you to every Apple device. No sign-up needed.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></span><div><strong>Apple Health and Strava</strong><p>Runs from Strava, Garmin, and Apple Watch come in automatically through Apple Health.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><div><strong>Race-day reminders</strong><p>Your phone tells you when to eat, warm up, and check in, based on your event time.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg></span><div><strong>Share your athlete card</strong><p>Send your card or a coach email straight from your phone’s share menu or Mail.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></svg></span><div><strong>Nike and adidas Nationals, plus state standards</strong><p>See how close you are to Nike and adidas Nationals and your state meet, next to New Balance.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg></span><div><strong>More colleges</strong><p>More conferences across D1, D2, and D3 beyond the 148 schools in this demo.</p></div></div>
   </div>
   <h3>Lane 4 Pro</h3>
   <div class="panel coming">
-    <div class="ci"><span>📋</span><div><strong>Recruiting Mode</strong><p>Track every school from first email to visit to offer, with follow-up reminders and a recruiting timeline.</p></div></div>
-    <div class="ci"><span>📈</span><div><strong>Progress Projections</strong><p>Charts of every event with college standards drawn in, and where your trend is heading. Pure math from your own times.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><div><strong>Recruiting Mode</strong><p>Track every school from first email to visit to offer, with follow-up reminders and a recruiting timeline.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><div><strong>Progress Projections</strong><p>Charts of every event with college standards drawn in, and where your trend is heading. Pure math from your own times.</p></div></div>
   </div>
   <p class="hint" style="text-align:center">Lane 4 will never use AI coaching. Your coach is your coach.</p>
 </div></div>
@@ -847,6 +939,7 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>go(b.datas
 function go(v){
   document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
   document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll('input[type=range]').forEach(r=>typeof rangeFill==="function"&&rangeFill(r));
   window.scrollTo(0,0);
 }
 
@@ -1327,10 +1420,15 @@ document.getElementById("doRestore").onclick=()=>{
   catch(e){m.textContent="That code didn’t work. Make sure you pasted the whole thing, starting with LANE4:"}
 };
 const THEME_KEY="lane4-theme";
-function applyTheme(t){document.documentElement.dataset.theme=t;const b=document.getElementById("themeBtn");b.textContent=t==="dark"?"☀ Switch to light mode":"☾ Switch to dark mode";b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==="dark"?"#151010":"#C62832"}
-let theme="light";try{theme=localStorage.getItem(THEME_KEY)==="dark"?"dark":"light"}catch(e){}
+function applyTheme(t){document.documentElement.dataset.theme=t;document.getElementById("themeBtn").checked=t==="dark";const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==="dark"?"#110E0E":"#C62832"}
+/* no saved choice: follow the phone's light/dark setting */
+let theme=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";try{const t=localStorage.getItem(THEME_KEY);if(t==="dark"||t==="light")theme=t}catch(e){}
 applyTheme(theme);
-document.getElementById("themeBtn").onclick=()=>{theme=theme==="dark"?"light":"dark";applyTheme(theme);try{localStorage.setItem(THEME_KEY,theme)}catch(e){}};
+document.getElementById("themeBtn").onchange=e=>{theme=e.target.checked?"dark":"light";applyTheme(theme);try{localStorage.setItem(THEME_KEY,theme)}catch(e){}};
+/* sliders: paint the red fill up to the thumb */
+function rangeFill(r){r.style.setProperty("--p",(r.value-(r.min||0))/((r.max||100)-(r.min||0))*100+"%")}
+document.addEventListener("input",e=>{if(e.target.type==="range")rangeFill(e.target)});
+document.querySelectorAll('input[type=range]').forEach(rangeFill);
 twoTap(document.getElementById("delCloud"),"Tap again to delete from your account",async()=>{if(!CLOUD.ref){toast("Nothing saved to an account here");return}
   const ref=CLOUD.ref;CLOUD.ref=null;try{await CLOUD.chain;await ref.delete();toast("Deleted from your account")}catch(e){toast("Couldn’t delete right now. Try again.")}setSync("device")});
 /* ---------- split calculator: physics + how races are run, no AI ---------- */
