@@ -72,6 +72,11 @@ Your separate admin page lives at https://knbwfpyn87-ux.github.io/Lane-4/admin.h
 - Emails are never shown anywhere in the app, not even to admins. The account box only says "Signed in with Google" or "with email."
 - Rankings show only the name each athlete types in, plus school and class year.
 - Photos, workouts, goals, and contact info are never public.
+- Strava tokens and race-day push reminders live only in your own Cloudflare Worker's database (see below).
+
+## Strava sync and push reminders (optional)
+Set up the free Cloudflare Worker in `worker/` by following `worker/README.md`. Until then, the Strava box
+stays hidden and race-day reminders work only while Lane 4 is open or through "Add my plan to my calendar."
 
 ## What each person can do (enforced by firestore.rules, not just hidden buttons)
 - Read and write only their own saved data.

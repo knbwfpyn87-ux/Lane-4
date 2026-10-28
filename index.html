@@ -6,6 +6,9 @@
 <title>Lane 4 — Track & Field Recruiting</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lane 4">
 <meta property="og:title" content="Lane 4 — Track & Field Recruiting">
 <meta property="og:description" content="Track your PRs, compare them to college and nationals standards, and plan race day.">
 <meta property="og:image" content="lane4-share-image.png">
@@ -376,6 +379,8 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
 .empty-art [fill="#FAF8F6"]{fill:var(--surface)}.empty-art [stroke="#141010"]{stroke:var(--ink)}
 :root[data-theme="dark"] .empty-art{opacity:1}
 /* progress chart */
+.go.strava{background:#FC4C02;box-shadow:none}
+.btnrow[hidden],.go[hidden]{display:none}
 .tag.pro{background:var(--track);color:#fff;font:700 12px "Barlow",sans-serif;vertical-align:middle;margin-left:4px}
 #projChart{margin-top:12px}
 #projChart svg{display:block;width:100%;height:auto;overflow:visible}
@@ -539,7 +544,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
       <h2 style="margin-top:22px">Latest races</h2>
       <div class="panel" id="recentRaces"></div>
       <button class="panel teaser" id="openRank"><span class="tz">Rankings</span><strong>See verified times from other Lane 4 athletes</strong><span class="hint" style="margin:0">Open rankings ›</span></button>
-      <button class="panel teaser" id="openComing"><span class="tz">Coming soon</span><strong>iCloud sync, Apple Health and Strava, more colleges, and Recruiting Mode</strong><span class="hint" style="margin:0">See what’s coming ›</span></button>
+      <button class="panel teaser" id="openComing"><span class="tz">Coming soon</span><strong>iCloud sync, Apple Health, more colleges, and Recruiting Mode</strong><span class="hint" style="margin:0">See what’s coming ›</span></button>
       
       
       
@@ -587,6 +592,12 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
         <input type="range" id="wFeel" min="1" max="5" value="3">
         <button class="go" id="saveW">Save workout</button>
       </details>
+      <div class="panel" id="stravaBox" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><h3 style="margin:0">Strava</h3><span class="hint" style="margin:0;font-size:12px">Powered by Strava</span></div>
+        <p class="hint" id="stravaLine" role="status"></p>
+        <button class="go strava" id="stravaConnect">Connect with Strava</button>
+        <div class="btnrow" id="stravaOn" hidden><button class="go" id="stravaSync">Sync now</button><button class="go alt" id="stravaOff">Disconnect</button></div>
+      </div>
       <details class="panel" id="uploadBox">
         <summary>Upload workouts (Strava, Garmin, watch)</summary>
         <p class="hint" style="margin:0 0 8px">Upload your Strava export (<strong>activities.csv</strong>) or activity files (<strong>.gpx</strong> or <strong>.tcx</strong>) from Strava, Garmin, or your watch. Files are read on your device and nothing is sent anywhere.</p>
@@ -698,9 +709,11 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
           <div><label for="mEvent">Event</label><select id="mEvent"></select></div>
           <div><label for="mTime">Estimated start</label><input type="time" id="mTime"></div>
         </div>
+        <label for="mDate">Race date</label><input type="date" id="mDate">
         <button class="go" id="buildPlan">Build my race-day plan</button>
         <label class="check toggle" style="margin-top:12px"><span>Remind me at each step</span><input type="checkbox" class="switch" id="remindOn" role="switch"></label>
         <p class="hint" id="remindMsg" role="status" style="margin:0"></p>
+        <button class="go alt" id="icsBtn">Add my plan to my calendar</button>
       </div>
       <div class="panel"><h3>Your timeline</h3><ul class="tl" id="tl"><li class="empty" style="padding-left:0">Your plan shows up here.</li></ul></div>
       <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><h3 style="margin:0">Bag check</h3><button class="ghost" id="resetBag">Reset</button></div><div id="bag"></div></div>
@@ -762,8 +775,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
   <p class="hint" style="margin:0 0 12px">This is a demo of Lane 4. These features are being built into the iPhone app.</p>
   <div class="panel coming">
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18z"/></svg></span><div><strong>iCloud sync</strong><p>Your data saves to your own iCloud and follows you to every Apple device. No sign-up needed.</p></div></div>
-    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></span><div><strong>Apple Health and Strava</strong><p>Runs from Strava, Garmin, and Apple Watch come in automatically through Apple Health.</p></div></div>
-    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><div><strong>Reminders with the app closed</strong><p>Race-day reminders work now while Lane 4 is open. The iPhone app will remind you even when it’s closed.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></span><div><strong>Apple Health</strong><p>Runs from Garmin and Apple Watch come in automatically through Apple Health.</p></div></div>
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></svg></span><div><strong>Nike and adidas Nationals, plus state standards</strong><p>See how close you are to Nike and adidas Nationals and your state meet, next to New Balance.</p></div></div>
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg></span><div><strong>More colleges</strong><p>More conferences across D1, D2, and D3 beyond the 148 schools in this demo.</p></div></div>
   </div>
@@ -796,6 +808,9 @@ const EMPTY_RACES=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150"
 <rect x="40" y="128" width="160" height="8" fill="#EADFDD"/>
 <path d="M120 40l5.4 11 12.2 1.8-8.8 8.6 2 12.1L120 67.8l-10.8 5.7 2-12.1-8.8-8.6 12.2-1.8z" fill="#C62832"/></svg>`;
 /* Storage: one permanent key. Never rename it; change the data shape with a new SCHEMA number and a step in migrate() instead. */
+/* Lane 4 Worker on Cloudflare (Strava sync, push reminders). Paste its URL here after following worker/README.md,
+   like "https://lane4.yourname.workers.dev". It's an address, not a secret. Empty = those features stay hidden. */
+const LANE4_WORKER="";
 const KEY="lane4-data",SCHEMA=5,OLD_KEYS=["lane4-demo-v4","lane4-demo-v3","lane4-demo-v2","lane4-demo-v1"];
 function migrate(d){
   if(!d||typeof d!=="object")return null;
@@ -1344,10 +1359,11 @@ const BAG_EXTRA={sprint:["Starting blocks plan (know your settings)"],hurdles:["
 function bagList(){return BAG_BASE.concat(BAG_EXTRA[planType(S&&S.meet?S.meet.event:mEvent.value)]||[])}
 document.getElementById("buildPlan").onclick=()=>{
   const t=mTime.value;if(!t){mTime.focus();return}
-  const[h,m]=t.split(":").map(Number);const d=new Date();d.setHours(h,m,0,0);
-  S.meet={event:mEvent.value,start:d.getTime(),remind:!!(S.meet&&S.meet.remind)};save();renderMeet();
+  const[h,m]=t.split(":").map(Number);const ds=document.getElementById("mDate").value;
+  const d=ds?new Date(+ds.slice(0,4),+ds.slice(5,7)-1,+ds.slice(8,10)):new Date();d.setHours(h,m,0,0);
+  S.meet={event:mEvent.value,start:d.getTime(),remind:!!(S.meet&&S.meet.remind)};save();renderMeet();pushSync();
 };
-mEvent.addEventListener("change",()=>{if(S&&S.meet){S.meet.event=mEvent.value;save();renderMeet()}renderBag()});
+mEvent.addEventListener("change",()=>{if(S&&S.meet){S.meet.event=mEvent.value;save();renderMeet();pushSync()}renderBag()});
 function hhmm(ms){return new Date(ms).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
 function renderMeet(){
   remindStatus();
@@ -1355,6 +1371,7 @@ function renderMeet(){
   if(!S||!S.meet){tl.innerHTML=`<li class="empty" style="padding-left:0">Your plan shows up here.</li>`;document.getElementById("bEvent").textContent="Set your event time below";bClock.textContent="--:--:--";bNext.innerHTML="&nbsp;";return}
   mEvent.value=S.meet.event;
   const st=new Date(S.meet.start);mTime.value=String(st.getHours()).padStart(2,"0")+":"+String(st.getMinutes()).padStart(2,"0");
+  document.getElementById("mDate").value=`${st.getFullYear()}-${String(st.getMonth()+1).padStart(2,"0")}-${String(st.getDate()).padStart(2,"0")}`;
   const P=plan(),now=Date.now(),nowIdx=P.findIndex(p=>S.meet.start+p[0]*60000>now);
   tl.innerHTML=`<li class="plantype">Plan for: ${PLANS[planType(S.meet.event)].label}</li>`+P.map((p,i)=>{const at=S.meet.start+p[0]*60000;const cls=at<=now?"done":(i===nowIdx?"now":"");
     return `<li class="${cls}"><span class="dot"></span><div class="t">${hhmm(at)} · ${p[1]}</div><div class="w">${p[2]}</div></li>`}).join("");
@@ -1366,27 +1383,79 @@ function tick(){
   remindCheck(now);
   document.getElementById("bEvent").textContent=`${S.meet.event} · starts ${hhmm(S.meet.start)}`;
   if(diff<=0){bClock.textContent="RACE";bNext.textContent="Good luck. Add your time in the Times tab after.";return}
-  const s=Math.floor(diff/1000);bClock.textContent=[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,"0")).join(":");
+  const s=Math.floor(diff/1000),dd=Math.floor(s/86400);bClock.textContent=(dd?dd+"d ":"")+[Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,"0")).join(":");
   const nx=plan().find(p=>S.meet.start+p[0]*60000>now);
   if(nx){const mins=Math.ceil((S.meet.start+nx[0]*60000-now)/60000);bNext.textContent=`Next: ${nx[1]} in ${mins} min`}
 }
 setInterval(tick,1000);setInterval(()=>{if(S&&S.meet)renderMeet()},30000);
-/* reminders: fire while Lane 4 is open. A website can't wake a phone later; that needs the iPhone app. */
-const FIRED=new Set();
+/* reminders: pop up in the page while Lane 4 is open; with the Lane 4 Worker set up, push notifications arrive even when it's closed */
+const FIRED=new Set(),PUSH={on:false};
 function remindCheck(now){if(!S||!S.meet||!S.meet.remind)return;
   plan().forEach(p=>{const at=S.meet.start+p[0]*60000,k=S.meet.start+":"+p[0];
     if(at<=now&&now-at<60000&&!FIRED.has(k)){FIRED.add(k);remind(p[1],p[2])}})}
 function remind(title,body){toast(title);try{if(navigator.vibrate)navigator.vibrate([200,100,200])}catch(e){}
-  try{if("Notification"in window&&Notification.permission==="granted")new Notification("Lane 4: "+title,{body,icon:"lane4-icon-512.png",tag:"lane4-meet"})}catch(e){}}
+  if(PUSH.on)return; /* the push notification covers it */
+  try{if("Notification"in window&&Notification.permission==="granted")new Notification("Lane 4: "+title,{body,icon:"lane4-icon-192.png",tag:"lane4-meet"})}catch(e){}}
+const IOS_TAB=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!navigator.standalone;
+function pushReady(){return !!LANE4_WORKER&&location.protocol==="https:"&&"serviceWorker"in navigator&&"PushManager"in window&&"Notification"in window}
 function remindStatus(){const on=!!(S&&S.meet&&S.meet.remind),el=document.getElementById("remindOn");el.checked=on;
   const notif="Notification"in window&&Notification.permission==="granted";
-  document.getElementById("remindMsg").textContent=!on?"Keep Lane 4 open on race day and it reminds you at each step of your plan."
-    :notif?"On. Keep Lane 4 open: you’ll get a notification at each step.":"On. Keep Lane 4 open and on screen: each step pops up at the bottom of the page."}
+  document.getElementById("remindMsg").textContent=!on?"Turn this on to get a reminder at each step of your plan."
+    :PUSH.on?"On. You’ll get a notification at each step, even with Lane 4 closed."
+    :LANE4_WORKER&&IOS_TAB?"On while Lane 4 is open. To get them with it closed, add Lane 4 to your Home Screen (Share → Add to Home Screen) and open it from there, or add the plan to your calendar."
+    :notif?"On. Keep Lane 4 open: you’ll get a notification at each step. Or add the plan to your calendar."
+    :"On. Keep Lane 4 open and on screen: each step pops up at the bottom of the page. Or add the plan to your calendar."}
 document.getElementById("remindOn").onchange=async e=>{
   if(!S.meet){e.target.checked=false;toast("Build your race-day plan first");return}
   S.meet.remind=e.target.checked;save();
   if(e.target.checked&&"Notification"in window&&Notification.permission==="default"){try{await Notification.requestPermission()}catch(_){}}
-  remindStatus()};
+  remindStatus();pushSync()};
+if(location.protocol==="https:"&&"serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+function keyBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(s+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0))}
+/* send the plan's step times to the Worker (or cancel them); it pushes each one when it's due */
+async function pushSync(){if(!pushReady())return;
+  const post=(path,body)=>fetch(LANE4_WORKER+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  try{const reg=await navigator.serviceWorker.ready;let sub=await reg.pushManager.getSubscription();
+    if(S&&S.meet&&S.meet.remind&&Notification.permission==="granted"){
+      if(!sub){const{key}=await(await fetch(LANE4_WORKER+"/push/key")).json();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:keyBytes(key)})}
+      const steps=plan().map(p=>({at:S.meet.start+p[0]*60000,title:p[1],body:p[2]}));
+      PUSH.on=(await post("/push/schedule",{subscription:sub.toJSON(),steps})).ok}
+    else{if(sub)await post("/push/cancel",{endpoint:sub.endpoint});PUSH.on=false}
+  }catch(e){PUSH.on=false}
+  remindStatus()}
+/* calendar: one event per step, each with an alert, so the phone's own calendar reminds you */
+function icsText(){const z=t=>new Date(t).toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),x=s=>String(s).replace(/[\\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
+  const fold=l=>{let o="";while(l.length>60){o+=l.slice(0,60)+"\r\n ";l=l.slice(60)}return o+l}; /* calendar lines max 75 bytes */
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Lane 4//Race day//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+  plan().forEach((p,i)=>{const at=S.meet.start+p[0]*60000;
+    L.push("BEGIN:VEVENT",`UID:lane4-${S.meet.start}-${i}@lane4`,`DTSTAMP:${z(Date.now())}`,`DTSTART:${z(at)}`,`DTEND:${z(at+5*60000)}`,
+      `SUMMARY:${x(p[1])} · ${x(S.meet.event)}`,`DESCRIPTION:${x(p[2])}`,"BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${x(p[1])}`,"TRIGGER:PT0S","END:VALARM","END:VEVENT")});
+  L.push("END:VCALENDAR");return L.map(fold).join("\r\n")+"\r\n"}
+document.getElementById("icsBtn").onclick=()=>{if(!S||!S.meet){toast("Build your race-day plan first");return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([icsText()],{type:"text/calendar"}));a.download="lane4-race-day.ics";
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+  toast("Open the file to add your plan to your calendar")};
+/* ---------- Strava sync through the Lane 4 Worker. Lane 4 keeps only a random session id; Strava's tokens stay in the Worker. ---------- */
+function stravaUI(){const box=document.getElementById("stravaBox");box.hidden=!LANE4_WORKER;if(!LANE4_WORKER||!S)return;
+  const on=!!(S.strava&&S.strava.sid);document.getElementById("stravaConnect").hidden=on;document.getElementById("stravaOn").hidden=!on;
+  document.getElementById("stravaLine").textContent=!on?"Connect once and your Strava activities come into your training log. Lane 4 only reads them; it never posts."
+    :S.strava.last?`Connected. Last synced ${new Date(S.strava.last*1000).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}.`:"Connected. Tap Sync now to bring in your activities."}
+async function stravaSync(quiet){if(!LANE4_WORKER||!S||!S.strava)return;const line=document.getElementById("stravaLine");if(!quiet)line.textContent="Syncing…";
+  const after=S.strava.last?S.strava.last-2*86400:Math.floor(Date.now()/1000)-180*86400;
+  try{const r=await fetch(`${LANE4_WORKER}/strava/activities?after=${after}`,{headers:{Authorization:"Bearer "+S.strava.sid}});
+    if(r.status===401){S.strava=null;save();stravaUI();toast("Strava disconnected. Connect again to sync.");return}
+    const d=await r.json();if(!r.ok){if(!quiet)line.textContent=d.error||"Couldn’t reach Strava. Try again later.";return}
+    const have=new Set(S.log.map(w=>w.src).filter(Boolean));
+    const fresh=d.activities.map(a=>{const mi=a.meters>0?a.meters/1609.34:0;
+      return{date:String(a.date).slice(0,10),type:wType(a.type),note:[a.name,mins(a.moving||a.elapsed),mi?mi.toFixed(2)+" mi":""].filter(Boolean).join(" · ")+" (Strava)",feel:3,src:"strava-"+a.id,miles:mi?+mi.toFixed(2):undefined}})
+      .filter(w=>/^\d{4}-\d\d-\d\d$/.test(w.date)&&!have.has(w.src)&&(have.add(w.src),true));
+    S.strava.last=Math.floor(Date.now()/1000);if(fresh.length){S.log.push(...fresh);S.log.sort((a,b)=>b.date.localeCompare(a.date))}save();renderAll();
+    if(!quiet||fresh.length)toast(fresh.length?`Added ${fresh.length} Strava workout${fresh.length===1?"":"s"}`:"Strava is up to date")}
+  catch(e){if(!quiet)line.textContent="Couldn’t reach Strava. Check your connection and try again."}}
+document.getElementById("stravaConnect").onclick=()=>{location.href=LANE4_WORKER+"/strava/start"};
+document.getElementById("stravaSync").onclick=()=>stravaSync(false);
+document.getElementById("stravaOff").onclick=async()=>{const sid=S.strava&&S.strava.sid;S.strava=null;save();stravaUI();toast("Strava disconnected");
+  if(sid)try{await fetch(LANE4_WORKER+"/strava/disconnect",{method:"POST",headers:{Authorization:"Bearer "+sid}})}catch(_){}};
 function renderBag(){
   const b=document.getElementById("bag");
   b.innerHTML=bagList().map((x,i)=>`<label class="check"><input type="checkbox" data-i="${i}" ${S.bag[i]?"checked":""}> ${x}</label>`).join("");
@@ -1735,10 +1804,17 @@ async function openAdmin(){
 document.getElementById("openAdmin").onclick=openAdmin;
 document.getElementById("settingsBtn").addEventListener("click",()=>refreshPublic());
 
-function renderAll(){if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits()}
+function renderAll(){if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits()}
 
 if(!S){welcome.hidden=false;S=fresh();renderAll();S=null}else{if(!S.gender)S.gender="Men";if(!S.fav)S.fav=[];renderAll()}
 const h=location.hash.slice(1);if(["home","times","goals","colleges","card","meet"].includes(h))go(h);
+/* back from Strava's sign-in page: the Worker sends #strava=<session id> or #strava-error=<why> */
+(function stravaReturn(){const ok=location.hash.match(/^#strava=([\w-]{20,})$/),bad=location.hash.match(/^#strava-error=(\w+)$/);
+  if(ok||bad)history.replaceState(null,"",location.pathname+location.search);
+  if(bad){go("times");toast({denied:"Strava wasn’t connected.",scope:"Lane 4 needs permission to read your activities. Connect again and leave that box checked.",expired:"That took too long. Try connecting again."}[bad[1]]||"Couldn’t connect Strava. Try again.");return}
+  if(ok){if(!S){toast("Set up Lane 4 first, then connect Strava.");return}S.strava={sid:ok[1],last:0};save();go("times");stravaUI();stravaSync(false);return}
+  if(S&&S.strava&&Date.now()/1000-(S.strava.last||0)>6*3600)stravaSync(true);})();
+if(S&&S.meet&&S.meet.remind)pushSync();
 /* No times yet? Open the screen where you add them. */
 function autoRoute(){
   if(!S||!document.getElementById("welcome").hidden||S.races.length)return;
