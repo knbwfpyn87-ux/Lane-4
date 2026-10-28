@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Lane 4 Admin</title>
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C62832;--ink:#141010;--muted:#6B5E5C;--line:#EADFDD;--bg:#FAF8F6;--good:#1B8A5A;box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Barlow",system-ui,sans-serif}
+header{background:var(--red);color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 18px;display:flex;align-items:center;gap:12px}
+header img{width:40px;height:40px;border-radius:22%;box-shadow:0 0 0 2px #fff}
+header h1{margin:0;font:800 28px "Barlow Condensed",sans-serif;flex:1}
+header button{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.6);color:#fff;border-radius:10px;padding:6px 12px;font:600 14px "Barlow",sans-serif;cursor:pointer}
+main{max-width:720px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom,0px))}
+h2{font:800 24px "Barlow Condensed",sans-serif;margin:22px 0 10px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.hint{color:var(--muted);font-size:14px;margin:4px 0}
+label{display:block;font-size:14px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+input{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #F28C28;outline-offset:2px}
+.btn{width:100%;margin-top:12px;padding:12px;border-radius:10px;border:0;background:var(--red);color:#fff;font:700 18px "Barlow Condensed",sans-serif;cursor:pointer}
+.btn.alt{background:#fff;color:var(--red);border:2px solid var(--red)}
+.btn.g{background:#fff;color:#1f1f1f;border:1px solid var(--line);font:600 16px "Barlow",sans-serif}
+.row{display:flex;gap:8px}.row>*{flex:1 1 0;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font:800 26px "Barlow Condensed",sans-serif}.stat span{font-size:12px;color:var(--muted);font-weight:600}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.tabs button{border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font:600 14px "Barlow",sans-serif;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+td{padding:6px 0;border-top:1px solid var(--line);vertical-align:top}
+td.m{font:700 17px "Barlow Condensed",sans-serif;text-align:right;white-space:nowrap;padding-left:8px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:20px;background:var(--bg);border:1px solid var(--line);margin-left:6px}
+.tag.ok{background:var(--good);border-color:var(--good);color:#fff}.tag.no{background:var(--ink);border-color:var(--ink);color:#fff}
+.msg{min-height:1.4em;color:var(--red);font-size:14px;font-weight:600}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:#fff;padding:10px 16px;border-radius:24px;font-size:14px}
+[hidden]{display:none!important}
+@media (max-width:380px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header><img src="lane4-icon-512.png" alt=""><h1>Lane 4 Admin</h1><button id="out" hidden>Sign out</button></header>
+<main>
+  <section id="login">
+    <h2>Admin sign-in</h2>
+    <div class="panel">
+      <p class="hint" style="margin-top:0">Only accounts on the admin list can use this page. Everyone else sees nothing, even if they sign in.</p>
+      <button class="btn g" id="google">Sign in with Google</button>
+      <label for="em">Email</label><input id="em" type="email" autocomplete="username" autocapitalize="none">
+      <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+      <button class="btn" id="go">Sign in</button>
+      <p class="msg" id="lmsg" role="status"></p>
+    </div>
+  </section>
+
+  <section id="denied" hidden>
+    <h2>Not an admin</h2>
+    <div class="panel"><p style="margin:0">This account isn’t on the admin list. Admins are added only in the Firebase console (Firestore → admins).</p></div>
+  </section>
+
+  <section id="panel" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="tabs" role="group" aria-label="Show">
+      <button data-t="pending" aria-pressed="true">Waiting</button><button data-t="approved" aria-pressed="false">Approved</button>
+      <button data-t="rejected" aria-pressed="false">Rejected</button><button data-t="board" aria-pressed="false">Rankings board</button>
+    </div>
+    <div id="list"></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script type="module">
+import { firebaseConfig } from "./firebase-config.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const toast = m => { const t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2000); };
+const FIELD = /jump|vault|put|discus|javelin|hammer/i;
+const show = (ev, m) => { if (!FIELD.test(ev)) return m; const p = String(m).split("-"); return `${p[0]}′ ${p[1] || 0}″`; };
+
+const app = initializeApp(firebaseConfig), auth = getAuth(app), fs = getFirestore(app);
+let subs = [], board = [], optout = new Set(), tab = "pending";
+
+onAuthStateChanged(auth, async user => {
+  $("out").hidden = !user;
+  if (!user) { $("login").hidden = false; $("panel").hidden = $("denied").hidden = true; return; }
+  $("login").hidden = true;
+  let admin = false;
+  try { admin = (await getDoc(doc(fs, "admins/" + user.uid))).exists(); } catch {}
+  $("denied").hidden = admin; $("panel").hidden = !admin;
+  if (admin) load();
+});
+
+$("go").onclick = async () => {
+  $("lmsg").textContent = "";
+  try { await signInWithEmailAndPassword(auth, $("em").value.trim(), $("pw").value); }
+  catch { $("lmsg").textContent = "Sign-in failed. Check your email and password."; }
+};
+$("google").onclick = async () => {
+  const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, p); }
+  catch (e) { if (e && e.code === "auth/popup-blocked") await signInWithRedirect(auth, p); else if (e && e.code !== "auth/popup-closed-by-user") $("lmsg").textContent = "Google sign-in failed."; }
+};
+$("out").onclick = () => signOut(auth);
+
+async function load() {
+  const [s, b, o] = await Promise.all([getDocs(collection(fs, "subs")), getDocs(collection(fs, "board")), getDocs(collection(fs, "optout"))]);
+  subs = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.public);
+  board = b.docs.map(d => ({ id: d.id, ...d.data() }));
+  optout = new Set(o.docs.map(d => d.id));
+  render();
+}
+
+document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
+
+function card(x, actions) {
+  const events = Object.entries(x.events || {});
+  return `<div class="panel"><strong>${esc(x.name)}</strong><span class="tag">${x.gender === "Women" ? "Girls" : "Boys"}</span>
+    ${x.status === "approved" ? '<span class="tag ok">Approved</span>' : x.status === "rejected" ? '<span class="tag no">Rejected</span>' : ""}
+    ${optout.has(x.id) ? '<span class="tag">Hidden by athlete</span>' : ""}
+    <p class="hint">${esc([x.school, x.grad ? "Class of " + x.grad : "", x.state].filter(Boolean).join(" · "))}</p>
+    ${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : '<p class="hint">No results link given. Ask them to add one before approving.</p>'}
+    <table>${events.map(([ev, v]) => `<tr><td>${esc(ev)}<div class="hint" style="margin:0">${esc(v.meet || "")} ${esc(v.date || "")}</div></td><td class="m">${esc(show(ev, v.mark))}</td></tr>`).join("")}</table>
+    ${actions}</div>`;
+}
+
+function render() {
+  document.querySelectorAll("[data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tab));
+  const pending = subs.filter(x => x.status === "pending"), approved = subs.filter(x => x.status === "approved"), rejected = subs.filter(x => x.status === "rejected");
+  $("stats").innerHTML = [[pending.length, "Waiting"], [approved.length, "Approved"], [board.length, "On rankings"], [optout.size, "Hidden"]]
+    .map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
+  let html = "";
+  if (tab === "pending") html = pending.length ? pending.map(x => card(x, `<div class="row"><button class="btn" data-ok="${x.id}">Approve</button><button class="btn alt" data-no="${x.id}">Reject</button></div>
+      <label for="r-${x.id}">Reason if rejecting (the athlete sees this)</label><input id="r-${x.id}" placeholder="Times didn’t match the results page">`)).join("") : '<div class="panel"><p class="hint" style="margin:0">Nothing waiting. Nice.</p></div>';
+  if (tab === "approved") html = approved.map(x => card(x, `<button class="btn alt" data-rm="${x.id}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No approved athletes yet.</p></div>';
+  if (tab === "rejected") html = rejected.map(x => card(x, `<p class="hint">Reason: ${esc(x.reason || "none given")}</p><button class="btn alt" data-ok="${x.id}">Approve after all</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No rejected submissions.</p></div>';
+  if (tab === "board") html = board.map(x => card(x, `<button class="btn alt" data-rm="${x.id}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">Rankings are empty.</p></div>';
+  $("list").innerHTML = html;
+  document.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => act(b, async x => {
+    await setDoc(doc(fs, "board/" + x.id), { name: x.name, school: x.school || "", grad: x.grad || "", state: x.state || "", gender: x.gender || "Men", events: x.events || {}, approvedAt: Date.now() });
+    await updateDoc(doc(fs, "subs/" + x.id), { status: "approved", reason: "" });
+  }, "Approved", b.dataset.ok));
+  document.querySelectorAll("[data-no]").forEach(b => b.onclick = () => act(b, async x => {
+    const reason = ($("r-" + x.id).value || "").trim() || "Times didn’t match the results page";
+    await updateDoc(doc(fs, "subs/" + x.id), { status: "rejected", reason });
+    await deleteDoc(doc(fs, "board/" + x.id)).catch(() => {});
+  }, "Rejected", b.dataset.no));
+  document.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => act(b, async x => {
+    await deleteDoc(doc(fs, "board/" + x.id));
+    if (subs.some(s => s.id === x.id)) await updateDoc(doc(fs, "subs/" + x.id), { status: "rejected", reason: "Removed by an admin" });
+  }, "Removed", b.dataset.rm));
+}
+
+async function act(btn, fn, done, id) {
+  const x = subs.find(s => s.id === id) || board.find(s => s.id === id); if (!x) return;
+  btn.disabled = true;
+  try { await fn(x); toast(done); await load(); }
+  catch { toast("Couldn’t save. Check your connection and try again."); btn.disabled = false; }
+}
+</script>
+</body>
+</html>

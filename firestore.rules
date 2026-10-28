@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null && request.auth.token.email_verified == true; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+
+    // Each athlete's own data: only they can read or write it.
+    match /data/users/{uid}/{rest=**} {
+      allow read, write: if isMe(uid);
+    }
+    // Submissions for Rankings: athletes can only submit their own, and only as "pending".
+    match /subs/{uid} {
+      allow read: if isMe(uid) || isAdmin();
+      allow create, update: if (isMe(uid) && request.resource.data.status == "pending") || isAdmin();
+      allow delete: if isMe(uid) || isAdmin();
+    }
+    // Verified Rankings: every signed-in athlete can read; only admins can write.
+    match /board/{uid} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    // "Hide me from Rankings" switches.
+    match /optout/{uid} {
+      allow read: if signedIn();
+      allow write: if isMe(uid) || isAdmin();
+    }
+    // Admin list: managed only in the Firebase console.
+    match /admins/{uid} {
+      allow read: if isMe(uid);
+      allow write: if false;
+    }
+  }
+}

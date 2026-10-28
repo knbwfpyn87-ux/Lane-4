@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lane 4 — Track & Field Recruiting</title>
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:title" content="Lane 4 — Track & Field Recruiting">
+<meta property="og:description" content="Track your PRs, compare them to college and nationals standards, and plan race day.">
+<meta property="og:image" content="lane4-share-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Lane 4: track your PRs, compare them to college and nationals standards, and plan race day.">
+<meta name="theme-color" content="#C62832">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --track:#C62832; --bg:#FAF8F6; --surface:#FFFFFF; --ink:#1E1717; --muted:#6B605C;
+  --line:#ECE3DE; --board:#141010; --on-board:#FFFFFF; --accent:#C62832; --good:#1B8A5A;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="dark"]{--accent:#E0454E;--track:#C62832;--bg:#151010;--surface:#221919;--ink:#F7F0EF;--muted:#B5A7A5;--line:#3A2C2B;--board:#F7F0EF;--on-board:#141010;--good:#3CC48A;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.app{max-width:480px;margin:0 auto;padding:0 0 100px}
+h1,h2,h3,.num{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif}
+header.top{background:var(--track);color:#fff;padding:34px 20px 24px;position:relative;overflow:hidden}
+.lanes{position:absolute;inset:0;display:flex;pointer-events:none;z-index:0}
+.lanes span:last-child{border-right:0}
+.lanes span{flex:1 1 0;min-width:0;border-right:2px solid rgba(255,255,255,.28);display:flex;justify-content:center;padding-top:6px;font:700 13px "Barlow Condensed",sans-serif;color:rgba(255,255,255,.85);letter-spacing:.5px}
+.lanes span.l4{background:rgba(255,255,255,.1);color:#fff}
+header.top h1{margin:0;font-size:34px;font-weight:800;line-height:1;position:relative;z-index:1}
+header.top p{margin:6px 0 0;opacity:.9;font-size:15px;position:relative;z-index:1}
+.demo-pill{position:relative;z-index:1;display:inline-block;margin-top:10px;font-size:12px;font-weight:600;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 10px}
+main{padding:16px}
+section.view{display:none}section.view.on{display:block}
+h2{font-size:26px;font-weight:700;margin:8px 0 12px;line-height:1.1}
+h3{font-size:19px;font-weight:700;margin:0 0 8px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.hint{color:var(--muted);font-size:14px;margin:4px 0 0}
+label{display:block;font-size:14px;font-weight:600;margin:10px 0 4px;color:var(--muted)}
+input,select,textarea{width:100%;min-width:0;max-width:100%;display:block;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:90px;resize:vertical}
+input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;min-height:46px;text-align:left}
+input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value{text-align:left}
+input[type=range]{padding:0;border:0;background:none;min-height:30px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--board);outline-offset:2px}
+.row{display:flex;gap:10px}.row>*{flex:1 1 0;min-width:0}
+@media (max-width:380px){.row{flex-direction:column;gap:0}}
+.go{margin-top:14px;width:100%;font:700 18px "Barlow Condensed",sans-serif;background:var(--track);color:#fff;border:0;border-radius:10px;padding:12px;cursor:pointer}
+.go.alt{background:none;color:var(--track);border:2px solid var(--track)}
+button.ghost{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer}
+a{color:var(--track)}
+.prs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pr{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.pr .ev{font-size:14px;color:var(--muted);font-weight:600}
+.pr .num{font-size:clamp(24px,7.5vw,34px);font-weight:700;line-height:1.05;overflow-wrap:anywhere}
+.pr .ev{overflow-wrap:anywhere}
+.pr .goal{font-size:13px;color:var(--muted)}
+.empty{color:var(--muted);font-size:15px;margin:0}
+.entry{padding:10px 0;border-top:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+.entry:first-child{border-top:0;padding-top:0}
+.entry .grow{flex:1;min-width:0}
+.entry .d{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.entry .num{flex:none;text-align:right}
+.entry .num{font-size:24px;font-weight:700;line-height:1}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:20px;background:var(--bg);border:1px solid var(--line);margin-right:6px}
+.tag.pb{background:var(--board);color:var(--on-board);border-color:var(--board)}
+.feedback{margin-top:12px;padding:12px;border-radius:10px;background:var(--bg);border-left:4px solid var(--board);font-size:15px}
+.goalrow{padding:14px 0;border-top:1px solid var(--line)}
+.goalrow:first-child{border-top:0;padding-top:0}
+.goalhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.goalhead .num{font-size:22px;font-weight:700}
+.bar{height:10px;background:var(--bg);border-radius:6px;overflow:hidden;margin:8px 0 4px;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--track)}
+.school{margin-top:10px}
+.school h4{margin:0 0 4px;font:600 15px "Barlow",sans-serif}
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tier{min-width:0;overflow-wrap:anywhere;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg);text-align:left;font:inherit;color:var(--ink);cursor:pointer}
+.tier .k{font-size:12px;color:var(--muted);display:block}
+.tier .m{font:700 clamp(16px,4.6vw,19px) "Barlow Condensed",sans-serif;display:block;line-height:1.1}
+.tier .g{font-size:12px;display:block;color:var(--muted)}
+.tier.hit{border-color:var(--good)}
+.tier.hit .g{color:var(--good);font-weight:600}
+.source{font-size:13px;color:var(--muted);margin:0}
+.board{background:#111111;color:#FFFFFF;border-radius:14px;padding:18px;text-align:center;margin-bottom:14px;border:2px solid #3A2424}
+.board .lbl{color:#E9D6D3;font-size:14px}
+.board .clock{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:clamp(44px,15vw,64px);line-height:1;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:6px 0}
+.board .next{color:#fff;font-size:17px;font-weight:600}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{position:relative;padding:0 0 14px 34px}
+.tl li::before{content:"";position:absolute;left:10px;top:6px;bottom:-6px;width:2px;background:var(--line)}
+.tl li:last-child::before{display:none}
+.tl .dot{position:absolute;left:3px;top:4px;width:16px;height:16px;border-radius:50%;background:var(--surface);border:3px solid var(--track)}
+.tl li.done{opacity:.5}.tl li.done .dot{background:var(--track)}
+.tl li.now .dot{border-color:var(--track);background:var(--track)}
+.tl .t{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:18px}
+.tl .w{font-size:15px}
+.check{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:16px;margin:0;color:var(--ink);font-weight:500}
+.check:first-child{border-top:0}
+.check input{width:22px;height:22px;flex:none;accent-color:var(--track)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+nav.tabs .in{max-width:480px;margin:0 auto;display:flex}
+nav.tabs button{flex:1 1 0;min-width:0;background:none;border:0;padding:10px 2px 12px;font:600 12px "Barlow",sans-serif;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button span{font-size:20px;line-height:1}
+nav.tabs button[aria-selected="true"]{color:var(--track)}
+.note{font-size:12px;color:var(--muted);text-align:center;margin:18px 0 0}
+/* welcome */
+.welcome{position:fixed;inset:0;z-index:20;background:var(--track);color:#fff;display:flex;flex-direction:column;overflow-y:auto;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.welcome::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 58px,rgba(255,255,255,.18) 58px 60px);pointer-events:none}
+.welcome .card{position:relative;max-width:420px;width:100%;margin:auto}
+.welcome .step[hidden]{display:none}
+.prrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:center;margin-top:8px}
+.prrow select,.prrow input{background:#fff;color:#141A26;border-color:rgba(255,255,255,.4)}
+.prrow .x{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:10px;width:42px;height:44px;font-size:18px;cursor:pointer;margin:0;padding:0}
+.welcome .small{background:none;border:0;color:#fff;text-decoration:underline;font:600 15px "Barlow",sans-serif;padding:8px 0;margin-top:6px;width:auto;display:inline-block}
+.seg{display:flex;gap:8px;margin:8px 0 4px}
+.seg label{flex:1;margin:0;color:inherit}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:block;text-align:center;padding:10px;border-radius:10px;border:2px solid rgba(255,255,255,.6);font-weight:600;cursor:pointer}
+.seg input:checked+span{background:#fff;color:#A51E27;border-color:#fff}
+.seg input:focus-visible+span{outline:3px solid var(--board);outline-offset:2px}
+.wmsg{min-height:1.4em;font-size:14px;color:#FFE08A;margin:8px 0 0}
+.segIn{display:flex;gap:8px}
+.segIn button{flex:1;padding:8px;border-radius:10px;border:2px solid var(--track);background:none;color:var(--track);font:600 15px "Barlow",sans-serif;cursor:pointer}
+.segIn button[aria-pressed="true"]{background:var(--track);color:#fff}
+.welcome h1{font:800 54px/0.95 "Barlow Condensed",sans-serif;margin:0 0 12px}
+.welcome p{margin:0 0 10px;font-size:17px;opacity:.95}
+.welcome .card>.step>button{display:block;width:100%;margin-top:12px;padding:14px;border-radius:12px;border:0;font:700 19px "Barlow Condensed",sans-serif;cursor:pointer}
+.welcome .w1{background:#fff;color:#A51E27}
+.welcome .w2{background:transparent;color:#fff;border:2px solid #fff}
+.welcome[hidden]{display:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chips button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:20px;padding:6px 12px;font:600 14px "Barlow",sans-serif;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--track);border-color:var(--track);color:#fff}
+.chips.small{margin:0}.chips.small button{padding:3px 10px;font-size:13px}
+.sortrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.crow{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line)}
+.crow:first-child{border-top:0}
+.cmain{flex:1;min-width:0;background:none;border:0;text-align:left;padding:12px 0;cursor:pointer;color:var(--ink);font:inherit;display:flex;flex-direction:column;gap:2px}
+.cname{font-weight:600;overflow-wrap:anywhere}
+.cmeta{font-size:13px;color:var(--muted)}
+.star-off{color:var(--muted);font-size:13px}
+.fav{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:none;font-size:24px;color:var(--muted);cursor:pointer}
+.fav.on{color:var(--board)}
+.badge{display:inline-block;align-self:flex-start;margin-top:4px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.badge.lv0{background:var(--good);border-color:var(--good);color:#fff}
+.badge.lv1{background:var(--track);border-color:var(--track);color:#fff}
+.badge.lv2{background:var(--board);border-color:var(--board);color:var(--on-board)}
+.tier.off{cursor:default;opacity:.55}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom,0px));background:#141A26;color:#fff;padding:10px 16px;border-radius:24px;font-size:14px;z-index:15;max-width:90vw;text-align:center}
+.toast[hidden]{display:none}
+#cDetail[hidden],#cList[hidden],#cTools[hidden]{display:none}
+nav.tabs button{font-size:11px}
+.splits{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.splits span{font:600 14px "Barlow Condensed",sans-serif;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:1px 8px}
+.splits em{font-style:normal;color:var(--muted);font-weight:500;margin-left:4px;font-size:12px}
+details.panel summary{cursor:pointer;font:700 19px "Barlow Condensed",sans-serif;list-style:none}
+details.panel summary::-webkit-details-marker{display:none}
+details.panel summary::after{content:"+";float:right;color:var(--track)}
+details.panel[open] summary::after{content:"−"}
+details.panel[open] summary{margin-bottom:6px}
+.acard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:12px}
+.acard .top{background:var(--track);color:#fff;padding:18px;position:relative;overflow:hidden}
+.acard .top::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(255,255,255,.2) 46px 48px);pointer-events:none}
+.acard .nm{font:800 32px/1 "Barlow Condensed",sans-serif;position:relative;z-index:1;overflow-wrap:anywhere}
+.acard .sub{position:relative;z-index:1;opacity:.9;margin-top:4px;font-size:15px}
+.acard .body{padding:14px 18px}
+.acard table{width:100%;border-collapse:collapse;font-size:15px}
+.acard td{padding:7px 0;border-top:1px solid var(--line);vertical-align:top}
+.acard tr:first-child td{border-top:0}
+.acard td.m{font:700 20px "Barlow Condensed",sans-serif;text-align:right;white-space:nowrap}
+.acard .lbl{font-size:13px;font-weight:600;color:var(--muted);margin:12px 0 4px}
+.lbl2{font:700 17px "Barlow Condensed",sans-serif;margin:18px 0 2px;padding-top:12px;border-top:1px solid var(--line)}
+.addacc{display:flex;gap:8px;align-items:center}.addacc input{flex:1}.addacc button{flex:none;padding:10px 14px}
+.acc{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}.acc:first-child{border-top:0}.acc span{flex:1;overflow-wrap:anywhere}
+.acard ul{margin:0;padding-left:18px}
+.mailbox textarea{min-height:360px;font-size:14px;line-height:1.45}
+.btnrow{display:flex;gap:8px}.btnrow>*{flex:1}
+a.go{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
+.tier{display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start}
+.btnrow .go{white-space:nowrap}
+@media (max-width:360px){.btnrow{flex-direction:column;gap:0}.tiers{gap:4px}.tier{padding:6px}}
+.themebtn{position:absolute;top:30px;right:16px;z-index:2;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);background:rgba(255,255,255,.15);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+a{color:var(--track)}
+.srow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;font:inherit;color:var(--ink)}
+#standing h3+.srow{border-top:0}
+.sbtn{cursor:pointer}.sbtn span{font-size:22px;color:var(--muted)}
+.srow .num{font-weight:700;margin-left:4px}
+.rank{flex:none;width:28px;height:28px;border-radius:50%;background:var(--track);color:#fff;font:700 15px "Barlow Condensed",sans-serif;display:flex;align-items:center;justify-content:center}
+.syncline{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 4px}
+.syncline[data-state="cloud"]{color:var(--good)}
+.sctable{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
+.sctable th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:4px 0}
+.sctable td{padding:7px 0;border-top:1px solid var(--line)}
+.sctable td.m{font:700 18px "Barlow Condensed",sans-serif}
+.sctable td.c{color:var(--muted);font-variant-numeric:tabular-nums}
+.linkbtn{background:none;border:0;padding:6px 0 0;color:var(--track);font:600 14px "Barlow",sans-serif;cursor:pointer}
+.filebtn{display:block;text-align:center;cursor:pointer;margin-top:4px}
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.sheetbox{background:var(--bg);width:100%;max-width:480px;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px))}
+.sheethead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;position:sticky;top:-16px;background:var(--bg);padding:6px 0}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font:700 24px "Barlow Condensed",sans-serif}
+.stat span{font-size:12px;color:var(--muted)}
+.wk{font:700 15px "Barlow Condensed",sans-serif;color:var(--muted);margin:14px 0 4px;text-transform:uppercase;letter-spacing:.5px}
+.teaser{display:block;width:100%;text-align:left;cursor:pointer;font:inherit;color:var(--ink);margin-top:4px}
+.teaser .tz{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--track);border-radius:20px;padding:2px 10px;margin-bottom:6px}
+.teaser strong{display:block;margin-bottom:4px}
+.coming .ci{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.coming .ci:first-child{border-top:0;padding-top:0}
+.coming .ci span{font-size:24px;line-height:1.2}
+.coming .ci p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+#welcome .small{display:block;margin:10px auto 0}
+.natrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;font:inherit;color:var(--ink);cursor:pointer}
+.natm{text-align:right;font:700 19px "Barlow Condensed",sans-serif;line-height:1.2}
+.natm .ok{color:var(--good);font:600 12px "Barlow",sans-serif}.natm .gap{color:var(--muted);font:500 12px "Barlow",sans-serif}
+.danger{background:#B3261E!important;color:#fff!important;border-color:#B3261E!important}
+.grpchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+.grpchips button{flex:1 1 30%;min-width:0;padding:9px 4px;white-space:nowrap;font-size:13px!important;border-radius:10px;border:2px solid rgba(255,255,255,.6);background:transparent;color:#fff;font:600 14px "Barlow",sans-serif;cursor:pointer}
+.grpchips button[aria-pressed="true"]{background:#fff;color:var(--track);border-color:#fff}
+.lbl3{font:700 15px "Barlow Condensed",sans-serif;color:var(--muted);margin:14px 0 2px;text-transform:uppercase;letter-spacing:.5px}
+.flabel{display:block;font-size:14px;font-weight:600;margin:10px 0 4px;color:var(--muted)}
+.mmss{display:flex;align-items:center;gap:6px}.mmss input{flex:1 1 0;min-width:0;text-align:center}.mmss span{font:700 22px "Barlow Condensed",sans-serif;color:var(--muted)}
+.score{flex:none;min-width:44px;text-align:center;font:700 22px "Barlow Condensed",sans-serif;color:var(--track);border:2px solid var(--track);border-radius:10px;padding:2px 6px}
+.tl li.plantype{padding:0 0 12px;font:700 15px "Barlow Condensed",sans-serif;color:var(--track);text-transform:uppercase;letter-spacing:.5px}
+.tl li.plantype::before{display:none}
+.phead{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--surface);margin:6px 0 16px}
+.pbanner{position:relative;background:var(--track);min-height:132px;padding-top:34px!important;display:flex;align-items:flex-end;gap:14px;padding:0 16px 16px}
+.pcurves{position:absolute;inset:0;width:100%;height:100%}
+.avatar{position:relative;z-index:1;flex:none;width:82px;height:82px;border-radius:50%;background:#fff;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:visible;margin:0}
+.avatar #avatarInner{width:100%;height:100%;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font:800 30px "Barlow Condensed",sans-serif;color:var(--track)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avcam{position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:#141010;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pname{position:relative;z-index:1;min-width:0;color:#fff;padding-bottom:4px}
+.pn{font:800 26px/1.05 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.pm{font-size:13px;opacity:.92;margin-top:3px}
+.pstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.pstats div{text-align:center;padding:10px 4px;border-left:1px solid var(--line)}
+.pstats div:first-child{border-left:0}
+.pstats b{display:block;font:800 22px/1.1 "Barlow Condensed",sans-serif;color:var(--ink);overflow-wrap:anywhere}
+.pstats b.hot{color:var(--track)}
+.pstats span{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.grpchips button{display:flex;flex-direction:column;align-items:center;gap:3px}
+.tag.sb{background:var(--surface);border:1.5px solid var(--ink);color:var(--ink)}
+.tag.nat{background:var(--track);border-color:var(--track);color:#fff}
+.tag.ver{background:var(--good);border-color:var(--good);color:#fff}
+.rank.r1{background:var(--track)}.rank.rn{background:#141010}
+:root[data-theme="dark"] .rank.rn{background:#3a2c2b}
+.cphoto{width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid #fff;float:right;position:relative;z-index:1}
+input[hidden],.avatar input{display:none!important}
+@media (max-width:360px){.avatar{width:68px;height:68px}.pn{font-size:22px}.pm{font-size:12px}.pstats span{font-size:10px;letter-spacing:0}.pstats b{font-size:20px}}
+.grpchips svg{width:30px!important;height:30px!important;flex:none}
+.brandh{display:flex;align-items:center;gap:10px}
+.brandh .logo{flex:none;border-radius:22%;box-shadow:0 0 0 2px #fff}
+header.top .brandh .logo{width:40px;height:40px}
+.welcome .brandh .logo{width:56px;height:56px}
+nav.tabs button span{display:flex;height:24px;align-items:center}
+.themebtn svg{display:block}
+.avcam svg{display:block}
+.emptybox{text-align:center}.empty-art{display:block;margin:0 auto 6px;max-width:100%;height:auto}
+:root[data-theme="dark"] .empty-art{opacity:.85}
+.authgate{position:fixed;inset:0;z-index:40;background:var(--track);color:#fff;display:flex;flex-direction:column;overflow-y:auto;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.authgate[hidden]{display:none}
+.authgate::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(90deg,transparent 0 58px,rgba(255,255,255,.18) 58px 60px);pointer-events:none}
+.authcard{position:relative;max-width:420px;width:100%;margin:auto}
+.authcard h1{font:800 54px/0.95 "Barlow Condensed",sans-serif;margin:0 0 10px}
+.authcard p{font-size:16px;opacity:.95}
+.authcard label{color:#fff}
+.authcard input:not([type=radio]):not([type=checkbox]){background:#fff;color:#141010;border-color:#fff}
+.authcard .w1{display:block;width:100%;margin-top:14px;padding:14px;border-radius:12px;border:0;font:700 19px "Barlow Condensed",sans-serif;cursor:pointer;background:#fff;color:#A51E27}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:6px;padding:13px;border-radius:12px;border:0;background:#fff;color:#1f1f1f;font:600 17px "Barlow",system-ui,sans-serif;cursor:pointer}
+.fine{font-size:13px!important;opacity:.85!important;margin:8px 0 0;text-align:center}
+.ordiv{display:flex;align-items:center;gap:10px;margin:16px 0 4px;font-size:13px;opacity:.85}
+.ordiv::before,.ordiv::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.5)}
+.authcard .small{background:none;border:0;color:#fff;text-decoration:underline;font:600 15px "Barlow",sans-serif;padding:10px 0;display:block;margin:4px auto 0}
+.agecheck{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:600}
+.agecheck input{width:20px;height:20px;accent-color:#fff}
+</style>
+</head>
+<body>
+
+<div class="authgate" id="authGate" hidden>
+  <div class="authcard" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <h1 id="authTitle" class="brandh"><img src="lane4-icon-512.png" alt="" width="56" height="56" class="logo"><span>Lane 4</span></h1>
+    <p id="authSub">Sign in to save your data to your account and use Rankings.</p>
+    <div id="authForm">
+      <button class="gbtn" id="gGo"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.2-13.5-10l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg><span>Continue with Google</span></button>
+      <p class="fine">By continuing, you confirm you’re 13 or older. Lane 4 never shows your email to anyone.</p>
+      <div class="ordiv"><span>or use email</span></div>
+      <div class="seg" role="tablist"><label><input type="radio" name="amode" value="in" checked><span>Sign in</span></label><label><input type="radio" name="amode" value="up"><span>Create account</span></label></div>
+      <label for="aEmail">Email</label><input id="aEmail" type="email" autocomplete="email" autocapitalize="none">
+      <label for="aPass">Password</label><input id="aPass" type="password" autocomplete="current-password" minlength="8">
+      <div id="upOnly" hidden>
+        <label for="aPass2">Confirm password</label><input id="aPass2" type="password" autocomplete="new-password">
+        <label class="agecheck"><input type="checkbox" id="aAge"> I’m 13 or older</label>
+      </div>
+      <p class="wmsg" id="aMsg" role="status"></p>
+      <button class="w1" id="aGo">Sign in</button>
+      <button class="small" id="aForgot">Forgot password?</button>
+    </div>
+    <div id="authVerify" hidden>
+      <p>We sent a verification link to <strong id="vEmail"></strong>. Open it, then tap the button below.</p>
+      <p class="wmsg" id="vMsg" role="status"></p>
+      <button class="w1" id="vDone">I verified my email</button>
+      <button class="small" id="vResend">Resend the email</button>
+    </div>
+    <button class="small" id="aSkip">Use without an account (saves on this device only)</button>
+  </div>
+</div>
+<script>
+/* Lane 4 web: connects the app's account features to Firebase (see lane4-firebase.js).
+   window.claude.use() is the small interface the app already uses for its database and user. */
+(function(){let ready,readyP=new Promise(r=>ready=r);window.__lane4={backend:null,resolveReady:v=>ready(v)};
+ window.claude={use:async n=>{const b=await readyP;return b?b.use(n):null}};})();
+</script>
+<div class="welcome" id="welcome" hidden>
+  <div class="card">
+    <div class="step" id="step1">
+      <h1 class="brandh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="56" height="56" class="logo" aria-hidden="true"><defs><clipPath id="lgw"><rect width="1024" height="1024" rx="228"/></clipPath></defs><g clip-path="url(#lgw)"><rect width="1024" height="1024" fill="#C62832"/><path d="M332 1024 L440.0 -10 L584.0 -10 L692 1024Z" fill="#fff" opacity="0.16"/><path d="M-748.0 1024 L7.7 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-388.0 1024 L151.8 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-28.0 1024 L295.9 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M332.0 1024 L440.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M692.0 1024 L584.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1052.0 1024 L728.1 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1412.0 1024 L872.2 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><rect x="0" y="872" width="1024" height="28" fill="#fff"/><path d="M313.2 -193.2V-109.2Q313.2 -105.0 310.79999999999995 -102.6Q308.4 -100.2 304.2 -100.2H286.2Q282.59999999999997 -100.2 282.59999999999997 -96.6V-9.0Q282.59999999999997 -4.8 280.2 -2.4Q277.8 0.0 273.59999999999997 0.0H178.79999999999998Q174.6 0.0 172.2 -2.4Q169.79999999999998 -4.8 169.79999999999998 -9.0V-96.6Q169.79999999999998 -100.2 166.2 -100.2H13.799999999999999Q9.6 -100.2 7.199999999999999 -102.6Q4.8 -105.0 4.8 -109.2V-175.79999999999998Q4.8 -181.2 6.6 -186.6L79.2 -412.8Q81.6 -420.0 89.39999999999999 -420.0H190.79999999999998Q195.6 -420.0 197.7 -417.29999999999995Q199.79999999999998 -414.59999999999997 198.6 -409.8L136.79999999999998 -206.4Q136.2 -202.2 139.79999999999998 -202.2H166.2Q169.79999999999998 -202.2 169.79999999999998 -205.79999999999998V-246.6Q169.79999999999998 -250.79999999999998 172.2 -253.2Q174.6 -255.6 178.79999999999998 -255.6H273.59999999999997Q277.8 -255.6 280.2 -253.2Q282.59999999999997 -250.79999999999998 282.59999999999997 -246.6V-205.79999999999998Q282.59999999999997 -202.2 286.2 -202.2H304.2Q308.4 -202.2 310.79999999999995 -199.8Q313.2 -197.4 313.2 -193.2Z" transform="translate(353.0 822)" fill="#fff"/></g></svg><span>Lane 4</span></h1>
+      <p>A training app for track athletes: track your PRs, compare them to real college standards, and get a race-day plan.</p>
+      <p style="font-size:14px;opacity:.8">Early demo. Anything you enter stays on your own device.</p>
+      <button class="w1" id="startFresh">Set up with my PRs</button>
+      <button class="w2" id="startSample">Look around with a sample athlete</button>
+      <button class="small" id="openComing3">See what’s coming</button>
+    </div>
+    <div class="step" id="step2" hidden>
+      <h1 style="font-size:40px">Add your PRs</h1>
+      <p style="font-size:15px">Add a few events. You can add more anytime.</p>
+      <p style="font-size:14px;margin:12px 0 0;font-weight:600">Compare me to college standards for</p>
+      <div class="seg" role="radiogroup" aria-label="Standards">
+        <label><input type="radio" name="gen" value="Men" checked><span>Men’s</span></label>
+        <label><input type="radio" name="gen" value="Women"><span>Women’s</span></label>
+      </div>
+      <p style="font-size:14px;margin:14px 0 0;font-weight:600">What do you run? Pick all that fit.</p>
+      <div class="grpchips" id="grpChips">
+<button data-g="sprints"><svg viewBox="0 0 50 50" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18h14M8 25h18M12 32h14"/><path d="M28 16l12 9-12 9"/></svg><span>Sprints</span></button><button data-g="hurdles"><svg viewBox="0 0 50 50" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 38V20M38 38V20M12 22h26"/><path d="M8 40h34"/></svg><span>Hurdles</span></button><button data-g="mid"><svg viewBox="0 0 50 50" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="25" cy="28" r="12"/><path d="M25 28l5-5M22 12h6M25 12v4"/></svg><span>Mid-distance</span></button><button data-g="distance"><svg viewBox="0 0 50 50" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 34c6-10 12-10 17 0s11 10 17 0"/><path d="M8 24c6-10 12-10 17 0s11 10 17 0"/></svg><span>Distance</span></button><button data-g="jumps"><svg viewBox="0 0 50 50" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 36 Q 22 8 40 30"/><path d="M30 38h12"/><circle cx="9" cy="36" r="2"/></svg><span>Jumps</span></button><button data-g="throws"><svg viewBox="0 0 50 50" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="22" r="7" fill="currentColor"/><path d="M10 38 Q 18 26 24 26M10 30h8"/></svg><span>Throws</span></button>
+      </div>
+      <div id="prRows"></div>
+      <button class="small" id="addRow">+ Add another event</button>
+      <p class="wmsg" id="wmsg" role="status"></p>
+      <button class="w1" id="finishSetup">Save my PRs</button>
+      <button class="small" id="skipSetup">Skip for now</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <header class="top">
+    <div class="lanes" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span class="l4">4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+    <button class="themebtn" id="settingsBtn" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
+    <h1 class="brandh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="40" height="40" class="logo" aria-hidden="true"><defs><clipPath id="lgh"><rect width="1024" height="1024" rx="228"/></clipPath></defs><g clip-path="url(#lgh)"><rect width="1024" height="1024" fill="#C62832"/><path d="M332 1024 L440.0 -10 L584.0 -10 L692 1024Z" fill="#fff" opacity="0.16"/><path d="M-748.0 1024 L7.7 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-388.0 1024 L151.8 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-28.0 1024 L295.9 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M332.0 1024 L440.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M692.0 1024 L584.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1052.0 1024 L728.1 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1412.0 1024 L872.2 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><rect x="0" y="872" width="1024" height="28" fill="#fff"/><path d="M313.2 -193.2V-109.2Q313.2 -105.0 310.79999999999995 -102.6Q308.4 -100.2 304.2 -100.2H286.2Q282.59999999999997 -100.2 282.59999999999997 -96.6V-9.0Q282.59999999999997 -4.8 280.2 -2.4Q277.8 0.0 273.59999999999997 0.0H178.79999999999998Q174.6 0.0 172.2 -2.4Q169.79999999999998 -4.8 169.79999999999998 -9.0V-96.6Q169.79999999999998 -100.2 166.2 -100.2H13.799999999999999Q9.6 -100.2 7.199999999999999 -102.6Q4.8 -105.0 4.8 -109.2V-175.79999999999998Q4.8 -181.2 6.6 -186.6L79.2 -412.8Q81.6 -420.0 89.39999999999999 -420.0H190.79999999999998Q195.6 -420.0 197.7 -417.29999999999995Q199.79999999999998 -414.59999999999997 198.6 -409.8L136.79999999999998 -206.4Q136.2 -202.2 139.79999999999998 -202.2H166.2Q169.79999999999998 -202.2 169.79999999999998 -205.79999999999998V-246.6Q169.79999999999998 -250.79999999999998 172.2 -253.2Q174.6 -255.6 178.79999999999998 -255.6H273.59999999999997Q277.8 -255.6 280.2 -253.2Q282.59999999999997 -250.79999999999998 282.59999999999997 -246.6V-205.79999999999998Q282.59999999999997 -202.2 286.2 -202.2H304.2Q308.4 -202.2 310.79999999999995 -199.8Q313.2 -197.4 313.2 -193.2Z" transform="translate(353.0 822)" fill="#fff"/></g></svg><span>Lane 4</span></h1>
+    <p>Your season, your splits, your race day.</p>
+    <span class="demo-pill" id="modePill">Beta</span>
+  </header>
+  <main>
+    <!-- HOME -->
+    <section class="view on" id="v-home">
+      <p class="syncline" id="syncLine" role="status">Checking your account…</p>
+      <div class="phead" id="phead">
+        <div class="pbanner">
+          <svg class="pcurves" viewBox="0 0 390 150" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2"><path d="M-40 150 Q 160 0 430 10"/><path d="M-40 150 Q 170 25 430 38"/><path d="M-40 150 Q 180 50 430 66"/><path d="M-40 150 Q 190 75 430 94"/><path d="M-40 150 Q 200 100 430 122"/></g><path d="M-40 150 Q 175 37 430 52" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-dasharray="6 6"/></svg>
+          <label class="avatar" id="avatar" title="Add your photo"><input type="file" id="photoIn" accept="image/*" hidden><span id="avatarInner"></span><span class="avcam" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="sr">Upload a photo of yourself</span></label>
+          <div class="pname"><div class="pn" id="pName2">Your name</div><div class="pm" id="pMeta">Add your info on the Card tab</div></div>
+        </div>
+        <div class="pstats" id="pStats"></div>
+      </div>
+      <h2>Personal bests</h2>
+      <div class="prs" id="prGrid"></div>
+      <p class="hint" id="prHint">PRs update automatically when you add race times.</p>
+      <button class="go alt" id="addPRs" style="margin-top:10px">Add PRs for more events</button>
+      <h2 style="margin-top:22px">Where you stand</h2>
+      <div class="panel" id="standing"></div>
+      <h2 style="margin-top:22px">Latest races</h2>
+      <div class="panel" id="recentRaces"></div>
+      <button class="panel teaser" id="openRank"><span class="tz">Rankings</span><strong>See verified times from other Lane 4 athletes</strong><span class="hint" style="margin:0">Open rankings ›</span></button>
+      <button class="panel teaser" id="openComing"><span class="tz">Coming soon</span><strong>iCloud sync, Apple Health and Strava, race-day reminders, and Lane 4 Pro</strong><span class="hint" style="margin:0">See what’s coming ›</span></button>
+      
+      
+      
+    </section>
+
+    <!-- TIMES -->
+    <section class="view" id="v-times">
+      <h2>Add a race time</h2>
+      <div class="panel">
+        <div class="row">
+          <div><label for="rEvent">Event</label><select id="rEvent"></select></div>
+          <div><label for="rMark">Time or mark</label><input id="rMark" placeholder="50.9" autocomplete="off"></div>
+        </div>
+        <div class="row">
+          <div><label for="rDate">Date</label><input type="date" id="rDate"></div>
+          <div><label for="rMeet">Meet</label><input id="rMeet" placeholder="Meet name"></div>
+        </div>
+        <label for="rSplits">Splits (optional)</label>
+        <input id="rSplits" placeholder="e.g. 23.8, 26.6" autocomplete="off" inputmode="decimal">
+        <button class="go" id="addRace">Add time</button>
+        <p class="hint" id="addMsg" role="status"></p>
+      </div>
+
+      <h2>Import from Athletic.net or MileSplit</h2>
+      <div class="panel">
+        <p class="hint" style="margin:0 0 6px"><strong>How:</strong> open your athlete page on Athletic.net or MileSplit, select your results (press and hold, then drag to select a season or the whole page), copy, and paste here. Lane 4 finds the events, times, dates, and meets. You can also type races one per line.</p>
+        <textarea id="paste" placeholder="400m 50.91 5/17/2026 State Open&#10;110m hurdles 15.20 4/12/2026 Spring Invite&#10;Shot put 45-6 5/3/2026 County Meet"></textarea>
+        <button class="go alt" id="readPaste">Read my results</button>
+        <div id="pastePreview"></div>
+      </div>
+
+      <h2>All races</h2>
+      <div class="panel" id="raceList"></div>
+          <h2 id="trainingH">Training</h2>
+      <details class="panel" id="logBox">
+        <summary>Log a workout</summary>
+        <div class="row">
+          <div><label for="wType">Type</label>
+            <select id="wType"><option>Speed</option><option>Tempo</option><option>Workout</option><option>Plyos</option><option>Weights</option><option>Rest</option></select></div>
+          <div><label for="wDate">Date</label><input type="date" id="wDate"></div>
+        </div>
+        <label for="wNote">What you did</label>
+        <textarea id="wNote" placeholder="e.g. 4×150 at 90%, full recovery"></textarea>
+        <label for="wFeel">How it felt: <span id="feelVal">3</span>/5</label>
+        <input type="range" id="wFeel" min="1" max="5" value="3">
+        <button class="go" id="saveW">Save workout</button>
+      </details>
+      <details class="panel" id="uploadBox">
+        <summary>Upload workouts (Strava, Garmin, watch)</summary>
+        <p class="hint" style="margin:0 0 8px">Upload your Strava export (<strong>activities.csv</strong>) or activity files (<strong>.gpx</strong> or <strong>.tcx</strong>) from Strava, Garmin, or your watch. Files are read on your device and nothing is sent anywhere.</p>
+        <label class="go alt filebtn">Choose files<input type="file" id="wFiles" accept=".csv,.gpx,.tcx,text/csv,application/gpx+xml" multiple hidden></label>
+        <p class="hint" id="uploadMsg" role="status"></p>
+        <p class="hint" style="font-size:13px">On strava.com: open an activity → ⋯ → Export GPX. For everything at once: Settings → My Account → Download or delete your account → Request your archive, then upload <em>activities.csv</em> from it.</p>
+      </details>
+      <div class="panel" id="history"></div>
+    </section>
+
+    <!-- GOALS -->
+    <section class="view" id="v-goals">
+      <h2>Goals</h2>
+      <div class="panel">
+        <div class="row">
+          <div><label for="gEvent">Event</label><select id="gEvent"></select></div>
+          <div><label for="gGoal">Your goal</label><input id="gGoal" autocomplete="off"></div>
+        </div>
+        <button class="go" id="saveG">Save goal</button>
+        <p class="hint" id="goalMsg" role="status"></p>
+        <div id="goalChips"></div>
+        <p class="hint">Times like 50.9 or 1:59.0. Jumps and throws in feet-inches, like 20-7. Or tap any college standard below to make it your goal.</p>
+      </div>
+      <h2>Nationals standards</h2>
+      <div class="panel" id="natList"></div>
+      <h2>My colleges</h2>
+      <div class="segIn" style="margin-bottom:12px" role="group" aria-label="Standards"><button data-gen="Men">Men’s</button><button data-gen="Women">Women’s</button></div>
+      <div class="panel" id="goalList"></div>
+      <p class="source" style="text-align:center">Standards from Preferred Recruit (trackandfieldstandards.com).</p>
+    </section>
+
+    <!-- COLLEGES -->
+    <section class="view" id="v-colleges">
+      <h2>Colleges</h2>
+      <div id="cTools">
+        <input id="cSearch" type="search" placeholder="Search by school, state, or conference" autocomplete="off" aria-label="Search colleges">
+        <div class="chips" id="cChips" role="group" aria-label="Filter"><button data-d="All">All</button><button data-d="D1">D1</button><button data-d="D2">D2</button><button data-d="D3">D3</button><button data-d="Mine">★ Mine</button></div>
+        <div class="sortrow"><span class="hint" id="cCount" style="margin:0"></span><div id="cSort" class="chips small" role="group" aria-label="Sort"><button data-s="fit">Best match</button><button data-s="az">A–Z</button></div></div>
+      </div>
+      <div class="panel" id="cList" style="padding:4px 12px"></div>
+      <div id="cDetail" hidden></div>
+      <div class="panel">
+        <p class="source"><strong>Where these numbers come from:</strong> Preferred Recruit’s <a href="https://trackandfieldstandards.com" target="_blank" rel="noopener">trackandfieldstandards.com</a>, 2026–27. For most schools, the levels come from the 2026 conference championship: Target is about 8th place, Recruit about 15th, and Walk-on about 25th, converted to high school events (1600 from the 1500, 3200 from the 5000, 300 hurdles from the 400 hurdles). Power conferences like the ACC have no walk-on level, and many D3 conferences list only Target and Walk-on. Schools marked ★ publish their own chart. This demo covers 12 conferences (148 schools) across D1, D2 and D3; coaches have the final say.</p>
+      </div>
+    </section>
+
+    <!-- CARD -->
+    <section class="view" id="v-card">
+      <h2>Athlete card</h2>
+      
+      <div class="acard" id="acard"></div>
+      <button class="go alt" id="copyCard">Copy card as text</button>
+      <p class="hint" style="text-align:center">Paste it into an email, a DM, or a recruiting questionnaire.</p>
+      <details class="panel" id="profBox">
+        <summary>Edit my info</summary>
+        <label for="pUser">Username</label><input id="pUser" autocomplete="username" placeholder="e.g. xavier_runs" autocapitalize="none" spellcheck="false">
+        <label for="pName">Name</label><input id="pName" autocomplete="name">
+        <div class="row">
+          <div><label for="pGrad">Grad year</label><input id="pGrad" inputmode="numeric" placeholder="2028"></div>
+          <div><label for="pState">State</label><input id="pState" placeholder="CT"></div>
+        </div>
+        <label for="pSchool">High school</label><input id="pSchool">
+        <label for="pEmail">Email</label><input id="pEmail" type="email" autocomplete="email">
+        <label for="pPhone">Phone (optional)</label><input id="pPhone" type="tel" autocomplete="tel">
+        <label for="pLink">Results link (Athletic.net or MileSplit)</label><input id="pLink" type="url" placeholder="https://">
+        <div class="lbl2">Academics (optional)</div>
+        <div class="row">
+          <div><label for="pGpa">GPA</label><input id="pGpa" inputmode="decimal" placeholder="3.8"></div>
+          <div><label for="pTest">SAT/ACT</label><input id="pTest" placeholder="SAT 1350"></div>
+        </div>
+        <label for="pMajor">What you want to study</label><input id="pMajor" placeholder="Finance">
+        <div class="lbl2">Accomplishments</div>
+        <p class="hint" style="margin:0 0 6px">Titles, honors, nationals, captain, records. One per line in your email.</p>
+        <div id="accList"></div>
+        <div class="addacc"><input id="accIn" placeholder="e.g. Nike Indoor Nationals qualifier, 400m" aria-label="New accomplishment"><button class="ghost" id="accAdd">Add</button></div>
+        <button class="go" id="saveProf">Save my info</button>
+      </details>
+    </section>
+
+    <!-- MEET DAY -->
+    <section class="view" id="v-meet">
+      <h2>Split calculator</h2>
+      <div class="panel">
+        <div class="row">
+          <div><label for="scEvent">Event</label><select id="scEvent"><option>200m</option><option selected>400m</option><option>800m</option><option>1600m</option><option>Mile</option><option>3200m</option><option>5K</option></select></div>
+          <div><span class="flabel" id="scLbl">Goal time</span><div class="mmss" role="group" aria-labelledby="scLbl"><input id="scMin" inputmode="numeric" placeholder="min" aria-label="Minutes" autocomplete="off"><span>:</span><input id="scSec" inputmode="decimal" placeholder="sec" aria-label="Seconds" autocomplete="off"></div></div>
+        </div>
+        <div id="scOut"></div>
+      </div>
+      <h2>Meet day mode</h2>
+      <div class="board" aria-live="polite">
+        <div class="lbl" id="bEvent">Set your event time below</div>
+        <div class="clock" id="bClock">--:--:--</div>
+        <div class="next" id="bNext">&nbsp;</div>
+      </div>
+      <div class="panel">
+        <div class="row">
+          <div><label for="mEvent">Event</label><select id="mEvent"></select></div>
+          <div><label for="mTime">Estimated start</label><input type="time" id="mTime"></div>
+        </div>
+        <button class="go" id="buildPlan">Build my race-day plan</button>
+      </div>
+      <div class="panel"><h3>Your timeline</h3><ul class="tl" id="tl"><li class="empty" style="padding-left:0">Your plan shows up here.</li></ul></div>
+      <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><h3 style="margin:0">Bag check</h3><button class="ghost" id="resetBag">Reset</button></div><div id="bag"></div></div>
+      <p class="note">Food and timing tips are general guidance. Follow your coach and what works for your body.</p>
+    </section>
+  </main>
+</div>
+
+<div class="sheet" id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheethead"><h3 id="sheetTitle" style="margin:0"></h3><button class="ghost" id="sheetClose">Close</button></div>
+  <div id="sheetBody"></div></div></div>
+<div class="sheet" id="setSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="sheethead"><h3 id="setTitle" style="margin:0">Settings</h3><button class="ghost" data-close>Close</button></div>
+  <div class="panel"><button class="go alt" id="themeBtn" style="margin-top:0">☾ Switch to dark mode</button>
+    <p class="hint" id="syncLine2" style="margin-top:10px"></p></div>
+  <details class="panel" id="backupBox">
+        <summary>Back up or move my data</summary>
+        <p class="hint" style="margin:0 0 8px">Your data stays on this device. To keep a copy or move it to another phone, copy your backup code and save it somewhere like your Notes app.</p>
+        <button class="go alt" id="copyBackup" style="margin-top:4px">Copy backup code</button>
+        <label for="restoreBox">Restore from a backup code</label>
+        <textarea id="restoreBox" placeholder="Paste your backup code here" style="min-height:70px"></textarea>
+        <button class="go" id="doRestore">Restore my data</button>
+        <button class="ghost" id="delCloud" style="margin-top:14px;width:100%;padding:8px">Delete my data from my account</button>
+        <p class="hint" id="restoreMsg" role="status"></p>
+      </details>
+  <div class="panel" id="pubBox">
+    <h3 style="margin:0 0 4px">Public times</h3>
+    <p class="hint" style="margin:0 0 8px">Share your PRs in Rankings. An admin checks every time against your Athletic.net or MileSplit page before it shows up. Workouts, contact info, and goals always stay private.</p>
+    <label class="check" style="border:0;padding:4px 0"><input type="checkbox" id="pubOn"> Show my verified PRs in Rankings</label>
+    <div id="pubFields" hidden>
+      <label for="pubName">Name shown</label><input id="pubName" placeholder="First name and last initial, like Xavier R." autocomplete="off">
+      <p class="hint" style="margin:6px 0 0">Your school and class year come from your card. Add your results link on the Card tab so the admin can verify.</p>
+      <button class="go" id="pubSubmit">Submit my PRs for verification</button>
+    </div>
+    <p class="hint" id="pubStatus" role="status"></p>
+  </div>
+  <div class="panel" id="acctBox"><h3 style="margin:0 0 4px">Account</h3><p class="hint" id="acctLine" style="margin:0">Not signed in.</p>
+    <div class="btnrow"><button class="go alt" id="acctSignIn">Sign in</button><button class="go alt" id="acctSignOut" hidden>Sign out</button></div>
+    <button class="ghost" id="acctDelete" hidden style="margin-top:10px;width:100%;padding:8px">Delete my account</button></div>
+  <button class="go alt" id="openAdmin" hidden>Admin: verify times</button>
+  <button class="go alt" id="openRank2">See rankings</button>
+  <button class="go alt" id="openComing2">See what’s coming in the iPhone app</button>
+  <div style="text-align:center;margin-top:16px"><button class="ghost" id="restart">Restart demo</button></div>
+</div></div>
+<div class="sheet" id="rankSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
+  <div class="sheethead"><h3 id="rankTitle" style="margin:0">Rankings</h3><button class="ghost" data-close>Close</button></div>
+  <div class="segIn" style="margin-bottom:10px" role="group" aria-label="Division"><button data-rg="Men">Boys</button><button data-rg="Women">Girls</button></div>
+  <label for="rankEvent">Event</label><select id="rankEvent"></select>
+  <div class="panel" id="rankList" style="margin-top:12px"></div>
+  <p class="hint">Only times an admin has verified appear here. Athletes choose to share, and can stop sharing anytime in Settings.</p>
+</div></div>
+<div class="sheet" id="adminSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+  <div class="sheethead"><h3 id="adminTitle" style="margin:0">Verify times</h3><button class="ghost" data-close>Close</button></div>
+  <p class="hint" style="margin:0 0 10px">Check each athlete’s times against their results page, then approve or reject. Only approved times appear in Rankings.</p>
+  <div id="adminList"></div>
+</div></div>
+<div class="sheet" id="comingSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="comingTitle">
+  <div class="sheethead"><h3 id="comingTitle" style="margin:0">Coming soon</h3><button class="ghost" data-close>Close</button></div>
+  <p class="hint" style="margin:0 0 12px">This is a demo of Lane 4. These features are being built into the iPhone app.</p>
+  <div class="panel coming">
+    <div class="ci"><span>☁️</span><div><strong>iCloud sync</strong><p>Your data saves to your own iCloud and follows you to every Apple device. No sign-up needed.</p></div></div>
+    <div class="ci"><span>❤️</span><div><strong>Apple Health and Strava</strong><p>Runs from Strava, Garmin, and Apple Watch come in automatically through Apple Health.</p></div></div>
+    <div class="ci"><span>🔔</span><div><strong>Race-day reminders</strong><p>Your phone tells you when to eat, warm up, and check in, based on your event time.</p></div></div>
+    <div class="ci"><span>📲</span><div><strong>Share your athlete card</strong><p>Send your card or a coach email straight from your phone’s share menu or Mail.</p></div></div>
+    <div class="ci"><span>🏅</span><div><strong>Nike and adidas Nationals, plus state standards</strong><p>See how close you are to Nike and adidas Nationals and your state meet, next to New Balance.</p></div></div>
+    <div class="ci"><span>🏫</span><div><strong>More colleges</strong><p>More conferences across D1, D2, and D3 beyond the 148 schools in this demo.</p></div></div>
+  </div>
+  <h3>Lane 4 Pro</h3>
+  <div class="panel coming">
+    <div class="ci"><span>📋</span><div><strong>Recruiting Mode</strong><p>Track every school from first email to visit to offer, with follow-up reminders and a recruiting timeline.</p></div></div>
+    <div class="ci"><span>📈</span><div><strong>Progress Projections</strong><p>Charts of every event with college standards drawn in, and where your trend is heading. Pure math from your own times.</p></div></div>
+  </div>
+  <p class="hint" style="text-align:center">Lane 4 will never use AI coaching. Your coach is your coach.</p>
+</div></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<nav class="tabs" aria-label="Sections">
+  <div class="in" role="tablist">
+    <button role="tab" aria-selected="true" data-v="home"><span><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></span>Home</button>
+    <button role="tab" aria-selected="false" data-v="times"><span><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9.5 2h5M12 2v3"/></svg></span>Log</button>
+    <button role="tab" aria-selected="false" data-v="goals"><span><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></span>Goals</button>
+    <button role="tab" aria-selected="false" data-v="colleges"><span><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></span>Colleges</button>
+    <button role="tab" aria-selected="false" data-v="card"><span><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8.5" cy="11" r="2.5"/><path d="M5 16c.6-1.6 2-2.5 3.5-2.5S11.4 14.4 12 16M14 10h5M14 13h4"/></svg></span>Card</button>
+    <button role="tab" aria-selected="false" data-v="meet"><span><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/><path d="M9 4v8M13 4v8" stroke-width="1.2"/></svg></span>Race day</button>
+  </div>
+</nav>
+
+<script>
+const EMPTY_RACES=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150" width="200" height="125" class="empty-art" role="img" aria-label="No races yet">
+<path d="M10 140 Q 120 20 230 140" fill="none" stroke="#EADFDD" stroke-width="10"/><path d="M30 140 Q 120 45 210 140" fill="none" stroke="#EADFDD" stroke-width="10"/>
+<path d="M50 140 Q 120 70 190 140" fill="none" stroke="#C62832" stroke-width="10"/><rect x="0" y="138" width="240" height="4" fill="#EADFDD"/>
+<g fill="none" stroke="#141010" stroke-width="3" stroke-linecap="round"><circle cx="120" cy="64" r="16"/><path d="M120 64v-8M114 44h12"/></g>
+<circle cx="120" cy="64" r="2.5" fill="#C62832"/></svg>`,EMPTY_COLLEGES=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150" width="200" height="125" class="empty-art" role="img" aria-label="No colleges starred yet">
+<g fill="#FAF8F6" stroke="#EADFDD" stroke-width="3"><path d="M40 70l80-36 80 36z"/><rect x="52" y="74" width="136" height="54"/></g>
+<g fill="#EADFDD"><rect x="66" y="82" width="12" height="40"/><rect x="98" y="82" width="12" height="40"/><rect x="130" y="82" width="12" height="40"/><rect x="162" y="82" width="12" height="40"/></g>
+<rect x="40" y="128" width="160" height="8" fill="#EADFDD"/>
+<path d="M120 40l5.4 11 12.2 1.8-8.8 8.6 2 12.1L120 67.8l-10.8 5.7 2-12.1-8.8-8.6 12.2-1.8z" fill="#C62832"/></svg>`;
+/* Storage: one permanent key. Never rename it; change the data shape with a new SCHEMA number and a step in migrate() instead. */
+const KEY="lane4-data",SCHEMA=5,OLD_KEYS=["lane4-demo-v4","lane4-demo-v3","lane4-demo-v2","lane4-demo-v1"];
+function migrate(d){
+  if(!d||typeof d!=="object")return null;
+  if(d.prs&&!d.races){ /* v1: {prs:{event:{pr,goal}}} */
+    d.races=[];d.goals=d.goals||{};
+    Object.entries(d.prs).forEach(([ev,p])=>{if(p.pr)d.races.push({event:ev,mark:p.pr,date:new Date().toISOString().slice(0,10),meet:"Added as a PR"});if(p.goal)d.goals[ev]=p.goal});
+    delete d.prs;
+  }
+  const ren={"300m indoor":"300m"};
+  d.races=(d.races||[]).filter(r=>r&&r.event&&r.mark).map(r=>({...r,event:ren[r.event]||r.event}));
+  const g={};Object.entries(d.goals||{}).forEach(([e,m])=>g[ren[e]||e]=m);d.goals=g;
+  d.log=d.log||[];d.bag=d.bag||{};d.fav=d.fav||[];d.profile=d.profile||{};
+  d.gender=d.gender==="Women"?"Women":"Men";d.started=d.started||"fresh";
+  if(d.meet&&!d.meet.start)d.meet=null;
+  d.schema=SCHEMA;return d;
+}
+function load(){
+  try{
+    let r=localStorage.getItem(KEY);
+    if(!r){for(const k of OLD_KEYS){const o=localStorage.getItem(k);if(o){r=o;break}}}
+    if(!r)return null;
+    const d=migrate(JSON.parse(r));
+    if(d)localStorage.setItem(KEY,JSON.stringify(d));
+    return d;
+  }catch(e){return null}
+}
+function localSave(){try{if(S){S.schema=SCHEMA;localStorage.setItem(KEY,JSON.stringify(S))}}catch(e){}}
+function save(){if(S)S.updatedAt=Date.now();localSave();queueCloud()}
+/* ---------- cloud save: each person's own private record, tied to their Lane 4 account ---------- */
+const CLOUD={ref:null,timer:null,chain:Promise.resolve(),state:"checking"};
+function setSync(st){CLOUD.state=st;const el=document.getElementById("syncLine");if(!el)return;
+  const u=S&&S.profile&&S.profile.username?` as @${S.profile.username}`:"";
+  el.textContent={checking:"Checking your account…",syncing:"Saving…",cloud:`☁️ Saved to your account${u}`,device:"📱 Saved on this device only",full:"⚠️ Account storage is full. Saved on this device only."}[st]||"";
+  el.dataset.state=st}
+function queueCloud(){if(!CLOUD.ref)return;clearTimeout(CLOUD.timer);setSync("syncing");CLOUD.timer=setTimeout(pushCloud,1200)}
+function pushCloud(){if(!CLOUD.ref||!S)return;const body={state:JSON.parse(JSON.stringify(S)),updatedAt:S.updatedAt||Date.now()};
+  CLOUD.chain=CLOUD.chain.then(()=>CLOUD.ref.set(body)).then(()=>setSync("cloud")).catch(e=>{
+    if(e&&e.code==="unavailable"){setTimeout(pushCloud,1500+Math.random()*1500);return}
+    if(e&&e.code==="quota_exceeded"){setSync("full");return}
+    if(e&&(e.code==="invalid_argument"||e.code==="revoked"||e.code==="not_granted")){CLOUD.ref=null;setSync("device");return}
+    setSync("device")});
+  return CLOUD.chain}
+async function initCloud(){
+  if(!window.claude||typeof window.claude.use!=="function"){setSync("device");return}
+  try{
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user){setSync("device");return}
+    const id=await user.id();if(!id){setSync("device");return}
+    if(await user.can("data.write")===false){setSync("device");return}
+    const ref=db.collection("data/users/"+id).doc("lane4");
+    PUB.db=db;PUB.id=id;try{PUB.owner=await user.isOwner()}catch(_){PUB.owner=false}refreshPublic();
+    setSync("syncing");
+    const snap=await ref.get();
+    CLOUD.ref=ref;
+    const c=snap.exists?snap.data():null;
+    if(c&&c.state&&(!S||(c.updatedAt||0)>(S.updatedAt||0))){
+      S=migrate(JSON.parse(JSON.stringify(c.state)));S.updatedAt=c.updatedAt||Date.now();localSave();
+      document.getElementById("welcome").hidden=true;renderAll();setSync("cloud");autoRoute();
+    }else if(S){await pushCloud()}else setSync("cloud");
+  }catch(e){CLOUD.ref=null;setSync(e&&e.code==="quota_exceeded"?"full":"device")}
+}
+async function deleteCloud(){if(!CLOUD.ref)return;clearTimeout(CLOUD.timer);try{await CLOUD.chain;await CLOUD.ref.delete()}catch(e){}}
+
+/* Events. field = higher is better. */
+const FIELD=new Set(["High jump","Long jump","Triple jump","Pole vault","Shot put","Discus","Javelin","Hammer"]);
+const EV_NAMES=["55m","60m","100m","200m","300m","400m","500m","600m","800m","1000m","1600m","Mile","3200m","5K XC","55m hurdles","60m hurdles","100m hurdles","110m hurdles","300m hurdles","400m hurdles","High jump","Long jump","Triple jump","Pole vault","Shot put","Discus","Javelin","Hammer"];
+const EVENTS={};EV_NAMES.forEach(e=>EVENTS[e]={field:FIELD.has(e)});
+/* College standards: Preferred Recruit (trackandfieldstandards.com), 2026-27, conference levels in high school events.
+   Each conference: n name, d division, u page slug, m/w = 15 events x [Target, Recruit, Walk-on] ("" = level not used), s = schools [name, state, official?] */
+const CONF=[{"n":"Big East","d":"D1","u":"big-east","m":["10.60","10.87","11.06","21.50","21.84","22.10","47.57","48.11","48.56","1:49.30","1:50.93","1:53.64","3:57.6","4:01.6","4:06.2","8:38.7","8:46.4","9:06.2","14.48","16.05","17.51","38.33","39.72","40.62","6-2.75","5-9.75","5-9.25","14-6.5","14-1.25","10-11.75","22-2.25","20-5.75","17-4.75","48-4","45-8","42-10.25","49-2.5","45-9.25","40-7.5","152-9","136-5","113-0","187-0","158-8","131-2"],"w":["11.94","12.24","12.64","24.19","24.55","25.13","55.15","56.32","57.85","2:07.67","2:10.17","2:11.26","4:35.2","4:42.6","4:50.7","10:09.3","10:49.6","11:04.2","14.24","15.12","16.59","42.90","47.92","49.97","5-5.75","5-1.25","4-8.75","12-6.75","11-9.75","10-2.75","18-11.75","18-3.25","16-0.5","38-11.75","38-1.25","35-1.75","41-2.5","38-5","29-10.25","136-10","98-9","98-9","121-11","76-4","67-9.75"],"s":[["Butler University","IN",1],["Creighton University","NE"],["DePaul University","IL"],["Georgetown University","DC"],["Marquette University","WI"],["Providence College","RI"],["Seton Hall University","NJ"],["St. John's University","NY"],["University of Connecticut (UConn)","CT"],["Villanova University","PA",1],["Xavier University","OH",1]]},{"n":"America East","d":"D1","u":"america-east","m":["10.59","10.71","10.92","21.49","21.63","21.86","48.04","48.61","49.17","1:50.39","1:51.76","1:53.38","4:06.4","4:07.4","4:09.8","8:55.2","9:05.0","9:09.7","14.55","14.94","15.89","38.91","40.21","45.83","6-6","6-2.75","5-8.75","15-3","13-7.25","11-5.75","23-6.25","23-0","22-0.25","48-4.5","46-3.25","39-10.75","53-3.5","49-10","44-7.5","161-1","146-10","123-5","184-11","163-4","131-11"],"w":["11.85","12.07","12.39","24.41","24.78","25.29","56.34","57.13","58.29","2:12.91","2:15.38","2:17.12","4:50.0","4:53.6","5:00.2","10:29.3","10:46.1","11:03.1","14.11","14.64","14.97","44.14","46.47","50.31","5-5.25","5-4.25","5-1","11-6.25","10-10","10-2","18-11.75","18-3.75","17-10.25","39-0.25","37-8.75","36-1.25","44-4","40-2.25","37-4","137-11","124-10","104-11","123-0","87-6","77-7.75"],"s":[["Binghamton University","NY"],["Bryant University","RI"],["New Jersey Institute of Technology","NJ"],["UMass Lowell","MA"],["University at Albany","NY",1],["University of Maine","ME"],["UMBC","MD",1],["University of New Hampshire","NH"],["University of Vermont","VT"]]},{"n":"NEC","d":"D1","u":"nec","m":["10.74","10.91","11.10","21.72","22.07","22.39","48.73","50.01","50.47","1:52.45","1:55.00","1:56.58","4:15.7","4:17.5","4:20.5","9:17.2","9:32.5","9:44.3","14.63","14.92","17.40","38.99","40.27","42.15","6-4.75","6-2.25","5-7","13-9.25","12-9.5","10-6","22-10","21-11.5","20-10.5","47-2.5","45-0.25","40-7.5","48-11.75","47-0.25","43-7.25","153-11","137-3","119-3","161-2","134-8","119-6.25"],"w":["12.23","12.67","13.10","25.47","25.86","26.38","58.83","59.79","1:02.84","2:17.75","2:20.39","2:24.86","4:58.9","5:09.5","5:23.0","11:10.5","11:45.4","12:24.9","14.76","15.85","17.80","46.55","47.08","50.94","5-0.25","4-9","4-7","11-9.75","10-6.5","10-2.75","18-0.5","17-0.5","16-3","37-4.5","35-8.5","29-8.25","39-10.5","34-9.5","28-9.25","125-0","110-9","89-8","97-5","90-5.5","78-7"],"s":[["Central Connecticut State University","CT"],["Chicago State University","IL"],["Fairleigh Dickinson University","NJ"],["Le Moyne College","NY"],["Long Island University","NY"],["Mercyhurst University","PA"],["University of New Haven","CT"],["Saint Francis University","PA"],["Stonehill College","MA"],["Wagner College","NY"]]},{"n":"Ivy League","d":"D1","u":"ivy-league","m":["10.36","10.64","10.77","20.94","21.36","21.57","46.54","47.35","48.49","1:49.32","1:50.13","1:51.33","3:58.3","4:03.7","4:05.7","8:37.6","8:48.2","8:55.9","13.78","14.78","17.21","36.95","39.20","42.41","6-6","6-2.75","5-4.25","16-0.75","14-10","10-11.75","23-2.75","22-9","21-9","49-0.25","45-8","42-10.25","57-9.5","52-2.5","37-5.25","171-3","154-5","134-2","182-3","148-7","119-1"],"w":["11.65","11.85","12.09","23.75","24.21","24.69","54.28","55.20","57.68","2:06.94","2:10.53","2:11.81","4:40.0","4:44.9","4:47.3","10:04.5","10:31.2","10:58.0","13.71","14.00","14.75","41.24","42.99","47.49","5-8","5-5.75","5-1","12-9.5","11-1.75","10-2","19-9","18-10.75","18-1.75","40-3.25","38-7","32-5.5","48-7.25","44-0.5","36-2.75","158-9","143-1","111-11","133-3","113-4","79-7"],"s":[["Brown University","RI",1],["Columbia University","NY",1],["Cornell University","NY"],["Dartmouth College","NH"],["Harvard University","MA",1],["Princeton University","NJ",1],["University of Pennsylvania","PA",1],["Yale University","CT",1]]},{"n":"Northeast-10","d":"D2","u":"northeast-10","m":["10.68","10.82","11.05","21.61","21.91","22.32","48.66","49.88","51.11","1:54.94","1:58.65","2:00.60","4:18.9","4:22.9","4:31.2","9:39.6","9:47.4","10:07.1","14.91","15.66","16.12","39.91","41.52","42.71","6-0.75","5-8.75","5-4.5","11-11.75","11-2","9-6.25","22-5.25","21-6","20-2.5","42-6.25","40-0.5","38-4.75","49-0.25","43-10","37-6.75","139-9","127-4","119-3","173-6","131-11","118-6.5"],"w":["12.28","12.65","13.01","25.20","25.51","26.68","1:00.59","1:02.13","1:04.74","2:20.03","2:25.45","2:31.00","5:14.9","5:26.7","5:39.8","11:50.6","12:28.4","12:47.4","15.20","16.51","18.48","46.06","49.39","50.81","4-9.75","4-7.75","4-3.5","11-5.75","10-11.75","9-3","17-11.5","16-11.25","15-9","35-8.5","33-4","30-4.25","37-3.25","34-5.5","28-5.75","114-10","93-10","66-6","114-4","94-1","70-2"],"s":[["Adelphi University","NY"],["American International College","MA"],["Assumption University","MA"],["Bentley University","MA"],["Franklin Pierce University","NH"],["Saint Anselm College","NH"],["Southern New Hampshire University (SNHU)","NH"],["Southern Connecticut State University","CT"],["Saint Michael's College","VT"]]},{"n":"NESCAC","d":"D3","u":"nescac","m":["10.75","","11.20","21.69","","22.59","48.57","","51.01","1:52.29","","1:56.54","4:08.6","","4:16.6","9:06.2","","9:23.9","14.37","","16.83","38.50","","46.38","6-0.75","","5-1.5","15-1","","9-4.25","22-9","","20-3","45-7","","38-9.75","43-1","","32-0.25","143-11","","97-3","175-1","","119-1"],"w":["12.19","","12.79","24.77","","26.23","56.86","","1:00.00","2:12.66","","2:20.25","4:54.7","","5:10.4","10:27.8","","11:15.2","15.07","","17.00","44.38","","56.58","5-2.25","","4-7.5","10-10","","7-4.5","18-3","","16-5.25","37-8","","32-1","38-8.25","","29-4","122-3","","98-5.5","125-10","","101-4"],"s":[["Amherst College","MA"],["Bates College","ME"],["Bowdoin College","ME"],["Colby College","ME"],["Connecticut College","CT"],["Hamilton College","NY"],["Middlebury College","VT"],["Trinity College","CT"],["Tufts University","MA",1],["Wesleyan University","CT",1],["Williams College","MA"]]},{"n":"Little East","d":"D3","u":"little-east","m":["11.09","","11.49","22.55","","23.28","51.20","","52.96","1:59.02","","2:06.57","4:27.3","","4:39.1","9:43.9","","10:42.8","15.29","","17.48","39.87","","45.18","6-3.25","","5-3.75","14-1.25","","10-0","20-7.75","","19-9.5","41-0.25","","38-9.75","46-1.5","","34-5","134-6","","104-10","156-11","","126-4.75"],"w":["12.58","","13.52","25.82","","28.12","1:00.43","","1:04.06","2:27.19","","2:41.81","5:25.1","","5:49.3","11:58.8","","13:48.8","16.07","","17.92","48.88","","54.95","4-11.75","","4-4.75","10-8","","9-1","17-2.75","","15-3.5","33-9.25","","31-10.25","37-0.25","","29-9.75","112-0","","90-2.5","99-10","","72-7"],"s":[["Castleton University","VT"],["Eastern Connecticut State University","CT"],["Keene State College","NH"],["Plymouth State University","NH"],["Rhode Island College","RI"],["UMass Dartmouth","MA"],["UMass Boston","MA",1],["University of Southern Maine","ME"],["Western Connecticut State University","CT"]]},{"n":"ACC","d":"D1","u":"acc","m":["10.27","10.58","","20.81","21.13","","46.18","46.98","","1:47.21","1:48.89","","3:55.8","3:57.3","","8:28.2","8:33.5","","13.33","13.94","","36.57","39.11","","6-10.25","6-6.75","","17-2.75","15-7","","24-9","23-7.25","","51-6.5","47-7","","57-5.5","52-2.75","","172-4","160-0","","187-11","156-11",""],"w":["11.30","11.60","","23.16","23.68","","53.21","54.08","","2:02.28","2:05.02","","4:29.7","4:32.3","","9:48.1","9:55.6","","13.28","13.89","","40.10","42.41","","5-8.5","5-5.75","","13-8.25","12-4.75","","20-7","19-10.25","","42-9","41-5.75","","52-0","46-3.5","","165-7","154-8","","157-3","120-9",""],"s":[["Boston College","MA"],["Clemson University","SC",1],["Duke University","NC",1],["Florida State University","FL",1],["Georgia Tech","GA"],["NC State University","NC"],["SMU (Southern Methodist University)","TX",1],["Stanford University","CA"],["Syracuse University","NY"],["UC Berkeley","CA"],["University of Louisville","KY"],["University of Miami","FL",1],["University of North Carolina","NC"],["University of Notre Dame","IN"],["University of Pittsburgh","PA"],["University of Virginia","VA"],["Virginia Tech","VA"],["Wake Forest University","NC"]]},{"n":"PSAC","d":"D2","u":"psac","m":["10.51","10.62","10.87","21.34","21.81","22.02","48.92","49.22","49.79","1:54.34","1:55.34","1:57.06","4:12.9","4:18.1","4:22.2","9:19.7","9:27.9","9:42.8","14.23","14.71","15.33","38.65","39.65","40.99","6-5","6-3.25","6-0.75","15-3.5","14-5.25","12-11.75","23-8.75","23-2.5","22-1.5","47-8","45-6.5","42-4.25","53-5","50-9.25","45-4.5","154-3","144-7","134-9","199-2","185-2","172-2"],"w":["12.11","12.28","12.52","25.03","25.27","25.57","57.84","58.52","59.47","2:17.57","2:19.80","2:22.00","5:05.7","5:10.2","5:14.1","11:05.1","11:26.3","11:41.6","14.66","14.97","15.27","43.85","44.79","46.26","5-5","5-3","5-1","11-7.75","11-1.75","9-3","19-0","18-3.75","17-3.5","38-5.5","36-8.5","34-7.5","41-10.5","39-1.75","35-5.75","129-5","124-3","117-5","132-10","122-2","107-1"],"s":[["Bloomsburg University","PA"],["California University of Pennsylvania","PA"],["Clarion University","PA"],["East Stroudsburg University","PA"],["Edinboro University","PA"],["Gannon University","PA"],["Indiana University of Pennsylvania","PA"],["Kutztown University","PA"],["Lock Haven University","PA"],["Mansfield University","PA"],["Millersville University","PA"],["Seton Hill University","PA",1],["Shepherd University","WV"],["Shippensburg University","PA",1],["Slippery Rock University","PA",1],["Pitt-Johnstown","PA"],["West Chester University","PA",1]]},{"n":"Big Ten","d":"D1","u":"big-ten","m":["10.13","10.30","","20.36","20.58","","45.37","46.16","","1:46.03","1:47.25","","3:53.5","3:56.0","","8:31.7","8:41.3","","13.53","14.10","","35.87","37.01","","7-0.25","6-6.75","","17-9.25","16-8","","25-6","24-8.5","","51-3.5","47-9.75","","63-0.75","57-8.5","","190-8","176-6","","227-0","189-0",""],"w":["11.21","11.49","","22.96","23.38","","52.10","52.78","","2:02.38","2:04.43","","4:30.2","4:36.1","","9:51.4","10:06.9","","13.30","13.73","","40.04","41.20","","5-11.25","5-8.75","","14-2.5","12-10.75","","20-10","20-0.5","","42-9.5","40-9.75","","56-4.75","52-5.25","","182-1","170-0","","168-9","144-7",""],"s":[["Indiana University","IN"],["Michigan State University","MI"],["Northwestern University","IL"],["Ohio State University","OH"],["Penn State University","PA"],["Purdue University","IN"],["Rutgers University","NJ",1],["UCLA","CA",1],["University of Illinois","IL"],["University of Iowa","IA"],["University of Maryland","MD"],["University of Michigan","MI",1],["University of Minnesota","MN"],["University of Nebraska","NE"],["University of Oregon","OR"],["University of Southern California (USC)","CA",1],["University of Washington","WA"],["University of Wisconsin","WI"]]},{"n":"SEC","d":"D1","u":"sec","m":["10.04","10.16","","20.34","20.52","","44.87","45.56","","1:46.44","1:47.64","","3:57.5","3:59.0","","8:27.8","8:35.7","","12.93","13.69","","35.15","36.29","","7-2.25","6-8.75","","17-8.5","14-9","","25-6.25","23-11.5","","52-6.5","49-3","","61-0","55-6.25","","197-10","179-3","","237-1","168-2",""],"w":["11.01","11.18","","22.55","22.77","","50.78","51.36","","2:01.74","2:05.27","","4:31.6","4:36.7","","9:53.7","9:58.5","","12.92","13.20","","38.68","40.69","","5-11.25","5-7.75","","14-0","13-3.75","","20-9.75","20-5.75","","42-9.75","40-3.25","","53-11","46-9","","187-10","160-6","","174-9","150-1",""],"s":[["Auburn University","AL"],["LSU (Louisiana State University)","LA"],["Mississippi State University","MS"],["Ole Miss (University of Mississippi)","MS"],["University of Texas","TX"],["Texas A&M University","TX"],["University of Alabama","AL"],["University of Arkansas","AR"],["University of Florida","FL"],["University of Georgia","GA"],["University of Kentucky","KY"],["University of Missouri","MO"],["University of Oklahoma","OK"],["University of South Carolina","SC"],["University of Tennessee","TN"],["Vanderbilt University","TN"]]},{"n":"CAA","d":"D1","u":"caa","m":["10.41","10.59","10.89","20.99","21.23","21.86","46.75","48.03","49.36","1:50.49","1:51.77","1:53.40","4:05.0","4:08.5","4:12.1","9:03.2","9:06.8","9:21.3","13.67","14.36","16.23","38.28","40.33","41.87","6-7","6-2.75","5-6.5","14-8","13-7.5","8-8","23-4.5","22-6.5","20-5.25","48-4","45-8","42-10.25","50-7.5","45-10.75","30-9.75","148-8","137-11","90-1","156-8","119-0.75","110-5.25"],"w":["11.78","11.89","12.02","24.28","24.41","24.64","55.57","56.48","57.68","2:08.90","2:10.80","2:13.57","4:44.5","4:49.8","4:53.8","10:35.0","10:50.4","10:58.5","13.96","14.37","14.97","41.61","43.85","45.70","5-7.75","5-5.75","5-2.25","12-4.75","12-1.5","8-4.25","19-0.75","18-6.5","18-1.75","39-7","38-3.5","34-5.5","45-3.75","42-11.75","34-10.5","154-0","139-3","122-10","123-4","92-9","70-2"],"s":[["Campbell University","NC"],["College of Charleston","SC",1],["William & Mary","VA"],["Elon University","NC"],["Hampton University","VA"],["Hofstra University","NY"],["Monmouth University","NJ"],["North Carolina A&T","NC"],["Northeastern University","MA",1],["Stony Brook University","NY"],["Towson University","MD",1],["UNC Wilmington","NC"]]}];
+const STD_EVENTS=["100m","200m","400m","800m","1600m","3200m","H","300m hurdles","High jump","Pole vault","Long jump","Triple jump","Shot put","Discus","Javelin"];
+const LEVELS=["Target","Recruit","Walk-on"];
+const SCHOOLS=[];CONF.forEach((c,ci)=>c.s.forEach(x=>SCHOOLS.push({name:x[0],state:x[1],official:!!x[2],ci,id:x[0]})));
+SCHOOLS.sort((a,b)=>a.name.localeCompare(b.name));
+function stdIndex(ev){const g=(S&&S.gender)||"Men";if(ev==="110m hurdles")return g==="Men"?6:-1;if(ev==="100m hurdles")return g==="Women"?6:-1;return STD_EVENTS.indexOf(ev)}
+function schoolStd(sc,ev){const i=stdIndex(ev);if(i<0)return null;const c=CONF[sc.ci];const arr=((S&&S.gender)==="Women"?c.w:c.m).slice(i*3,i*3+3);return arr.some(Boolean)?arr:null}
+function confUrl(c){return `https://trackandfieldstandards.com/conferences/${c.u}-track-standards.html`}
+/* best level the athlete has hit at a school: 0 Target, 1 Recruit, 2 Walk-on, 3 none, -1 no comparable events */
+function schoolFit(sc){
+  let best=3,bestEv=null,any=false,closest=null;
+  shownEvents().forEach(ev=>{const st=schoolStd(sc,ev),p=pr(ev);if(!st||!p)return;any=true;const pv=val(ev,p.mark);
+    st.forEach((m,i)=>{if(!m)return;const mv=val(ev,m);if(!better(ev,mv,pv)){if(i<best){best=i;bestEv=ev}}});
+    const lowest=[...st].reverse().find(Boolean);if(lowest){const mv=val(ev,lowest);if(better(ev,mv,pv)){const g=Math.abs(pv-mv)/mv;if(!closest||g<closest.g)closest={g,ev,diff:Math.abs(pv-mv)}}}
+  });
+  return{level:any?best:-1,bestEv,closest};
+}
+
+function today(off=0){const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().slice(0,10)}
+function sample(){return{
+  started:"sample",gender:"Men",profile:{name:"Sample Athlete",grad:"2028",school:"Riverside High School",state:"CT"},fav:["University of Connecticut (UConn)","Central Connecticut State University","Southern Connecticut State University","Trinity College"],
+  races:[
+    {event:"400m",mark:"50.9",date:"2026-05-16",meet:"Spring Invitational",splits:["23.9","27.0"]},
+    {event:"400m",mark:"51.6",date:"2026-04-25",meet:"County Championship"},
+    {event:"200m",mark:"23.4",date:"2026-10-10",meet:"Armory fall meet"},
+    {event:"200m",mark:"22.6",date:"2026-04-11",meet:"Early season open"},
+    {event:"300m",mark:"37.2",date:"2025-01-18",meet:"Indoor invitational"},
+    {event:"Long jump",mark:"20-7",date:"2026-05-02",meet:"Spring Invitational"}
+  ],
+  goals:{"200m":"20.9","400m":"46.9","Long jump":"23-0","300m":"34.9"},
+  log:[
+    {date:today(-1),type:"Speed",note:"3×60 fly, 2×150 at 95%",feel:4},
+    {date:today(-3),type:"Tempo",note:"8×200 at 70%, 1 min rest",feel:3},
+    {date:today(-4),type:"Plyos",note:"Bounds, box jumps, single-leg hops",feel:4},
+    {date:"2026-05-14",type:"Speed",note:"2×150 at 95%, full rest",feel:5},
+    {date:"2026-05-12",type:"Workout",note:"3×300 at race pace, 6 min rest",feel:4},
+    {date:"2026-05-09",type:"Tempo",note:"6×200 at 75%",feel:3},
+    {date:"2026-05-06",type:"Workout",note:"350, 300, 250 at 400 pace",feel:4},
+    {date:"2026-05-04",type:"Weights",note:"Squats, RDLs, core",feel:3},
+    {date:"2026-04-29",type:"Workout",note:"2×(300, 200) at 400 pace",feel:3},
+    {date:"2026-04-27",type:"Speed",note:"4×60 fly",feel:4},
+    {date:"2026-04-22",type:"Tempo",note:"10×100 strides",feel:3},
+    {date:"2026-04-20",type:"Workout",note:"4×300, 5 min rest",feel:2},
+    {date:"2026-04-15",type:"Run",note:"Easy 3 miles",feel:3,miles:3}
+  ],meet:null,bag:{}}}
+function fresh(){return{started:"fresh",gender:"Men",fav:[],races:[],goals:{},log:[],meet:null,bag:{}}}
+let S=load();
+
+/* ---------- parsing ---------- */
+function toSec(t){t=String(t).trim();if(!t)return NaN;
+  if(/^\d{1,2}\s+\d{1,2}(\.\d+)?$/.test(t))t=t.replace(/\s+/,":");
+  if(/^\d{1,2}\.\d{2}\.\d+$/.test(t))t=t.replace(".",":");
+  if(t.includes(":")){const[m,s]=t.split(":");return(+m)*60+parseFloat(s||0)}return parseFloat(t)}
+function toIn(t){t=String(t).toLowerCase().replace(/[”“″"]|\binch(es)?\b|\bin\b/g," ").replace(/[’‘'′`´]|\bfeet\b|\bft\b/g,"-").replace(/\s+/g," ").trim();if(!t)return NaN;
+  const p=(t.includes("-")?t.split("-"):t.split(" ")).map(s=>s.trim()).filter(Boolean);if(!p.length||isNaN(+p[0]))return NaN;
+  const inch=p.length>1?+p[1]:0;if(isNaN(inch)||inch>=12)return NaN;return(+p[0])*12+inch}
+function val(ev,t){return EVENTS[ev].field?toIn(t):toSec(t)}
+function better(ev,a,b){return EVENTS[ev].field?a>b:a<b}
+function fmtJump(t){const i=toIn(t);if(isNaN(i))return t;const ft=Math.floor(i/12),inch=+(i-ft*12).toFixed(2);return ft+"′ "+inch+"″"}
+function show(ev,t){if(!t)return"—";return EVENTS[ev].field?fmtJump(t):t}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function validMark(ev,m){const v=val(ev,m);return !isNaN(v)&&v>0}
+
+function matchEvent(line){
+  const l=line.toLowerCase();
+  const F=[[/high\s*jump|\bhj\b/,"High jump"],[/long\s*jump|\blj\b/,"Long jump"],[/triple\s*jump|\btj\b/,"Triple jump"],[/pole\s*vault|\bpv\b/,"Pole vault"],[/shot\s*put|\bshot\b|\bsp\b/,"Shot put"],[/discus|\bdt\b/,"Discus"],[/javelin|\bjav\b/,"Javelin"],[/hammer|\bht\b/,"Hammer"],[/\b5\s*k\b|5000\s*m?\b.*xc|\bxc\b|cross\s*country/,"5K XC"]];
+  for(const[r,e]of F)if(r.test(l))return e;
+  const h=l.match(/\b(55|60|100|110|300|400)\s*(?:m|meters?)?\s*(?:h\b|hurdles?|hh\b|ih\b)/);
+  if(h)return h[1]+"m hurdles";
+  if(/\bmile\b/.test(l))return"Mile";
+  const m=l.match(/(?:^|[^\d.:])(55|60|100|200|300|400|500|600|800|1000|1600|3200)\s*(?:m\b|meters?\b|meter dash|dash\b|run\b|\s|$)/);
+  if(m)return m[1]+"m";
+  return null;
+}
+function parseLine(line,forced,yearCtx){
+  const ev=forced||matchEvent(line);if(!ev)return null;
+  let rest=line;const yr=yearCtx||String(new Date().getFullYear());
+  let date="";const dm=rest.match(/(\d{4}-\d{2}-\d{2})|(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+  const mn=rest.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})(?:(?:st|nd|rd|th)?,?\s+(20\d{2}))?/i);
+  if(dm){
+    if(dm[1])date=dm[1];
+    else{let y=dm[4]?(dm[4].length===2?"20"+dm[4]:dm[4]):yr;date=`${y}-${dm[2].padStart(2,"0")}-${dm[3].padStart(2,"0")}`}
+    rest=rest.replace(dm[0]," ");
+  }else if(mn){const mo=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].indexOf(mn[1].toLowerCase())+1;
+    date=`${mn[3]||yr}-${String(mo).padStart(2,"0")}-${mn[2].padStart(2,"0")}`;rest=rest.replace(mn[0]," ")}
+  let mark=null;
+  if(EVENTS[ev].field){const mm=rest.match(/(\d{1,3})\s*(?:-|'|’|′|ft)\s*(\d{1,2}(?:\.\d+)?)/);if(mm&&+mm[2]<12)mark=mm[1]+"-"+mm[2]}
+  else{
+    const cleaned=rest.replace(/(^|[^\d.:])(55|60|100|110|200|300|400|500|600|800|1000|1600|3200|5000)\s*(m|meters?)?\b/ig,"$1 ").replace(/\b5\s*k\b/ig," ");
+    const mm=cleaned.match(/\b\d{1,2}:\d{2}(?:\.\d{1,2})?\b|\b\d{1,2}\.\d{1,2}\b/);if(mm)mark=mm[0];
+  }
+  if(!mark||!validMark(ev,mark))return null;
+  let meet=rest.replace(/\b(55|60|100|110|300|400)\s*m?\s*(h|hh|ih)\b/ig," ").replace(/(high|long|triple)\s*jump|pole\s*vault|shot\s*put|discus|javelin|hammer|hurdles?|cross\s*country|\b(lj|hj|tj|pv|sp|dt|jav|xc|mile|dash|run)\b/ig," ").replace(mark," ").replace(/(^|[^\d.:])(55|60|100|110|200|300|400|500|600|800|1000|1600|3200|5000)\s*(m|meters?)?\b/ig,"$1 ").replace(/\b5\s*k\b/ig," ").replace(/\b\d{1,3}\s*(?:-|'|’|′)\s*\d{1,2}(?:\.\d+)?/," ").replace(/\b(indoor|fat|ht|pr|pb|sr)\b/ig," ").replace(/[|,\t"”“″]+/g," ").replace(/\s+/g," ").trim();
+  return{event:ev,mark,date:date||today(),meet:meet||"Imported result"};
+}
+
+/* ---------- derived ---------- */
+function pr(ev){let best=null;S.races.filter(r=>r.event===ev).forEach(r=>{if(!best||better(ev,val(ev,r.mark),val(ev,best.mark)))best=r});return best}
+function isPR(r){const b=pr(r.event);return b===r}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v){
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
+  document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  window.scrollTo(0,0);
+}
+
+/* ---------- welcome ---------- */
+const welcome=document.getElementById("welcome"),step1=document.getElementById("step1"),step2=document.getElementById("step2");
+let setupMode="new";
+function evOptions(sel){return EV_NAMES.map(e=>`<option${e===sel?" selected":""}>${e}</option>`).join("")}
+function addRow(ev,mark){
+  const d=document.createElement("div");d.className="prrow";
+  d.innerHTML=`<select aria-label="Event">${evOptions(ev)}</select><input aria-label="PR" placeholder="${EVENTS[ev].field?"20-7":"50.9"}" value="${mark||""}" autocomplete="off"><button class="x" aria-label="Remove event">✕</button>`;
+  const sel=d.querySelector("select"),inp=d.querySelector("input");
+  const ph=v=>EVENTS[v].field?"20-7":(/^(800|1000|1600|3200|5K|Mile)/.test(v)?"4:45.0":"50.9");inp.placeholder=ph(ev);
+  sel.onchange=()=>inp.placeholder=ph(sel.value);
+  d.querySelector(".x").onclick=()=>{d.remove();if(!prRows.children.length)addRow("200m")};
+  prRows.appendChild(d);
+}
+const GROUPS={sprints:["100m","200m","400m"],hurdles:["HURDLE","300m hurdles"],mid:["400m","800m","1600m"],distance:["1600m","3200m","5K XC"],jumps:["Long jump","Triple jump","High jump","Pole vault"],throws:["Shot put","Discus","Javelin"]};
+function syncGroupRows(){
+  const gen=document.querySelector('input[name=gen]:checked').value;
+  const picked=[...document.querySelectorAll("#grpChips button[aria-pressed=true]")].map(b=>b.dataset.g);
+  const want=[...new Set(picked.flatMap(g=>GROUPS[g]).map(e=>e==="HURDLE"?(gen==="Women"?"100m hurdles":"110m hurdles"):e))];
+  const rows=[...prRows.querySelectorAll(".prrow")];
+  rows.forEach(r=>{const ev=r.querySelector("select").value,m=r.querySelector("input").value.trim();if(!m&&!want.includes(ev))r.remove()});
+  const have=[...prRows.querySelectorAll("select")].map(x=>x.value);
+  EV_NAMES.filter(e=>want.includes(e)&&!have.includes(e)).forEach(e=>addRow(e));
+  if(!prRows.children.length)addRow("100m");
+}
+document.querySelectorAll("#grpChips button").forEach(b=>b.onclick=()=>{b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");syncGroupRows()});
+document.querySelectorAll('input[name=gen]').forEach(x=>x.addEventListener("change",syncGroupRows));
+function openSetup(mode){
+  setupMode=mode;welcome.hidden=false;step1.hidden=true;step2.hidden=false;prRows.innerHTML="";wmsg.textContent="";
+  document.querySelectorAll('input[name=gen]').forEach(r=>r.checked=r.value===((S&&S.gender)||"Men"));
+  document.querySelectorAll("#grpChips button").forEach(b=>b.setAttribute("aria-pressed","false"));
+  addRow("100m");
+  document.getElementById("skipSetup").textContent=mode==="new"?"Skip for now":"Cancel";
+}
+document.getElementById("addRow").onclick=()=>{const used=[...prRows.querySelectorAll("select")].map(x=>x.value);addRow(EV_NAMES.find(e=>!used.includes(e))||"200m")};
+document.getElementById("startSample").onclick=()=>{S=sample();save();welcome.hidden=true;renderAll();autoRoute()};
+document.getElementById("startFresh").onclick=()=>openSetup("new");
+document.getElementById("addPRs").onclick=()=>openSetup("more");
+document.getElementById("finishSetup").onclick=()=>{
+  const rows=[...prRows.querySelectorAll(".prrow")];const out=[];let bad=null;
+  rows.forEach(r=>{const ev=r.querySelector("select").value,m=r.querySelector("input").value.trim();if(!m)return;if(!validMark(ev,m)){bad=bad||ev;return}out.push({event:ev,mark:normMark(ev,m),date:today(),meet:"Added as a PR"})});
+  if(bad){wmsg.textContent=EVENTS[bad].field?`Enter the ${bad} in feet-inches, like 20-7.`:`Enter the ${bad} as a time, like 50.9 or 4:45.2.`;return}
+  if(!out.length){wmsg.textContent="Enter at least one PR, or skip for now.";return}
+  const gen=document.querySelector('input[name=gen]:checked').value;
+  if(setupMode==="new"||!S)S=fresh();
+  S.gender=gen;S.races.push(...out);save();welcome.hidden=true;renderAll();go("home");
+};
+document.getElementById("skipSetup").onclick=()=>{if(setupMode==="new"||!S){S=fresh();S.gender=document.querySelector('input[name=gen]:checked').value;save()}welcome.hidden=true;renderAll();autoRoute()};
+/* Two-tap confirm: pop-up confirm() boxes are blocked inside the published page, so the button asks twice instead. */
+function twoTap(btn,warn,action){const orig=btn.textContent;let armed=false,t=null;
+  btn.onclick=()=>{if(!armed){armed=true;btn.textContent=warn;btn.classList.add("danger");clearTimeout(t);t=setTimeout(()=>{armed=false;btn.textContent=orig;btn.classList.remove("danger")},4000);return}
+    clearTimeout(t);armed=false;btn.textContent=orig;btn.classList.remove("danger");action()}}
+twoTap(document.getElementById("restart"),"Tap again to erase everything",()=>{
+  deleteCloud();try{localStorage.removeItem(KEY)}catch(e){}S=null;
+  document.querySelectorAll(".sheet").forEach(x=>x.hidden=true);
+  welcome.hidden=false;step1.hidden=false;step2.hidden=true;go("home");welcome.scrollTop=0});
+document.querySelectorAll(".segIn button").forEach(b=>b.onclick=()=>{S.gender=b.dataset.gen;save();renderGoals();renderNationals();renderColleges()});
+/* ---------- selects ---------- */
+["rEvent","gEvent","mEvent"].forEach(id=>document.getElementById(id).innerHTML=EV_NAMES.map(e=>`<option>${e}</option>`).join(""));
+document.getElementById("rEvent").value="400m";document.getElementById("mEvent").value="400m";
+document.getElementById("rDate").value=today();document.getElementById("wDate").value=today();
+
+/* ---------- home ---------- */
+function shownEvents(){const s=new Set(S.races.map(r=>r.event));Object.keys(S.goals).forEach(e=>s.add(e));return EV_NAMES.filter(e=>s.has(e))}
+function splitsHTML(r){if(!r.splits||!r.splits.length)return"";const v=r.splits.map(toSec);
+  return `<div class="splits">${r.splits.map((x,i)=>`<span>${esc(x)}${i?`<em>${(v[i]-v[i-1]>=0?"+":"−")+Math.abs(v[i]-v[i-1]).toFixed(2)}</em>`:""}</span>`).join("")}</div>`}
+function isSB(r){if(isPR(r))return false;const y=r.date.slice(0,4);let b=null;S.races.filter(x=>x.event===r.event&&x.date.slice(0,4)===y).forEach(x=>{if(!b||better(r.event,val(r.event,x.mark),val(r.event,b.mark)))b=x});return b===r}
+function isNat(r){const v=val(r.event,r.mark);return natStd(r.event).some(m=>!better(r.event,val(r.event,m),v))}
+function raceHTML(r,del){
+  return `<div class="entry"><div class="grow"><div>${isPR(r)?'<span class="tag pb">PR</span>':isSB(r)?'<span class="tag sb">SB</span>':''}${isNat(r)?'<span class="tag nat">★ Nationals</span>':''}<span class="tag">${esc(r.event)}</span></div><div class="d">${esc(r.date)} · ${esc(r.meet)}</div>${splitsHTML(r)}${isPR(r)?`<button class="linkbtn" data-build="${S.races.indexOf(r)}">See build-up ›</button>`:""}</div><div class="num">${esc(show(r.event,r.mark))}</div>${del?`<button class="ghost" data-del="${S.races.indexOf(r)}" aria-label="Delete">✕</button>`:""}</div>`}
+function workoutHTML(e){return `<div class="entry"><div class="grow"><span class="tag">${esc(e.type)}</span><span class="d">${esc(e.date)} · felt ${e.feel}/5</span><div>${esc(e.note||"")}</div></div></div>`}
+function tierSpread(ev,st){const v=st.filter(Boolean).map(m=>val(ev,m));if(v.length<2)return 0;return Math.max(...v)-Math.min(...v)}
+function spreadPos(ev,st,pv){const v=st.filter(Boolean).map(m=>val(ev,m));if(v.length<2)return null;
+  const f=EVENTS[ev].field,top=f?Math.max(...v):Math.min(...v),low=f?Math.min(...v):Math.max(...v),d=Math.abs(low-top);if(!d)return null;
+  return f?(pv-low)/d:(low-pv)/d}
+function levelWords(p){return p>=1?"Above Target at a typical college":p>=0.5?"Near Target at a typical college":p>=0?"In the recruit range at a typical college":p>=-0.5?"Just under walk-on at a typical college":"Building toward college level"}
+function renderStanding(){
+  const el=document.getElementById("standing");
+  const evs=shownEvents().filter(ev=>pr(ev));
+  if(!evs.length){el.innerHTML=`<p class="empty">Add PRs and this shows your strongest events and the college marks you’re closest to.</p>`;return}
+  const favs=SCHOOLS.filter(x=>S.fav.includes(x.id));
+  const pool=favs.length?favs:SCHOOLS;
+  /* Strongest events, fair across events: at each college, measure the PR against that college's own
+     spread from its lowest level (0) to Target (1). A second in the mile is a much smaller step than a
+     second in the 400, and the spread captures that. Score = median over colleges, shown on a 0–100 scale
+     where 50 = lowest level (usually Walk-on) and 100 = Target. */
+  const strong=evs.map(ev=>{const pv=val(ev,pr(ev).mark);let n=0,hit=0;const ps=[];
+    SCHOOLS.forEach(sc=>{const st=schoolStd(sc,ev);if(!st)return;n++;if(st.some(m=>m&&!better(ev,val(ev,m),pv)))hit++;const p=spreadPos(ev,st,pv);if(p!=null)ps.push(p)});
+    ps.sort((a,b)=>a-b);const med=ps.length?ps[Math.floor(ps.length/2)]:null;
+    return{ev,n,hit,med,score:med==null?null:Math.max(0,Math.min(150,Math.round(50+50*med)))}}).filter(x=>x.n&&x.med!=null).sort((a,b)=>b.med-a.med).slice(0,3);
+  /* closest marks not reached yet, in starred colleges (or all) */
+  const close=[];
+  pool.forEach(sc=>evs.forEach(ev=>{const st=schoolStd(sc,ev);if(!st)return;const pv=val(ev,pr(ev).mark);
+    const d=tierSpread(ev,st)||Math.abs(val(ev,st.find(Boolean)))*0.02;
+    st.forEach((m,i)=>{if(!m)return;const mv=val(ev,m);if(better(ev,mv,pv))close.push({sc,ev,i,m,diff:Math.abs(pv-mv),g:Math.abs(pv-mv)/d})})}));
+  close.sort((a,b)=>a.g-b.g);
+  /* one row per conference + event + level, so 11 identical NESCAC rows don't crowd the list */
+  const seen=new Set(),top=[];for(const c of close){const k=c.sc.ci+"|"+c.ev+"|"+c.i;if(seen.has(k))continue;seen.add(k);
+    c.count=pool.filter(x=>x.ci===c.sc.ci).length;top.push(c);if(top.length===3)break}
+  el.innerHTML=`<h3>Your best events</h3><p class="hint" style="margin:-4px 0 6px">Scored against college standards so every event is judged fairly: 50 = walk-on line, 100 = target line.</p>${strong.length?strong.map((x,i)=>`<div class="srow"><span class="rank">${i+1}</span><div class="grow"><strong>${x.ev}</strong> <span class="num">${esc(show(x.ev,pr(x.ev).mark))}</span><div class="hint" style="margin:0">${levelWords(x.med)} · reaches a level at ${x.hit} of ${x.n} colleges</div></div><span class="score" title="Lane 4 score: 50 = Walk-on line, 100 = Target line">${x.score}</span><div></div></div>`).join(""):`<p class="hint">Your events don’t have college standards yet.</p>`}
+  <h3 style="margin-top:16px">Closest college marks${favs.length?" (your colleges)":""}</h3>${top.length?top.map(c=>`<button class="srow sbtn" data-id="${esc(c.sc.id)}"><div class="grow"><strong>${esc(c.count>1?CONF[c.sc.ci].n+" schools":c.sc.name)}</strong><div class="hint" style="margin:0">${c.count>1?`${c.count} schools incl. ${esc(c.sc.name)} · `:""}${CONF[c.sc.ci].d} · ${c.ev} ${LEVELS[c.i]} ${esc(show(c.ev,c.m))} · ${gapText(c.ev,c.diff)}</div></div><span aria-hidden="true">›</span></button>`).join(""):`<p class="hint">You’ve reached every level at ${favs.length?"your starred colleges":"these colleges"}.</p>`}
+  ${favs.length?"":`<p class="hint" style="margin-top:8px">Star colleges in the Colleges tab to focus this on your list.</p>`}`;
+  el.querySelectorAll(".sbtn").forEach(b=>b.onclick=()=>{cOpen=b.dataset.id;go("colleges");renderColleges()});
+}
+/* ---------- profile photo: resized on the device, saved with your data ---------- */
+document.getElementById("photoIn").onchange=e=>{const f=e.target.files[0];if(!f)return;
+  if(!f.type.startsWith("image/")){toast("Pick a photo");return}
+  const img=new Image(),url=URL.createObjectURL(f);
+  img.onload=()=>{const n=256,c=document.createElement("canvas");c.width=n;c.height=n;const x=c.getContext("2d");
+    const sz=Math.min(img.width,img.height);x.drawImage(img,(img.width-sz)/2,(img.height-sz)/2,sz,sz,0,0,n,n);
+    URL.revokeObjectURL(url);if(!S.profile)S.profile={};S.profile.photo=c.toDataURL("image/jpeg",0.82);save();renderHome();renderCard();toast("Photo updated")};
+  img.onerror=()=>{URL.revokeObjectURL(url);toast("Couldn’t read that photo")};img.src=url;e.target.value=""};
+function natStd(ev){const g=S.gender==="Women"?"Women":"Men";return NATS.map(n=>n[g][ev]).filter(Boolean)}
+function renderProfileHead(){
+  const p=S.profile||{};const inner=document.getElementById("avatarInner");
+  inner.innerHTML=p.photo?`<img src="${p.photo}" alt="Your photo">`:esc((p.name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()||"＋");
+  document.getElementById("pName2").textContent=p.name||"Your name";
+  const evs=shownEvents().filter(ev=>pr(ev));
+  const grp=evs.length?PLANS[planType(evs[0])].label:"";
+  document.getElementById("pMeta").textContent=[p.grad?"Class of "+p.grad:"",p.school||"",p.state||"",grp].filter(Boolean).join(" · ")||"Tap Card to add your school and class";
+  /* stats: best event score, colleges reached in any event, PR count, closest nationals gap */
+  let best=null,reach=new Set(),gap=null,gapEv="",qual=false;
+  evs.forEach(ev=>{const pv=val(ev,pr(ev).mark);const ps=[];
+    SCHOOLS.forEach(sc=>{const st=schoolStd(sc,ev);if(!st)return;if(st.some(m=>m&&!better(ev,val(ev,m),pv)))reach.add(sc.id);const q=spreadPos(ev,st,pv);if(q!=null)ps.push(q)});
+    if(ps.length){ps.sort((a,b)=>a-b);const m=ps[Math.floor(ps.length/2)];const sc=Math.max(0,Math.min(150,Math.round(50+50*m)));if(best==null||sc>best)best=sc}
+    natStd(ev).forEach(m=>{const mv=val(ev,m);if(!better(ev,mv,pv))qual=true;else{const d=Math.abs(pv-mv),rel=d/mv;if(gap==null||rel<gap.rel)gap={rel,d,ev}}})});
+  const natTxt=qual?"✓":gap?(EVENTS[gap.ev].field?`${+gap.d.toFixed(1)}″`:`${gap.d.toFixed(2)}s`):"—";
+  document.getElementById("pStats").innerHTML=`<div><b>${best??"—"}</b><span>Score</span></div><div><b>${reach.size||"—"}</b><span>Colleges</span></div><div><b>${evs.length}</b><span>PRs</span></div><div><b class="hot">${natTxt}</b><span>${qual?"Nationals":"To nationals"}</span></div>`.replace("To nationals","Nationals");
+}
+function renderHome(){renderStanding();renderProfileHead();
+  document.getElementById("modePill").textContent=S.started==="sample"?"Beta · sample athlete":"Beta";
+  const evs=shownEvents();
+  document.getElementById("prGrid").innerHTML=evs.length?evs.map(ev=>{const p=pr(ev);return `<div class="pr"><div class="ev">${ev}</div><div class="num">${esc(show(ev,p&&p.mark))}</div><div class="goal">Goal ${esc(show(ev,S.goals[ev]))}</div></div>`}).join(""):`<div class="panel" style="grid-column:1/-1"><p class="empty">No times yet. Add your first race in the Log tab and your PRs show up here.</p></div>`;
+  const rr=[...S.races].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);
+  document.getElementById("recentRaces").innerHTML=rr.length?rr.map(r=>raceHTML(r,false)).join(""):`<div class="emptybox">${EMPTY_RACES}<p class="empty">No races yet. Add your first time in the Log tab.</p></div>`;
+
+}
+
+/* ---------- times ---------- */
+document.getElementById("addRace").onclick=()=>{
+  const ev=rEvent.value,mark=rMark.value.trim(),msg=document.getElementById("addMsg");
+  if(!validMark(ev,mark)){msg.textContent=EVENTS[ev].field?"Enter the jump as feet-inches, like 20-7.":"Enter a time like 50.9 or 1:59.4.";return}
+  const old=pr(ev);
+  const splits=rSplits.value.split(/[,\s]+/).map(x=>x.trim()).filter(Boolean);
+  if(splits.some(x=>isNaN(toSec(x)))){msg.textContent="Enter splits as times separated by commas, like 23.8, 26.6.";return}
+  const race={event:ev,mark:normMark(ev,mark),date:rDate.value||today(),meet:rMeet.value.trim()||"Race"};if(splits.length)race.splits=splits;
+  S.races.push(race);save();
+  msg.textContent=(!old||better(ev,val(ev,mark),val(ev,old.mark)))?`New PR in the ${ev}: ${show(ev,mark)}.`:`Added ${show(ev,mark)} in the ${ev}.`;
+  rMark.value="";rMeet.value="";rSplits.value="";renderAll();
+};
+let pending=[];
+/* Results pages list an event heading, then rows under it. Remember the heading and the season year. */
+function parseBatch(text){
+  const lines=text.split(/\n+/).map(s=>s.replace(/\u00a0/g," ").trim()).filter(Boolean);
+  let ctx=null,year=null;const out=[];
+  for(const line of lines){
+    const y=line.match(/^(?:.*\b)?(20\d{2})\b.*\b(indoor|outdoor|track|season)\b/i)||line.match(/^(20\d{2})$/);
+    if(y&&!/\d{1,2}[:.]\d{2}/.test(line)){year=y[1];continue}
+    const ev=matchEvent(line);
+    if(ev){const p=parseLine(line,ev,year);if(p){out.push(p);ctx=ev;continue}ctx=ev;continue}
+    if(ctx){const p=parseLine(line,ctx,year);if(p)out.push(p)}
+  }
+  return{races:out,lines:lines.length}}
+document.getElementById("readPaste").onclick=()=>{
+  const res=parseBatch(paste.value);const lines=paste.value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const seen=new Set(S.races.map(x=>x.event+"|"+x.mark+"|"+x.date));
+  pending=res.races.filter(x=>{const k=x.event+"|"+x.mark+"|"+x.date;if(seen.has(k))return false;seen.add(k);return true});
+  const skipped=0;
+  const box=document.getElementById("pastePreview");
+  if(!lines.length){box.innerHTML=`<p class="hint">Paste at least one result first.</p>`;return}
+  if(!pending.length){box.innerHTML=`<p class="hint">Couldn't find an event and a time on any line. Try a format like “400m 50.91 5/17/2026 Meet name”.</p>`;return}
+  box.innerHTML=`<p class="hint" style="margin-top:12px">Found ${pending.length} result${pending.length>1?"s":""}${skipped?`, skipped ${skipped} line${skipped>1?"s":""} without an event and time`:""}. Check them, then add.</p>`+
+    `<div class="panel" style="margin:8px 0 0;background:var(--bg)">${pending.map(r=>`<div class="entry"><div class="grow"><span class="tag">${esc(r.event)}</span><div class="d">${esc(r.date)} · ${esc(r.meet)}</div></div><div class="num">${esc(show(r.event,r.mark))}</div></div>`).join("")}</div>`+
+    `<button class="go" id="confirmPaste">Add ${pending.length} result${pending.length>1?"s":""}</button>`;
+  document.getElementById("confirmPaste").onclick=()=>{S.races.push(...pending);save();pending=[];paste.value="";box.innerHTML=`<p class="hint" style="margin-top:10px">Added. Your PRs are updated.</p>`;renderAll()};
+};
+function renderRaces(){
+  const list=[...S.races].sort((a,b)=>b.date.localeCompare(a.date));
+  const el=document.getElementById("raceList");
+  el.innerHTML=list.length?list.map(r=>raceHTML(r,true)).join(""):`<p class="empty">No races yet.</p>`;
+  el.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{S.races.splice(+b.dataset.del,1);save();renderAll()});
+}
+/* ---------- log ---------- */
+wFeel.oninput=()=>feelVal.textContent=wFeel.value;
+document.getElementById("saveW").onclick=()=>{
+  S.log.unshift({date:wDate.value||today(),type:wType.value,note:wNote.value.trim(),feel:+wFeel.value});
+  S.log.sort((a,b)=>b.date.localeCompare(a.date));save();wNote.value="";renderAll();
+  saveW.textContent="Saved";setTimeout(()=>saveW.textContent="Save workout",1200);
+};
+let logAll=false;
+function renderLog(){const h=document.getElementById("history");const list=logAll?S.log:S.log.slice(0,4);
+  h.innerHTML=S.log.length?list.map(workoutHTML).join("")+(S.log.length>4?`<button class="ghost" id="logMore" style="margin-top:10px;width:100%;padding:8px">${logAll?"Show less":`Show all ${S.log.length} workouts`}</button>`:""):`<p class="empty">No workouts yet. Tap “Log a workout” above.</p>`;
+  const b=document.getElementById("logMore");if(b)b.onclick=()=>{logAll=!logAll;renderLog()}}
+
+/* ---------- goals ---------- */
+let gTouched=false;
+function fillGoal(){gGoal.value=S.goals[gEvent.value]||""}
+gEvent.onchange=()=>{gTouched=true;fillGoal();goalMsg.textContent=""};
+gGoal.oninput=()=>{gTouched=true};
+document.getElementById("saveG").onclick=()=>{
+  const ev=gEvent.value,g=gGoal.value.trim(),msg=document.getElementById("goalMsg");
+  if(g&&!validMark(ev,g)){msg.textContent=EVENTS[ev].field?`Enter the goal in feet-inches, like 23-0 or 23' 0".`:`Enter the goal as a time, like 49.5 or 1:58.0.`;gGoal.focus();return}
+  if(g){S.goals[ev]=normMark(ev,g);msg.textContent=`Saved: ${ev} goal ${show(ev,g)}.`}else{delete S.goals[ev];msg.textContent=`Removed your ${ev} goal.`}
+  gTouched=false;save();renderAll();gEvent.value=ev;fillGoal()};
+function normMark(ev,m){if(!EVENTS[ev].field)return m.trim();const i=toIn(m);if(isNaN(i))return m;const ft=Math.floor(i/12);return ft+"-"+(+(i-ft*12).toFixed(2))}
+function renderGoalChips(){const el=document.getElementById("goalChips");const g=EV_NAMES.filter(e=>S.goals[e]);
+  el.innerHTML=g.length?`<div class="lbl3">Your goals</div>`+g.map(e=>`<div class="acc"><span><strong>${e}</strong> ${esc(show(e,S.goals[e]))}</span><button class="ghost" data-gdel="${e}" aria-label="Remove ${e} goal">✕</button></div>`).join(""):"";
+  el.querySelectorAll("[data-gdel]").forEach(b=>b.onclick=()=>{delete S.goals[b.dataset.gdel];save();renderAll()})}
+function gapText(ev,diff){return EVENTS[ev].field?`${+(diff).toFixed(1)} in to go`:`${diff.toFixed(2)}s to go`}
+function tiersHTML(sc,ev){
+  const st=schoolStd(sc,ev);if(!st)return `<p class="hint" style="margin:0">No standard for this event.</p>`;
+  const p=pr(ev),pv=p?val(ev,p.mark):NaN;
+  return `<div class="tiers">${st.map((m,i)=>{
+    if(!m)return `<div class="tier off"><span class="k">${LEVELS[i]}</span><span class="m">—</span><span class="g">Not used</span></div>`;
+    const mv=val(ev,m);let cls="",g="";
+    if(!isNaN(pv)){if(!better(ev,mv,pv)){cls="hit";g="✓ Got it"}else g=gapText(ev,Math.abs(pv-mv))}
+    return `<button class="tier ${cls}" data-ev="${ev}" data-m="${m}" aria-label="Set ${esc(sc.name)} ${LEVELS[i]} ${show(ev,m)} as my ${ev} goal"><span class="k">${LEVELS[i]}</span><span class="m">${esc(show(ev,m))}</span><span class="g">${g||"&nbsp;"}</span></button>`}).join("")}</div>`;
+}
+function bindTiers(el){el.querySelectorAll("button.tier").forEach(b=>b.onclick=()=>{S.goals[b.dataset.ev]=b.dataset.m;save();renderAll();gEvent.value=b.dataset.ev;fillGoal();toast(`Goal set: ${b.dataset.ev} ${show(b.dataset.ev,b.dataset.m)}`)})}
+function renderGoals(){
+  document.querySelectorAll(".segIn button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.gen===S.gender));
+  const el=document.getElementById("goalList");
+  const favs=SCHOOLS.filter(x=>S.fav.includes(x.id));
+  const evs=shownEvents();
+  if(!favs.length){el.innerHTML=`<div class="emptybox">${EMPTY_COLLEGES}</div><p class="empty">Star colleges in the Colleges tab and their standards for your events show up here.</p><button class="go alt" id="goColleges">Find colleges</button>`;document.getElementById("goColleges").onclick=()=>go("colleges");return}
+  if(!evs.length){el.innerHTML=`<p class="empty">Add a PR first so there’s something to compare.</p>`;return}
+  el.innerHTML=evs.map(ev=>{
+    const p=pr(ev),goal=S.goals[ev];
+    let bar="";
+    if(p&&goal){const E=EVENTS[ev],pv=val(ev,p.mark),gv=val(ev,goal);const start=E.field?gv*0.85:gv*1.15;let pct=E.field?(pv-start)/(gv-start):(start-pv)/(start-gv);pct=Math.max(0,Math.min(1,pct));
+      bar=`<div class="bar" role="progressbar" aria-valuenow="${Math.round(pct*100)}" aria-valuemin="0" aria-valuemax="100" aria-label="${ev} goal progress"><i style="width:${pct*100}%"></i></div><div class="hint" style="margin:0 0 4px">${Math.round(pct*100)}% of the way to your goal of ${esc(show(ev,goal))}</div>`}
+    const rows=favs.map(sc=>schoolStd(sc,ev)?`<div class="school"><h4>${esc(sc.name)}</h4>${tiersHTML(sc,ev)}</div>`:"").join("");
+    return `<div class="goalrow"><div class="goalhead"><h3 style="margin:0">${ev}</h3><span class="num">${p?esc(show(ev,p.mark)):"—"}</span></div>${bar}${rows||`<p class="hint">Your colleges don’t list a standard for this event.</p>`}</div>`}).join("");
+  bindTiers(el);
+}
+
+/* ---------- colleges ---------- */
+let cDiv="All",cSort="fit",cOpen=null;
+function fitBadge(f){
+  if(f.level===-1)return `<span class="badge none">Add a PR to compare</span>`;
+  if(f.level<3)return `<span class="badge lv${f.level}">${LEVELS[f.level]} level in the ${f.bestEv}</span>`;
+  if(f.closest)return `<span class="badge none">${gapText(f.closest.ev,f.closest.diff)} in the ${f.closest.ev}</span>`;
+  return `<span class="badge none">Not yet</span>`;
+}
+function renderColleges(){
+  const list=document.getElementById("cList"),detail=document.getElementById("cDetail");
+  document.querySelectorAll("#cChips button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===cDiv));
+  document.querySelectorAll("#cSort button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===cSort));
+  if(cOpen){list.hidden=true;document.getElementById("cTools").hidden=true;detail.hidden=false;renderCollege(cOpen);return}
+  list.hidden=false;document.getElementById("cTools").hidden=false;detail.hidden=true;
+  const q=cSearch.value.trim().toLowerCase();
+  let items=SCHOOLS.filter(sc=>{const c=CONF[sc.ci];
+    if(cDiv==="Mine"&&!S.fav.includes(sc.id))return false;
+    if(["D1","D2","D3"].includes(cDiv)&&c.d!==cDiv)return false;
+    if(!q)return true;
+    return (sc.name+" "+sc.state+" "+c.n+" "+c.d).toLowerCase().includes(q)});
+  const fits=new Map(items.map(sc=>[sc.id,schoolFit(sc)]));
+  if(cSort==="fit")items.sort((a,b)=>{const fa=fits.get(a.id),fb=fits.get(b.id);const la=fa.level<0?9:fa.level,lb=fb.level<0?9:fb.level;if(la!==lb)return la-lb;const ga=fa.closest?fa.closest.g:9,gb=fb.closest?fb.closest.g:9;return ga-gb||a.name.localeCompare(b.name)});
+  document.getElementById("cCount").textContent=`${items.length} college${items.length===1?"":"s"}`;
+  list.innerHTML=items.length?items.map(sc=>{const c=CONF[sc.ci],fav=S.fav.includes(sc.id);
+    return `<div class="crow"><button class="cmain" data-id="${esc(sc.id)}"><span class="cname">${esc(sc.name)}${sc.official?' <span class="star-off" title="Publishes its own chart">★</span>':""}</span><span class="cmeta">${c.d} · ${esc(c.n)} · ${sc.state}</span>${fitBadge(fits.get(sc.id))}</button><button class="fav ${fav?"on":""}" data-fav="${esc(sc.id)}" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>`}).join(""):`<p class="empty" style="padding:8px 0">No colleges match. Try a school name, state like CT, or a conference.</p>`;
+  list.querySelectorAll(".cmain").forEach(b=>b.onclick=()=>{cOpen=b.dataset.id;renderColleges();window.scrollTo(0,0)});
+  list.querySelectorAll("[data-fav]").forEach(b=>b.onclick=()=>toggleFav(b.dataset.fav));
+}
+function toggleFav(id){const i=S.fav.indexOf(id);if(i>=0)S.fav.splice(i,1);else S.fav.push(id);save();renderColleges();renderGoals();toast(i>=0?"Removed from my colleges":"Added to my colleges")}
+let cAll=false;
+function renderCollege(id){
+  const sc=SCHOOLS.find(x=>x.id===id),c=CONF[sc.ci],fav=S.fav.includes(id),el=document.getElementById("cDetail");
+  const mine=shownEvents().filter(ev=>schoolStd(sc,ev));
+  const all=EV_NAMES.filter(ev=>schoolStd(sc,ev));
+  const evs=(cAll||!mine.length)?all:mine;
+  const f=schoolFit(sc);
+  el.innerHTML=`<button class="ghost" id="cBack">‹ All colleges</button>
+  <div class="panel" style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><h2 style="margin:0">${esc(sc.name)}</h2><button class="fav ${fav?"on":""}" id="cFav" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>
+    <p class="hint">${c.d} · ${esc(c.n)} · ${sc.state} · ${S.gender==="Women"?"Women’s":"Men’s"} standards</p>
+    <div style="margin-top:8px">${fitBadge(f)}</div>
+    ${sc.official?`<p class="hint" style="margin-top:10px">★ This school publishes its own recruiting chart, which can differ from the conference levels shown here. <a href="${confUrl(c)}" target="_blank" rel="noopener">Check it on Preferred Recruit</a>.</p>`:""}
+  </div>
+  <div class="panel">${evs.map(ev=>{const p=pr(ev);return `<div class="goalrow"><div class="goalhead"><h3 style="margin:0">${ev}</h3><span class="num">${p?esc(show(ev,p.mark)):"—"}</span></div>${tiersHTML(sc,ev)}</div>`}).join("")}
+  ${mine.length&&all.length>mine.length?`<button class="ghost" id="cAllBtn" style="margin-top:12px;width:100%;padding:8px">${cAll?"Show only my events":`Show all ${all.length} events`}</button>`:""}</div>
+  <div class="panel mailbox"><h3>Email this coach</h3>
+    <p class="hint" style="margin:0 0 6px">Your PRs and info are filled in. Every ${BL} is yours to write, so the email sounds like you.</p>
+    <button class="go alt" id="mailOpen">${mailOpenFor===id?"Hide draft":"Start a draft"}</button>
+    ${mailOpenFor===id?`<label for="mailSub">Subject</label><input id="mailSub" value="${esc(coachEmail(sc).subject)}"><label for="mailBody">Message</label><textarea id="mailBody">${esc(coachEmail(sc).body)}</textarea>
+    <div class="btnrow"><button class="go" id="mailCopy">Copy email</button><a class="go alt" id="mailTo" href="#" target="_blank" rel="noopener">Open in Mail</a></div>
+    <p class="hint">Find the coach’s email on the school’s athletics site, under staff directory.</p>`:""}
+  </div>
+  <p class="source">Tap any mark to make it your goal. Levels come from the ${esc(c.n)}’s 2026 championship, converted to high school events. <a href="${confUrl(c)}" target="_blank" rel="noopener">See the source</a>.</p>`;
+  document.getElementById("cBack").onclick=()=>{cOpen=null;cAll=false;mailOpenFor=null;renderColleges()};
+  document.getElementById("cFav").onclick=()=>toggleFav(id);
+  const ab=document.getElementById("cAllBtn");if(ab)ab.onclick=()=>{cAll=!cAll;renderColleges()};
+  bindTiers(el);
+  document.getElementById("mailOpen").onclick=()=>{mailOpenFor=mailOpenFor===id?null:id;renderColleges();if(mailOpenFor)document.getElementById("mailSub").scrollIntoView({block:"center"})};
+  const mc=document.getElementById("mailCopy");
+  if(mc){const mt=document.getElementById("mailTo");const upd=()=>{mt.href=`mailto:?subject=${encodeURIComponent(mailSub.value)}&body=${encodeURIComponent(mailBody.value)}`};upd();mailSub.oninput=upd;mailBody.oninput=upd;
+    mc.onclick=()=>{const left=(mailSub.value+mailBody.value).split(BL).length-1;copyText(`Subject: ${mailSub.value}\n\n${mailBody.value}`,left?`Copied. ${left} blank${left>1?"s":""} still to fill in`:"Email copied")}}
+}
+let mailOpenFor=null;
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,1800)}
+
+/* ---------- meet day ---------- */
+/* Race-day plans by event type. General guidance from common pre-competition practice, not AI and not coaching. */
+const MEAL=[-210,"Main pre-race meal","Familiar carbs with a little protein: rice, pasta, a bagel with peanut butter. Skip heavy, greasy, or very high-fiber food."];
+const PLANS={
+ sprint:{label:"Short sprints",steps:[[-240,"Wake up and get moving","Light walk or mobility to wake your legs up."],MEAL,[-150,"Hydrate","Steady sips of water. No chugging right before you race."],[-90,"Light snack","Something small: a banana, crackers, or a granola bar."],[-60,"Arrive and check the schedule","Confirm your heat and lane, and whether events are running ahead or behind."],[-45,"Start warm-up","Easy jog 5–8 minutes, then dynamic stretches and leg swings."],[-35,"Sprint drills","A-skips, B-skips, high knees, butt kicks."],[-25,"Accelerations","3–4 build-ups to about 90%, full walk-back recovery."],[-20,"Report to check-in","Check in with the clerk and pin your bib."],[-12,"Spikes on, block starts","2–3 starts out of the blocks if there’s room. Stay warm."],[-3,"Get set","Breathe. Drive out of the blocks and stay tall."],[0,"Race time","Go get it."]]},
+ long:{label:"Long sprints (300–400)",steps:[[-240,"Wake up and get moving","Light walk or mobility to wake your legs up."],MEAL,[-150,"Hydrate","Steady sips of water."],[-90,"Light snack","Something small and easy to digest."],[-60,"Arrive and check the schedule","Confirm your heat and lane."],[-50,"Start warm-up","Easy jog 8–10 minutes, dynamic stretches."],[-38,"Drills","A-skips, B-skips, high knees."],[-28,"Strides and a race-pace rhythm run","2–3 strides, then one 60–80m at race rhythm to feel your pace."],[-20,"Report to check-in","Check in and pin your bib."],[-12,"Spikes on, stay loose","1–2 short accelerations. Keep warm layers on."],[-3,"Get set","Plan your first 200: fast but relaxed."],[0,"Race time","Go get it."]]},
+ hurdles:{label:"Hurdles",steps:[[-240,"Wake up and get moving","Light walk or mobility."],MEAL,[-150,"Hydrate","Steady sips of water."],[-90,"Light snack","Something small and easy."],[-60,"Arrive and check the schedule","Confirm your heat, lane, and hurdle height."],[-50,"Start warm-up","Easy jog, then hip mobility: walkovers and swings."],[-38,"Hurdle drills","Lead-leg and trail-leg drills over 2–3 hurdles."],[-28,"Run-throughs","2–3 starts over the first 1–2 hurdles at speed."],[-20,"Report to check-in","Check in and pin your bib."],[-12,"Spikes on","One more start over the first hurdle if allowed. Stay warm."],[-3,"Get set","Attack the first hurdle."],[0,"Race time","Go get it."]]},
+ mid:{label:"Mid-distance (500–1000)",steps:[[-240,"Wake up and get moving","Light walk or mobility."],[-225,"Main pre-race meal","Familiar carbs, a little protein. Eat a bit earlier than for sprints so your stomach settles."],[-150,"Hydrate","Steady sips of water."],[-90,"Light snack","Small and easy: a banana or a few crackers."],[-60,"Arrive and check the schedule","Confirm your heat."],[-50,"Start warm-up","Easy jog 10–12 minutes."],[-36,"Drills and stretches","A-skips, B-skips, leg swings."],[-26,"Strides","3–4 strides, the last one near race pace."],[-20,"Report to check-in","Check in and pin your bib."],[-10,"Spikes on, stay moving","Light jogging and one short stride."],[-3,"Get set","Know your first-lap target from the split calculator."],[0,"Race time","Go get it."]]},
+ distance:{label:"Distance (mile and up)",steps:[[-270,"Wake up and get moving","Easy walk or mobility."],[-240,"Main pre-race meal","Familiar carbs with a little protein, eaten earlier so it’s fully settled by race time."],[-180,"Hydrate","Steady sips of water through the morning."],[-100,"Light snack","Small and easy: half a bagel or a banana."],[-60,"Arrive and check the schedule","Confirm your heat, and for XC, walk or jog part of the course."],[-50,"Start warm-up","Easy jog 12–15 minutes."],[-34,"Drills and stretches","A-skips, B-skips, leg swings."],[-25,"Strides","4 strides building to race pace."],[-18,"Report to check-in","Check in and pin your bib."],[-10,"Spikes on, stay moving","Keep jogging lightly. Last sip of water."],[-3,"Get set","Know your lap splits from the split calculator."],[0,"Race time","Go get it."]]},
+ jump:{label:"Jumps",steps:[[-240,"Wake up and get moving","Light walk or mobility."],MEAL,[-150,"Hydrate","Steady sips. Field events run long, so pack water."],[-100,"Light snack","Small and easy, plus a snack for during the competition."],[-75,"Arrive and check the schedule","Field events often check in earlier than running events. Find your pit."],[-60,"Start warm-up","Easy jog, dynamic stretches, hip mobility."],[-48,"Report to check-in","Check in at the pit and get your flight order."],[-40,"Mark your approach","Measure your steps and run 2–3 approaches on the runway when allowed."],[-25,"Bounding and pop-ups","Short bounds and a few take-off drills."],[-12,"Stay warm between jumps","Layers on between attempts. Re-check your mark if the wind changes."],[-3,"Get set","Hit your board, stay tall at take-off."],[0,"Competition starts","Go get it."]]},
+ vault:{label:"Pole vault",steps:[[-270,"Wake up and get moving","Light walk or mobility."],[-240,"Main pre-race meal","Familiar carbs, a little protein."],[-150,"Hydrate","Steady sips. Vault runs long, so pack plenty of water."],[-110,"Light snack","Small and easy, plus food for during the competition."],[-90,"Arrive and check the schedule","Find the pit and confirm your opening height."],[-75,"Check in and check your poles","Report to the official. Make sure your poles are rated for your weight."],[-65,"Start warm-up","Easy jog, dynamic stretches, gymnastics drills."],[-45,"Runway time","Mark your approach and take practice runs and short-approach jumps."],[-15,"Stay warm","Layers on. Stay loose while other athletes jump."],[-3,"Get set","Commit to the plant."],[0,"Competition starts","Go get it."]]},
+ throw:{label:"Throws",steps:[[-240,"Wake up and get moving","Light walk or mobility."],MEAL,[-150,"Hydrate","Steady sips. Pack water for a long competition."],[-100,"Light snack","Small and easy, plus a snack for between flights."],[-75,"Arrive and check the schedule","Find your ring or runway and your flight."],[-60,"Start warm-up","Easy jog, dynamic stretches, shoulder and hip mobility."],[-48,"Report to check-in","Check in and get your implement weighed if needed."],[-40,"Warm-up throws","Stand throws first, then full throws during the warm-up period."],[-20,"Med-ball or band work","A few explosive reps to stay sharp."],[-10,"Stay warm","Layers on between throws."],[-3,"Get set","Stay patient through the ring or the approach."],[0,"Competition starts","Go get it."]]}
+};
+function planType(ev){if(ev==="Pole vault")return"vault";if(/jump/i.test(ev))return"jump";if(/put|discus|javelin|hammer/i.test(ev))return"throw";if(/hurdles/.test(ev))return ev==="400m hurdles"?"long":"hurdles";
+  if(["300m","400m"].includes(ev))return"long";if(["500m","600m","800m","1000m"].includes(ev))return"mid";if(["1600m","Mile","3200m","5K XC"].includes(ev))return"distance";return"sprint"}
+function plan(){return PLANS[planType(S&&S.meet?S.meet.event:mEvent.value)].steps}
+const BAG_BASE=["Spikes and spike wrench","Bib and safety pins","Water bottle","Pre-race snack","Warm-ups and an extra layer","Recovery snack for after"];
+const BAG_EXTRA={sprint:["Starting blocks plan (know your settings)"],hurdles:["Know your block settings and steps to the first hurdle"],jump:["Measuring tape for your approach","Snack for during the competition"],vault:["Your poles, tape, and grip spray","Measuring tape for your approach","Snack for during the competition"],throw:["Your implement and throwing shoes","Chalk or tacky grip if allowed","Snack for during the competition"],distance:["Racing flats or XC spikes","Watch for splits"],mid:["Watch for splits"],long:[]};
+function bagList(){return BAG_BASE.concat(BAG_EXTRA[planType(S&&S.meet?S.meet.event:mEvent.value)]||[])}
+document.getElementById("buildPlan").onclick=()=>{
+  const t=mTime.value;if(!t){mTime.focus();return}
+  const[h,m]=t.split(":").map(Number);const d=new Date();d.setHours(h,m,0,0);
+  S.meet={event:mEvent.value,start:d.getTime()};save();renderMeet();
+};
+mEvent.addEventListener("change",()=>{if(S&&S.meet){S.meet.event=mEvent.value;save();renderMeet()}renderBag()});
+function hhmm(ms){return new Date(ms).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
+function renderMeet(){
+  const tl=document.getElementById("tl");
+  if(!S||!S.meet){tl.innerHTML=`<li class="empty" style="padding-left:0">Your plan shows up here.</li>`;document.getElementById("bEvent").textContent="Set your event time below";bClock.textContent="--:--:--";bNext.innerHTML="&nbsp;";return}
+  mEvent.value=S.meet.event;
+  const st=new Date(S.meet.start);mTime.value=String(st.getHours()).padStart(2,"0")+":"+String(st.getMinutes()).padStart(2,"0");
+  const P=plan(),now=Date.now(),nowIdx=P.findIndex(p=>S.meet.start+p[0]*60000>now);
+  tl.innerHTML=`<li class="plantype">Plan for: ${PLANS[planType(S.meet.event)].label}</li>`+P.map((p,i)=>{const at=S.meet.start+p[0]*60000;const cls=at<=now?"done":(i===nowIdx?"now":"");
+    return `<li class="${cls}"><span class="dot"></span><div class="t">${hhmm(at)} · ${p[1]}</div><div class="w">${p[2]}</div></li>`}).join("");
+  tick();
+}
+function tick(){
+  if(!S||!S.meet)return;
+  const now=Date.now(),diff=S.meet.start-now;
+  document.getElementById("bEvent").textContent=`${S.meet.event} · starts ${hhmm(S.meet.start)}`;
+  if(diff<=0){bClock.textContent="RACE";bNext.textContent="Good luck. Add your time in the Times tab after.";return}
+  const s=Math.floor(diff/1000);bClock.textContent=[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,"0")).join(":");
+  const nx=plan().find(p=>S.meet.start+p[0]*60000>now);
+  if(nx){const mins=Math.ceil((S.meet.start+nx[0]*60000-now)/60000);bNext.textContent=`Next: ${nx[1]} in ${mins} min`}
+}
+setInterval(tick,1000);setInterval(()=>{if(S&&S.meet)renderMeet()},30000);
+function renderBag(){
+  const b=document.getElementById("bag");
+  b.innerHTML=bagList().map((x,i)=>`<label class="check"><input type="checkbox" data-i="${i}" ${S.bag[i]?"checked":""}> ${x}</label>`).join("");
+  b.querySelectorAll("input").forEach(c=>c.onchange=()=>{S.bag[c.dataset.i]=c.checked;save()});
+}
+document.getElementById("resetBag").onclick=()=>{S.bag={};save();renderBag()};
+
+cSearch.oninput=()=>renderColleges();
+document.querySelectorAll("#cChips button").forEach(b=>b.onclick=()=>{cDiv=b.dataset.d;renderColleges()});
+document.querySelectorAll("#cSort button").forEach(b=>b.onclick=()=>{cSort=b.dataset.s;renderColleges()});
+
+/* ---------- profile, card, coach email ---------- */
+const BL="________";
+function P(){return S.profile||(S.profile={})}
+let accDraft=null;
+function renderAcc(){const el=document.getElementById("accList");const a=accDraft;
+  el.innerHTML=a.length?a.map((x,i)=>`<div class="acc"><span>${esc(x)}</span><button class="ghost" data-i="${i}" aria-label="Remove ${esc(x)}">✕</button></div>`).join(""):`<p class="empty" style="font-size:14px">None added yet.</p>`;
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{accDraft.splice(+b.dataset.i,1);renderAcc()})}
+function addAcc(){const v=accIn.value.trim();if(!v)return;accDraft.push(v);accIn.value="";renderAcc();accIn.focus()}
+document.getElementById("accAdd").onclick=addAcc;
+accIn.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addAcc()}};
+function fillProf(){const p=P();pUser.value=p.username||"";pGpa.value=p.gpa||"";pTest.value=p.test||"";pMajor.value=p.major||"";accDraft=[...(p.acc||[])];renderAcc();pName.value=p.name||"";pGrad.value=p.grad||"";pState.value=p.state||"";pSchool.value=p.school||"";pEmail.value=p.email||"";pPhone.value=p.phone||"";pLink.value=p.link||""}
+document.getElementById("saveProf").onclick=()=>{
+  const un=pUser.value.trim().replace(/^@/,"");
+  if(un&&!/^[A-Za-z0-9_.]{3,20}$/.test(un)){pUser.focus();toast("Username: 3–20 letters, numbers, _ or .");return}S.profile={name:pName.value.trim(),grad:pGrad.value.trim(),state:pState.value.trim(),school:pSchool.value.trim(),email:pEmail.value.trim(),phone:pPhone.value.trim(),link:pLink.value.trim(),username:un,gpa:pGpa.value.trim(),test:pTest.value.trim(),major:pMajor.value.trim(),acc:[...accDraft]};if(accIn.value.trim()){S.profile.acc.push(accIn.value.trim());accIn.value=""}save();renderCard();if(cOpen)renderColleges();document.getElementById("profBox").open=false;toast("Info saved")};
+function fmtDate(d){if(!d)return"";const[y,m,dd]=d.split("-");return `${+m}/${+dd}/${y}`}
+function prLines(){return shownEvents().map(ev=>{const p=pr(ev);return p?{ev,mark:show(ev,p.mark),meet:p.meet,date:p.date}:null}).filter(Boolean)}
+function cardText(){const p=P(),lines=prLines();
+  let t=`${p.name||BL}\n${p.grad?"Class of "+p.grad:"Class of "+BL} · ${p.school||BL}${p.state?", "+p.state:""}\n\nPRs\n`;
+  t+=lines.length?lines.map(l=>`${l.ev}: ${l.mark} (${l.meet}, ${fmtDate(l.date)})`).join("\n"):BL;
+  const g=Object.entries(S.goals);if(g.length)t+=`\n\nGoals\n`+g.map(([e,m])=>`${e}: ${show(e,m)}`).join("\n");
+  if(p.acc&&p.acc.length)t+=`\n\nAccomplishments\n`+p.acc.map(a=>"- "+a).join("\n");
+  const ac=academics(p);if(ac)t+=`\n\nAcademics: ${ac}`;
+  if(p.link)t+=`\n\nResults: ${p.link}`;
+  const c=[p.email,p.phone].filter(Boolean).join(" · ");if(c)t+=`\nContact: ${c}`;
+  return t}
+function renderCard(){const p=P(),lines=prLines(),el=document.getElementById("acard");
+  document.getElementById("profBox").open=!p.name;
+  const goals=Object.entries(S.goals);
+  el.innerHTML=`<div class="top">${p.photo?`<img class="cphoto" src="${p.photo}" alt="">`:""}<div class="nm">${esc(p.name||"Your name")}</div>${p.username?`<div class="sub">@${esc(p.username)}</div>`:""}<div class="sub">${p.grad?"Class of "+esc(p.grad):"Class of —"} · ${esc(p.school||"High school")}${p.state?", "+esc(p.state):""}</div></div>
+  <div class="body"><div class="lbl" style="margin-top:0">Personal bests</div>
+  ${lines.length?`<table>${lines.map(l=>`<tr><td><strong>${l.ev}</strong><div class="hint" style="margin:0">${esc(l.meet)} · ${fmtDate(l.date)}</div></td><td class="m">${esc(l.mark)}</td></tr>`).join("")}</table>`:`<p class="empty">Add PRs to fill this in.</p>`}
+  ${goals.length?`<div class="lbl">Goals</div><p style="margin:0">${goals.map(([e,m])=>`${e} ${esc(show(e,m))}`).join(" · ")}</p>`:""}
+  ${p.acc&&p.acc.length?`<div class="lbl">Accomplishments</div><ul>${p.acc.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>`:""}
+  ${academics(p)?`<div class="lbl">Academics</div><p style="margin:0">${esc(academics(p))}</p>`:""}
+  ${(p.link||p.email||p.phone)?`<div class="lbl">Contact</div><p style="margin:0;overflow-wrap:anywhere">${[p.email,p.phone].filter(Boolean).map(esc).join(" · ")}${p.link?`<br><a href="${esc(p.link)}" target="_blank" rel="noopener">Full results</a>`:""}</p>`:""}</div>`;
+}
+async function copyText(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg)}catch(e){const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();toast(ok?msg:"Couldn’t copy. Press and hold the text to copy it.")}}
+document.getElementById("copyCard").onclick=()=>copyText(cardText(),"Card copied");
+function academics(p){return[p.gpa?`${p.gpa} GPA`:"",p.test||"",p.major?`interested in ${p.major}`:""].filter(Boolean).join(", ")}
+function primaryEvents(){const e=prLines().map(l=>l.ev);return e.length?e.slice(0,3).join("/"):BL}
+function coachEmail(sc){const p=P(),lines=prLines(),name=p.name||BL;
+  const subject=`Class of ${p.grad||BL} ${primaryEvents()} – ${name}, ${p.school||BL}`;
+  const body=`Coach ${BL},
+
+My name is ${name}, and I’m a Class of ${p.grad||BL} ${primaryEvents()} athlete at ${p.school||BL}${p.state?" in "+p.state:""}. I’m interested in competing for ${sc.name} because ${BL}.
+
+My current PRs:
+${lines.length?lines.map(l=>`- ${l.ev}: ${l.mark} (${l.meet}, ${fmtDate(l.date)})`).join("\n"):"- "+BL}
+
+${p.acc&&p.acc.length?`Some highlights:\n${p.acc.map(a=>"- "+a).join("\n")}\n\n`:""}This season, I’m working on ${BL}, and my goal is ${BL}.
+
+${academics(p)?`Academically, ${p.gpa?`I have a ${p.gpa} GPA${p.test?` (${p.test})`:""}`:p.test?`I scored ${p.test}`:`I ${BL}`}${p.major?`, and I plan to study ${p.major}`:""}. ${BL}`:`Academically, ${BL} (GPA, test scores, what I want to study).`}
+
+My full results: ${p.link||BL}
+
+I’d love to learn more about your program and ${BL}. Thank you for your time.
+
+${name}
+${[p.email,p.phone].filter(Boolean).join(" · ")||BL}`;
+  return{subject,body}}
+
+document.getElementById("copyBackup").onclick=()=>copyText("LANE4:"+btoa(unescape(encodeURIComponent(JSON.stringify(S)))),"Backup code copied");
+document.getElementById("doRestore").onclick=()=>{
+  const m=document.getElementById("restoreMsg");let raw=restoreBox.value.trim();
+  if(!raw){m.textContent="Paste your backup code first.";return}
+  try{if(raw.startsWith("LANE4:"))raw=decodeURIComponent(escape(atob(raw.slice(6))));const d=migrate(JSON.parse(raw));if(!d)throw 0;
+    S=d;save();restoreBox.value="";m.textContent=`Restored ${S.races.length} race${S.races.length===1?"":"s"} and ${S.log.length} workout${S.log.length===1?"":"s"}.`;renderAll()}
+  catch(e){m.textContent="That code didn’t work. Make sure you pasted the whole thing, starting with LANE4:"}
+};
+const THEME_KEY="lane4-theme";
+function applyTheme(t){document.documentElement.dataset.theme=t;const b=document.getElementById("themeBtn");b.textContent=t==="dark"?"☀ Switch to light mode":"☾ Switch to dark mode";b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==="dark"?"#151010":"#C62832"}
+let theme="light";try{theme=localStorage.getItem(THEME_KEY)==="dark"?"dark":"light"}catch(e){}
+applyTheme(theme);
+document.getElementById("themeBtn").onclick=()=>{theme=theme==="dark"?"light":"dark";applyTheme(theme);try{localStorage.setItem(THEME_KEY,theme)}catch(e){}};
+twoTap(document.getElementById("delCloud"),"Tap again to delete from your account",async()=>{if(!CLOUD.ref){toast("Nothing saved to an account here");return}
+  const ref=CLOUD.ref;CLOUD.ref=null;try{await CLOUD.chain;await ref.delete();toast("Deleted from your account")}catch(e){toast("Couldn’t delete right now. Try again.")}setSync("device")});
+/* ---------- split calculator: physics + how races are run, no AI ---------- */
+function fmtT(x){if(x<60)return x.toFixed(2);const m=Math.floor(x/60),s=x-m*60;return m+":"+(s<10?"0":"")+s.toFixed(2)}
+const SPLIT_INFO={
+  "200m":"Your first 100 is slower: it includes reacting to the gun, accelerating from zero, and running the curve. In real races the first 100 takes about 51.5% of the total time.",
+  "400m":"Nobody can hold top speed for 400m, so every good 400 slows down. Fast 400s usually run the second 200 about 4% of the total time slower than the first.",
+  "800m":"The 800 is run slightly fast on the first lap: in fast races the second lap is usually about 2% of the total time slower.",
+  "1600m":"From the mile up, even pacing is the most efficient: holding the same speed keeps your body from building up fatigue too early.",
+  "Mile":"Even pacing is the most efficient way to run the mile. A mile is 1609m, so each lap here is about 402m.",
+  "3200m":"Even pacing is the most efficient way to run a 3200: every lap at the same speed.",
+  "5K":"Even pacing is the most efficient over 5K. On a cross country course, judge effort on hills and use these as checkpoints."};
+function splitPlan(ev,T){
+  switch(ev){
+    case "200m":return[["First 100",T*0.515],["Second 100",T*0.485]];
+    case "400m":{const d=T*0.04;return[["First 200",(T-d)/2],["Second 200",(T+d)/2]]}
+    case "800m":{const d=T*0.02;return[["Lap 1",(T-d)/2],["Lap 2",(T+d)/2]]}
+    case "1600m":return[1,2,3,4].map(i=>["Lap "+i,T/4]);
+    case "Mile":return[1,2,3,4].map(i=>["Lap "+i+" (402m)",T/4]);
+    case "3200m":return[1,2,3,4,5,6,7,8].map(i=>["Lap "+i,T/8]);
+    case "5K":return[1,2,3,4,5].map(i=>["Km "+i,T/5]);
+  }return[]}
+function renderSplits(){
+  const ev=scEvent.value,T=scValue(),out=document.getElementById("scOut");
+  const ph={"200m":["0","22.6"],"400m":["0","50.9"],"800m":["1","59.0"],"1600m":["4","45.0"],"Mile":["4","47.0"],"3200m":["10","15.0"],"5K":["17","30"]}[ev];scMin.placeholder=ph[0];scSec.placeholder=ph[1];
+  if(!(T>0)){out.innerHTML=`<p class="hint">Enter a goal time to see your splits.</p>`;return}
+  let cum=0;const rows=splitPlan(ev,T).map(([n,x])=>{cum+=x;return `<tr><td>${n}</td><td class="m">${fmtT(x)}</td><td class="c">${fmtT(cum)}</td></tr>`}).join("");
+  const extra=ev==="5K"?`<p class="hint">Mile pace: ${fmtT(T/3.10686)} per mile.</p>`:"";
+  out.innerHTML=`<table class="sctable"><tr><th>Segment</th><th>Split</th><th>Clock</th></tr>${rows}</table>${extra}<p class="hint">${SPLIT_INFO[ev]}</p>`}
+/* Minutes and seconds are separate boxes so phone number pads work (no ":" key needed). */
+function scValue(){const m=parseFloat(scMin.value)||0,sv=String(scSec.value).trim();if(!sv&&!m)return NaN;
+  if(sv.includes(":"))return toSec(sv);const sec=parseFloat(sv)||0;return m*60+sec}
+function setSc(t){const x=toSec(t);if(!(x>0)){scMin.value="";scSec.value="";return}const m=Math.floor(x/60),sec=x-m*60;scMin.value=m?String(m):"";scSec.value=(+sec.toFixed(2)).toString()}
+scEvent.onchange=()=>{const map={"5K":"5K XC"};const g=S&&S.goals[map[scEvent.value]||scEvent.value];setSc(g||"");renderSplits()};
+scMin.oninput=renderSplits;scSec.oninput=renderSplits;
+/* ---------- build-up to a race: what happened in the weeks before it (data only, no AI) ---------- */
+let buWeeks=6,buRace=null;
+function dayNum(d){return Math.floor(Date.parse(d+"T12:00:00")/864e5)}
+function openBuildup(race){buRace=race;renderBuildup();document.getElementById("sheet").hidden=false;document.getElementById("sheetClose").focus()}
+function renderBuildup(){
+  const race=buRace,rd=dayNum(race.date),start=rd-buWeeks*7;
+  const ws=S.log.filter(w=>{const d=dayNum(w.date);return d>=start&&d<rd});
+  const rs=S.races.filter(x=>x!==race&&(()=>{const d=dayNum(x.date);return d>=start&&d<rd})());
+  const prior=S.races.filter(x=>x.event===race.event&&dayNum(x.date)<rd).reduce((b,x)=>!b||better(race.event,val(race.event,x.mark),val(race.event,b.mark))?x:b,null);
+  const types={};ws.forEach(w=>types[w.type]=(types[w.type]||0)+1);
+  const feel=ws.length?(ws.reduce((a,w)=>a+(+w.feel||0),0)/ws.length).toFixed(1):"—";
+  const miles=ws.reduce((a,w)=>a+(+w.miles||0),0);
+  let improve="First time on record";
+  if(prior){const d=Math.abs(val(race.event,race.mark)-val(race.event,prior.mark));improve=EVENTS[race.event].field?`+${+d.toFixed(2)} in over ${show(race.event,prior.mark)}`:`−${d.toFixed(2)}s from ${prior.mark}`}
+  document.getElementById("sheetTitle").textContent=`Build-up: ${race.event} ${show(race.event,race.mark)}`;
+  const weeks=[];for(let k=buWeeks;k>=1;k--){const a=rd-k*7,b=a+7;
+    const items=[...ws.filter(w=>{const d=dayNum(w.date);return d>=a&&d<b}).map(w=>({d:w.date,h:workoutHTML(w)})),
+      ...rs.filter(x=>{const d=dayNum(x.date);return d>=a&&d<b}).map(x=>({d:x.date,h:`<div class="entry"><div class="grow"><span class="tag">${esc(x.event)}</span><span class="d">${esc(x.date)} · ${esc(x.meet)}</span></div><div class="num">${esc(show(x.event,x.mark))}</div></div>`}))]
+      .sort((p,q)=>p.d.localeCompare(q.d));
+    weeks.push(`<div class="wk">${k} week${k>1?"s":""} out · ${items.length} session${items.length===1?"":"s"}</div>${items.length?items.map(i=>i.h).join(""):`<p class="hint" style="margin:0">Nothing logged.</p>`}`)}
+  document.getElementById("sheetBody").innerHTML=`<p class="hint" style="margin:0 0 10px">${esc(race.meet)} · ${esc(race.date)} · ${improve}</p>
+   <div class="chips" role="group" aria-label="How far back">${[4,6,8,12].map(n=>`<button data-wk="${n}" aria-pressed="${n===buWeeks}">${n} weeks</button>`).join("")}</div>
+   <div class="stats"><div class="stat"><b>${ws.length}</b><span>workouts</span></div><div class="stat"><b>${(ws.length/buWeeks).toFixed(1)}</b><span>per week</span></div><div class="stat"><b>${feel}</b><span>avg feel /5</span></div></div>
+   ${Object.keys(types).length?`<p style="margin:0 0 6px">${Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<span class="tag">${esc(t)} ×${n}</span>`).join(" ")}</p>`:""}
+   ${miles?`<p class="hint" style="margin:0">${miles.toFixed(1)} miles of runs logged</p>`:""}
+   ${weeks.join("")}
+   ${ws.length?"":`<p class="hint">Log workouts or upload them from Strava and this fills in for future races.</p>`}`;
+  document.querySelectorAll("#sheetBody [data-wk]").forEach(b=>b.onclick=()=>{buWeeks=+b.dataset.wk;renderBuildup()});
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-build]");if(b){e.preventDefault();openBuildup(S.races[+b.dataset.build])}});
+document.getElementById("sheetClose").onclick=()=>{document.getElementById("sheet").hidden=true};
+document.getElementById("sheet").onclick=e=>{if(e.target.id==="sheet")e.currentTarget.hidden=true};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".sheet").forEach(x=>x.hidden=true)});
+
+/* ---------- workout upload: Strava activities.csv, .gpx, .tcx (read on device) ---------- */
+function csvRows(t){const rows=[];let row=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
+  if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+  else if(c==='"')q=true;else if(c===","){row.push(f);f=""}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(f);f="";if(row.length>1||row[0])rows.push(row);row=[]}else f+=c}
+  if(f||row.length){row.push(f);rows.push(row)}return rows}
+const MON={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+function isoDate(str){const m=String(str).match(/([A-Za-z]{3})[a-z]*\.? (\d{1,2}),? (\d{4})/);let d;
+  if(m&&MON[m[1].toLowerCase()]!=null)d=new Date(+m[3],MON[m[1].toLowerCase()],+m[2]);else d=new Date(str);
+  if(isNaN(d))return null;return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function wType(t){t=String(t||"").toLowerCase();if(/run|track/.test(t))return"Run";if(/weight|strength/.test(t))return"Weights";if(/ride|bik|cycl/.test(t))return"Bike";if(/walk|hike/.test(t))return"Walk";return"Workout"}
+function mins(sec){sec=+sec||0;return sec?`${Math.round(sec/60)} min`:""}
+function fromCSV(text){const rows=csvRows(text);if(rows.length<2)return[];const h=rows[0].map(x=>x.trim().toLowerCase());
+  const col=n=>h.indexOf(n),iD=col("activity date"),iN=col("activity name"),iT=col("activity type"),iE=col("elapsed time"),iDist=col("distance"),iId=col("activity id");
+  if(iD<0)return[];
+  return rows.slice(1).map(r=>{const date=isoDate(r[iD]);if(!date)return null;let dist=parseFloat(r[iDist]);let mi=0;
+    if(dist>0)mi=dist>200?dist/1609.34:dist/1.60934;
+    const note=[r[iN],mins(r[iE]),mi?mi.toFixed(2)+" mi":""].filter(Boolean).join(" · ");
+    return{date,type:wType(r[iT]),note:note+" (Strava)",feel:3,src:"strava-"+(iId>=0?r[iId]:date+r[iN]),miles:mi?+mi.toFixed(2):undefined}}).filter(Boolean)}
+function hav(a,b){const R=6371e3,t=x=>x*Math.PI/180,dl=t(b.lat-a.lat),dn=t(b.lon-a.lon);const h=Math.sin(dl/2)**2+Math.cos(t(a.lat))*Math.cos(t(b.lat))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function fromXML(text,name){const doc=new DOMParser().parseFromString(text,"application/xml");if(doc.querySelector("parsererror"))return[];
+  const tag=(el,n)=>el.getElementsByTagName(n);
+  if(tag(doc,"trkpt").length){const pts=[...tag(doc,"trkpt")].map(p=>({lat:+p.getAttribute("lat"),lon:+p.getAttribute("lon"),t:tag(p,"time")[0]?.textContent}));
+    let m=0;for(let i=1;i<pts.length;i++)m+=hav(pts[i-1],pts[i]);const t0=Date.parse(pts[0].t),t1=Date.parse(pts[pts.length-1].t);
+    const date=isoDate(pts[0].t||Date.now());const nm=tag(doc,"name")[0]?.textContent||name;const ty=tag(doc,"type")[0]?.textContent||"run";const mi=m/1609.34;
+    return[{date,type:wType(ty),note:[nm,isNaN(t1-t0)?"":mins((t1-t0)/1000),mi?mi.toFixed(2)+" mi":""].filter(Boolean).join(" · "),feel:3,src:"gpx-"+(pts[0].t||name),miles:mi?+mi.toFixed(2):undefined}]}
+  const acts=[...tag(doc,"Activity")];return acts.map(a=>{const id=tag(a,"Id")[0]?.textContent||"";let sec=0,m=0;
+    [...tag(a,"Lap")].forEach(l=>{sec+=+(tag(l,"TotalTimeSeconds")[0]?.textContent||0);m+=+(tag(l,"DistanceMeters")[0]?.textContent||0)});
+    const mi=m/1609.34,date=isoDate(id);if(!date)return null;
+    return{date,type:wType(a.getAttribute("Sport")),note:[name,mins(sec),mi?mi.toFixed(2)+" mi":""].filter(Boolean).join(" · "),feel:3,src:"tcx-"+id,miles:mi?+mi.toFixed(2):undefined}}).filter(Boolean)}
+document.getElementById("wFiles").onchange=async e=>{const files=[...e.target.files];const msg=document.getElementById("uploadMsg");if(!files.length)return;
+  msg.textContent="Reading…";let found=[],bad=0;
+  for(const f of files){try{const t=await f.text();const n=f.name.toLowerCase();
+    const got=n.endsWith(".csv")?fromCSV(t):fromXML(t,f.name.replace(/\.[^.]+$/,""));if(!got.length)bad++;found.push(...got)}catch(_){bad++}}
+  const have=new Set(S.log.map(w=>w.src).filter(Boolean));const fresh=found.filter(w=>w.src&&!have.has(w.src)&&(have.add(w.src),true));
+  S.log.push(...fresh);S.log.sort((a,b)=>b.date.localeCompare(a.date));save();renderAll();e.target.value="";
+  msg.textContent=fresh.length?`Added ${fresh.length} workout${fresh.length===1?"":"s"}${found.length>fresh.length?`, skipped ${found.length-fresh.length} already in your log`:""}.${bad?` ${bad} file${bad===1?"":"s"} couldn’t be read.`:""}`
+    :(found.length?"Those workouts are already in your log.":"Couldn’t find workouts in that file. Use activities.csv, .gpx, or .tcx.")};
+
+function openSheet(id){document.querySelectorAll(".sheet").forEach(x=>x.hidden=true);document.getElementById(id).hidden=false}
+document.querySelectorAll(".sheet").forEach(sh=>{sh.addEventListener("click",e=>{if(e.target===sh||e.target.closest("[data-close]"))sh.hidden=true})});
+document.getElementById("settingsBtn").onclick=()=>{document.getElementById("syncLine2").textContent=document.getElementById("syncLine").textContent;openSheet("setSheet")};
+["openComing","openComing2","openComing3"].forEach(id=>document.getElementById(id).onclick=()=>openSheet("comingSheet"));
+/* ---------- nationals: official 2026 Championship automatic standards ---------- */
+const NATS=[
+ {name:"New Balance Nationals Outdoor",short:"NB Outdoor",url:"https://nbnationalsout.com/standards",
+  Men:{"100m":"10.70","200m":"21.70","400m":"48.50","800m":"1:54.30","1600m":"4:16.29","Mile":"4:18.00","3200m":"9:14.47","110m hurdles":"14.30","300m hurdles":"37.90","400m hurdles":"54.00","Discus":"176-5","Hammer":"182-0","High jump":"6-8","Javelin":"184-0","Long jump":"23-8","Pole vault":"15-9","Shot put":"59-0","Triple jump":"47-0"},
+  Women:{"100m":"12.10","200m":"24.75","400m":"56.75","800m":"2:15.00","1600m":"4:58.99","Mile":"5:01.00","3200m":"10:52.83","100m hurdles":"14.40","300m hurdles":"42.56","400m hurdles":"1:01.00","Discus":"138-6","Hammer":"139-0","High jump":"5-6","Javelin":"128-0","Long jump":"19-2","Pole vault":"12-3","Shot put":"40-6","Triple jump":"39-2"}},
+ {name:"New Balance Nationals Indoor",short:"NB Indoor",url:"https://nbnationalsin.com/standards",
+  Men:{"55m":"6.47","60m":"7.05","200m":"22.30","300m":"35.35","400m":"50.10","500m":"1:06.12","600m":"1:22.71","800m":"1:57.50","1000m":"2:33.01","Mile":"4:21.50","1600m":"4:19.77","3200m":"9:23.91","55m hurdles":"7.71","60m hurdles":"8.40","High jump":"6-7","Pole vault":"15-2","Long jump":"23-0","Triple jump":"46-3","Shot put":"56-0"},
+  Women:{"55m":"7.25","60m":"7.90","200m":"25.50","300m":"40.76","400m":"58.50","500m":"1:17.63","600m":"1:37.50","800m":"2:19.00","1000m":"3:01.63","Mile":"5:08.00","1600m":"5:05.94","3200m":"11:05.74","55m hurdles":"8.44","60m hurdles":"9.20","High jump":"5-5","Pole vault":"11-11","Long jump":"18-8","Triple jump":"37-10","Shot put":"39-0"}}
+];
+function renderNationals(){
+  const el=document.getElementById("natList");if(!el)return;
+  const g=S.gender==="Women"?"Women":"Men";
+  const evs=shownEvents().filter(ev=>NATS.some(n=>n[g][ev]));
+  if(!evs.length){el.innerHTML=`<p class="empty">Add a PR in a nationals event and you’ll see how close you are.</p>`;return}
+  el.innerHTML=evs.map(ev=>{const p=pr(ev),pv=p?val(ev,p.mark):NaN;
+    const rows=NATS.filter(n=>n[g][ev]).map(n=>{const m=n[g][ev],mv=val(ev,m);let gap="";
+      if(!isNaN(pv))gap=!better(ev,mv,pv)?`<span class="ok">✓ Qualified</span>`:`<span class="gap">${gapText(ev,Math.abs(pv-mv))}</span>`;
+      return `<button class="natrow" data-ev="${ev}" data-m="${m}" aria-label="Set ${n.name} ${show(ev,m)} as my ${ev} goal"><span><strong>${n.short}</strong><br><span class="hint" style="margin:0">Championship</span></span><span class="natm">${esc(show(ev,m))}<br>${gap}</span></button>`}).join("");
+    return `<div class="goalrow"><div class="goalhead"><h3 style="margin:0">${ev}</h3><span class="num">${p?esc(show(ev,p.mark)):"—"}</span></div>${rows}</div>`}).join("")+
+   `<p class="source" style="margin-top:12px">2026 Championship automatic standards from <a href="https://nbnationalsout.com/standards" target="_blank" rel="noopener">New Balance Nationals Outdoor</a> and <a href="https://nbnationalsin.com/standards" target="_blank" rel="noopener">Indoor</a>. 2027 standards may change. Tap a mark to make it your goal. Nike and adidas Nationals are coming soon.</p>`;
+  el.querySelectorAll(".natrow").forEach(b=>b.onclick=()=>{S.goals[b.dataset.ev]=b.dataset.m;save();renderAll();toast(`Goal set: ${b.dataset.ev} ${show(b.dataset.ev,b.dataset.m)}`)});
+}
+/* ---------- public times: opt in, admin verifies, then everyone can see ---------- */
+const PUB={wantOn:null,db:null,id:null,owner:false,mine:null,board:[],optout:new Set(),subs:[]};
+let rankGender="Men";
+async function refreshPublic(){
+  const st=document.getElementById("pubStatus"),on=document.getElementById("pubOn");
+  if(!PUB.db){on.disabled=true;st.textContent="Public times need an account. Sign in with your Lane 4 account to use them.";document.getElementById("openAdmin").hidden=true;return}
+  on.disabled=false;
+  try{const d=await PUB.db.doc("subs/"+PUB.id).get();PUB.mine=d.exists?d.data():null}catch(_){PUB.mine=null}
+  const isOn=PUB.wantOn!=null?PUB.wantOn:!!(PUB.mine&&PUB.mine.public);on.checked=isOn;document.getElementById("pubFields").hidden=!isOn;
+  if(PUB.mine&&PUB.mine.name)pubName.value=PUB.mine.name;
+  st.textContent=isOn&&(!PUB.mine||!PUB.mine.public)?"Add the name you want shown, then submit.":!PUB.mine||!PUB.mine.public?"Your times are private.":PUB.mine.status==="approved"?"✓ Verified. Your PRs are showing in Rankings.":PUB.mine.status==="rejected"?`Not approved${PUB.mine.reason?": "+PUB.mine.reason:""}. Fix your times or results link and submit again.`:"⏳ Waiting for an admin to verify your times.";
+  const ab=document.getElementById("openAdmin");ab.hidden=!PUB.owner;
+  if(PUB.owner){try{const q=await PUB.db.collection("subs").get();PUB.subs=q.docs.filter(x=>x.exists).map(x=>({id:x.id,...x.data()}));
+    const n=PUB.subs.filter(x=>x.public&&x.status==="pending").length;ab.textContent=`Admin: verify times${n?` (${n} waiting)`:""}`}catch(_){}}
+}
+document.getElementById("pubOn").onchange=async e=>{
+  if(!PUB.db)return;const on=e.target.checked;PUB.wantOn=on;document.getElementById("pubFields").hidden=!on;
+  try{if(on){await PUB.db.doc("optout/"+PUB.id).delete().catch(()=>{});}
+    else{await PUB.db.doc("optout/"+PUB.id).set({at:Date.now()});await PUB.db.doc("subs/"+PUB.id).delete();toast("Your times are private again")}
+  }catch(_){toast("Couldn’t update that right now. Try again.")}refreshPublic()};
+document.getElementById("pubSubmit").onclick=async()=>{
+  if(!PUB.db||!S)return;const name=pubName.value.trim();
+  if(name.length<2){pubName.focus();toast("Add the name you want shown");return}
+  const events={};shownEvents().forEach(ev=>{const p=pr(ev);if(p)events[ev]={mark:p.mark,date:p.date,meet:p.meet}});
+  if(!Object.keys(events).length){toast("Add some PRs first");return}
+  const p=S.profile||{};
+  try{await PUB.db.doc("subs/"+PUB.id).set({public:true,status:"pending",name,school:p.school||"",grad:p.grad||"",state:p.state||"",gender:S.gender||"Men",link:p.link||"",events,submittedAt:Date.now()});
+    await PUB.db.doc("optout/"+PUB.id).delete().catch(()=>{});toast("Sent for verification")}
+  catch(e){toast(e&&e.code==="invalid_argument"?"This account can’t share times in the demo.":"Couldn’t send right now. Try again.")}
+  refreshPublic()};
+async function openRankings(){
+  openSheet("rankSheet");const list=document.getElementById("rankList");list.innerHTML=`<p class="hint">Loading…</p>`;
+  if(!PUB.db){list.innerHTML=`<p class="empty">Rankings need an account. Sign in with your Lane 4 account to see them.</p>`;return}
+  try{const [b,o]=await Promise.all([PUB.db.collection("board").get(),PUB.db.collection("optout").get()]);
+    PUB.optout=new Set(o.docs.map(x=>x.id));PUB.board=b.docs.filter(x=>x.exists&&!PUB.optout.has(x.id)).map(x=>({id:x.id,...x.data()}))}
+  catch(_){list.innerHTML=`<p class="empty">Couldn’t load rankings right now.</p>`;return}
+  renderRankings()}
+function renderRankings(){
+  document.querySelectorAll("#rankSheet [data-rg]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.rg===rankGender));
+  const rows=PUB.board.filter(x=>(x.gender||"Men")===rankGender);
+  const evs=EV_NAMES.filter(ev=>rows.some(x=>x.events&&x.events[ev]));const sel=document.getElementById("rankEvent");
+  const keep=evs.includes(sel.value)?sel.value:(evs.includes("400m")?"400m":evs[0]);
+  sel.innerHTML=evs.map(e=>`<option${e===keep?" selected":""}>${e}</option>`).join("");
+  const list=document.getElementById("rankList");
+  if(!evs.length){list.innerHTML=`<p class="empty">No verified times yet for ${rankGender==="Men"?"boys":"girls"}.</p>`;return}
+  const ev=keep;const ranked=rows.filter(x=>x.events[ev]).sort((a,b)=>better(ev,val(ev,a.events[ev].mark),val(ev,b.events[ev].mark))?-1:1);
+  list.innerHTML=ranked.map((x,i)=>`<div class="srow"><span class="rank ${i===0?"r1":"rn"}">${i+1}</span><div class="grow"><strong>${esc(x.name)}</strong>${x.id===PUB.id?' <span class="tag nat">YOU</span>':""}<div class="hint" style="margin:0">${esc([x.school,x.grad?"’"+String(x.grad).slice(-2):"",x.state].filter(Boolean).join(" · "))} · <span class="tag ver" style="font-size:11px">✓ Verified</span></div></div><span class="num">${esc(show(ev,x.events[ev].mark))}</span></div>`).join("")}
+document.getElementById("rankEvent").onchange=renderRankings;
+document.querySelectorAll("#rankSheet [data-rg]").forEach(b=>b.onclick=()=>{rankGender=b.dataset.rg;renderRankings()});
+["openRank","openRank2"].forEach(id=>document.getElementById(id).onclick=()=>{rankGender=(S&&S.gender)||"Men";openRankings()});
+async function openAdmin(){
+  if(!PUB.owner)return;openSheet("adminSheet");await refreshPublic();
+  const el=document.getElementById("adminList");const pend=PUB.subs.filter(x=>x.public&&x.status==="pending");
+  const done=PUB.subs.filter(x=>x.public&&x.status!=="pending");
+  const card=x=>`<div class="panel"><strong>${esc(x.name)}</strong> <span class="tag">${x.gender==="Women"?"Girls":"Boys"}</span>
+    <div class="hint" style="margin:0">${esc([x.school,x.grad?"Class of "+x.grad:"",x.state].filter(Boolean).join(" · "))}</div>
+    ${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">Open their results page ›</a>`:`<p class="hint" style="margin:4px 0">No results link given.</p>`}
+    <table class="sctable">${Object.entries(x.events||{}).map(([ev,v])=>`<tr><td>${esc(ev)}</td><td class="m">${esc(show(ev,v.mark))}</td><td class="c">${esc(v.meet||"")} ${esc(v.date||"")}</td></tr>`).join("")}</table>
+    ${x.status==="pending"?`<div class="btnrow"><button class="go" data-ok="${x.id}">Approve</button><button class="go alt" data-no="${x.id}">Reject</button></div>`
+      :`<p class="hint">${x.status==="approved"?"✓ Approved":"Rejected"}</p>${x.status==="approved"?`<button class="ghost" data-rm="${x.id}">Remove from rankings</button>`:""}`}</div>`;
+  el.innerHTML=(pend.length?pend.map(card).join(""):`<p class="empty">Nothing waiting for verification.</p>`)+(done.length?`<div class="lbl3">Reviewed</div>`+done.map(card).join(""):"");
+  el.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{const x=PUB.subs.find(y=>y.id===b.dataset.ok);
+    try{await PUB.db.doc("board/"+x.id).set({name:x.name,school:x.school,grad:x.grad,state:x.state,gender:x.gender,events:x.events,approvedAt:Date.now()});
+      await PUB.db.doc("subs/"+x.id).update({status:"approved",reason:""});toast("Approved")}catch(_){toast("Couldn’t approve. Try again.")}openAdmin()});
+  el.querySelectorAll("[data-no]").forEach(b=>b.onclick=async()=>{
+    try{await PUB.db.doc("subs/"+b.dataset.no).update({status:"rejected",reason:"Times didn’t match the results page"});await PUB.db.doc("board/"+b.dataset.no).delete().catch(()=>{});toast("Rejected")}catch(_){toast("Couldn’t reject. Try again.")}openAdmin()});
+  el.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc("board/"+b.dataset.rm).delete();await PUB.db.doc("subs/"+b.dataset.rm).update({status:"rejected",reason:"Removed by an admin"});toast("Removed")}catch(_){toast("Couldn’t remove. Try again.")}openAdmin()});
+}
+document.getElementById("openAdmin").onclick=openAdmin;
+document.getElementById("settingsBtn").addEventListener("click",()=>refreshPublic());
+
+function renderAll(){if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits()}
+
+if(!S){welcome.hidden=false;S=fresh();renderAll();S=null}else{if(!S.gender)S.gender="Men";if(!S.fav)S.fav=[];renderAll()}
+const h=location.hash.slice(1);if(["home","times","goals","colleges","card","meet"].includes(h))go(h);
+/* No times yet? Open the screen where you add them. */
+function autoRoute(){
+  if(!S||!document.getElementById("welcome").hidden||S.races.length)return;
+  go("times");
+  const m=document.getElementById("addMsg");m.textContent="Add your first race time, or paste your results below, to get started.";
+  document.getElementById("rMark").focus({preventScroll:true});
+}
+autoRoute();
+setSync("checking");initCloud();
+</script>
+<script type="module" src="lane4-firebase.js"></script>
+</body>
+</html>
