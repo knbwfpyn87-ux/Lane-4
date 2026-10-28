@@ -282,6 +282,49 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
 .authcard .small{background:none;border:0;color:#fff;text-decoration:underline;font:600 15px "Barlow",sans-serif;padding:10px 0;display:block;margin:4px auto 0}
 .agecheck{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:600}
 .agecheck input{width:20px;height:20px;accent-color:#fff}
+.tc-wrap{container-type:inline-size;max-width:380px;margin:0 auto;perspective:1400px}
+.tcard{position:relative;aspect-ratio:5/7;transition:transform .6s;transform-style:preserve-3d}
+.tcard.flipped{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){.tcard{transition:none}}
+.tface{position:absolute;inset:0;border-radius:4.5cqw;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35);font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+.tfront{background:linear-gradient(135deg,#8e1018,#C62832 40%,#e0454e 55%,#C62832 70%,#7a0e15)}
+.tback{transform:rotateY(180deg);background:#f4efe6;color:#141010}
+.tin{position:absolute;inset:3.5cqw;border-radius:3cqw;overflow:hidden;background:#141b2b}
+.tphoto{position:absolute;inset:0;background:radial-gradient(circle at 40% 30%,#3a4a6a,#141b2b 70%);background-size:cover}
+.tphoto img{width:100%;height:100%;object-fit:cover}
+.tlanes{position:absolute;inset:0;width:100%;height:100%}
+.tholo{position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.18) 42%,rgba(120,200,255,.18) 48%,rgba(255,120,220,.14) 54%,transparent 66%);mix-blend-mode:screen;background-size:250% 100%;animation:holo 6s ease-in-out infinite}
+@keyframes holo{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.tholo{animation:none}}
+.tlogo{position:absolute;left:3.5cqw;top:3.5cqw;width:12cqw;height:12cqw;border-radius:22%;box-shadow:0 0 0 .6cqw #fff}
+.tser{position:absolute;left:18cqw;top:6.4cqw;color:#fff;font-weight:800;font-size:3.6cqw;letter-spacing:.4cqw;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.tev{position:absolute;right:3.5cqw;top:4cqw;background:#fff;color:#C62832;font-weight:900;font-size:5.4cqw;padding:.4cqw 2.4cqw;border-radius:1.6cqw}
+.tname{position:absolute;right:0;top:17cqw;bottom:34cqw;width:20cqw;background:linear-gradient(180deg,#141010ee,#141010cc);clip-path:polygon(28% 0,100% 0,100% 100%,0 100%,0 6%);display:flex;align-items:center;justify-content:center}
+.tvn{writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;text-align:center;line-height:.9;max-height:100%;overflow:hidden;white-space:nowrap}
+.tvn .l{font-weight:900;font-size:var(--ls,13.5cqw);letter-spacing:.4cqw}
+.tvn .f{font-weight:800;font-size:5.2cqw;letter-spacing:.8cqw;color:#ff9aa1}
+.tbanner{position:absolute;left:-2cqw;right:-2cqw;bottom:20cqw;height:15cqw;background:linear-gradient(90deg,#141010,#2a1a1a);transform:skewY(-5deg);border-top:.7cqw solid #fff;border-bottom:.7cqw solid #fff}
+.tschool{position:absolute;left:4.5cqw;bottom:25cqw;color:#fff;font-weight:900;font-size:5.6cqw;transform:rotate(-5deg);transform-origin:left;white-space:nowrap;max-width:85cqw;overflow:hidden;text-overflow:ellipsis}
+.tsub{position:absolute;left:4.8cqw;bottom:20.4cqw;color:#ff9aa1;font-weight:800;font-size:3.6cqw;letter-spacing:.4cqw;transform:rotate(-5deg);transform-origin:left;white-space:nowrap}
+.tpr{position:absolute;left:0;right:0;bottom:0;height:20cqw;background:#fff;display:flex;align-items:center;padding:0 4cqw;gap:2.6cqw}
+.tpr .lb{color:#C62832;font-weight:900;font-size:4.8cqw;line-height:.9}
+.tpr .v{color:#141010;font-weight:900;font-size:12.5cqw;white-space:nowrap}
+.tseal{margin-left:auto;flex:none;color:#fff;background:linear-gradient(135deg,#1B8A5A,#2fc282,#1B8A5A);border-radius:50%;width:15cqw;height:15cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:2.8cqw;box-shadow:inset 0 0 0 .7cqw rgba(255,255,255,.6)}
+.tseal b{font-size:6cqw;line-height:1}
+.tseal.no{background:#eee;color:#6B5E5C;box-shadow:inset 0 0 0 .5cqw #d9cfc0}
+.tbh{background:#C62832;color:#fff;padding:3.5cqw 4.5cqw;display:flex;align-items:center;gap:2.6cqw}
+.tbh img{width:9.5cqw;height:9.5cqw;border-radius:22%;box-shadow:0 0 0 .4cqw #fff;flex:none}
+.tbh .n{font-weight:900;font-size:6.6cqw;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tbh .s{font-weight:800;font-size:3cqw;letter-spacing:.3cqw;opacity:.9}
+.tbh .num{margin-left:auto;font-weight:900;font-size:3.8cqw;background:#fff;color:#C62832;border-radius:1.2cqw;padding:.2cqw 1.6cqw;flex:none}
+.tstats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8cqw;margin:3cqw 4.5cqw 0}
+.tstats div{background:#fff;border:.4cqw solid #141010;border-radius:1.8cqw;text-align:center;padding:1.2cqw .4cqw}
+.tstats b{display:block;font-size:7cqw;font-weight:900;color:#C62832;line-height:1}.tstats span{font-size:2.7cqw;font-weight:800;letter-spacing:.2cqw}
+.ttab{width:calc(100% - 9cqw);margin:2.6cqw 4.5cqw 0;border-collapse:collapse;font-size:3.7cqw}
+.ttab th{background:#141010;color:#fff;font-weight:800;text-align:left;padding:1cqw 1.4cqw;font-size:3cqw}
+.ttab td{padding:1.2cqw 1.4cqw;border-bottom:.3cqw solid #d9cfc0;font-weight:800;white-space:nowrap}
+.ttab td.r{text-align:right}.ttab .ck{color:#1B8A5A;font-weight:900}
+.thl{margin:2.6cqw 4.5cqw 0;font-size:3.4cqw;font-weight:800}
+.tfoot{position:absolute;bottom:2.6cqw;left:4.5cqw;right:4.5cqw;font-weight:800;font-size:2.7cqw;color:#6B5E5C}
 </style>
 </head>
 <body>
@@ -478,8 +521,12 @@ nav.tabs button span{display:flex;height:24px;align-items:center}
     <section class="view" id="v-card">
       <h2>Athlete card</h2>
       
-      <div class="acard" id="acard"></div>
-      <button class="go alt" id="copyCard">Copy card as text</button>
+      <div class="tc-wrap"><div class="tcard" id="tcard" role="group" aria-label="Your athlete card"></div></div>
+      <div class="btnrow" style="margin-top:12px"><button class="go" id="flipCard">Flip card</button><label class="go alt filebtn" style="margin-top:14px">Card photo<input type="file" id="cardPhotoIn" accept="image/*" hidden></label></div>
+      <label for="cardPos" id="cardPosLbl" hidden>Move your photo up or down</label><input type="range" id="cardPos" min="0" max="100" value="30" hidden>
+      <p class="hint" style="text-align:center">Screenshot your card to post it. ✓ means an admin checked that time against official results.</p>
+      <details class="panel"><summary>Text version of your card</summary><div class="acard" id="acard"></div>
+      <button class="go alt" id="copyCard">Copy card as text</button></details>
       <p class="hint" style="text-align:center">Paste it into an email, a DM, or a recruiting questionnaire.</p>
       <details class="panel" id="profBox">
         <summary>Edit my info</summary>
@@ -1185,7 +1232,57 @@ function cardText(){const p=P(),lines=prLines();
   if(p.link)t+=`\n\nResults: ${p.link}`;
   const c=[p.email,p.phone].filter(Boolean).join(" · ");if(c)t+=`\nContact: ${c}`;
   return t}
-function renderCard(){const p=P(),lines=prLines(),el=document.getElementById("acard");
+/* ---------- trading card ---------- */
+function eventStrength(ev){const p=pr(ev);if(!p)return null;const pv=val(ev,p.mark);const ps=[];
+  SCHOOLS.forEach(sc=>{const st=schoolStd(sc,ev);if(!st)return;const q=spreadPos(ev,st,pv);if(q!=null)ps.push(q)});
+  if(!ps.length)return null;ps.sort((a,b)=>a-b);return ps[Math.floor(ps.length/2)]}
+function cardStats(){const evs=shownEvents().filter(ev=>pr(ev));let best=null,bestEv=evs[0]||null,reach=new Set(),gap=null,qual=false;
+  evs.forEach(ev=>{const pv=val(ev,pr(ev).mark);SCHOOLS.forEach(sc=>{const st=schoolStd(sc,ev);if(st&&st.some(m=>m&&!better(ev,val(ev,m),pv)))reach.add(sc.id)});
+    const m=eventStrength(ev);if(m!=null&&(best==null||m>best)){best=m;bestEv=ev}
+    natStd(ev).forEach(m2=>{const mv=val(ev,m2);if(!better(ev,mv,pv))qual=true;else{const d=Math.abs(pv-mv),rel=d/mv;if(gap==null||rel<gap.rel)gap={rel,d,ev}}})});
+  return{evs,bestEv,score:best==null?"—":Math.max(0,Math.min(150,Math.round(50+50*best))),reach:reach.size,nat:qual?"✓":gap?(EVENTS[gap.ev].field?`${+gap.d.toFixed(1)}″`:gap.d.toFixed(2)):"—",natLbl:qual?"NATIONALS":"TO NATIONALS"}}
+function isVerified(ev){let v;try{v=PUB.myVerified&&PUB.myVerified[ev]}catch(_){return false};const p=pr(ev);return!!(v&&p&&String(v.mark)===String(p.mark))}
+function renderTradingCard(){
+  const el=document.getElementById("tcard");if(!el||!S)return;const p=P(),c=cardStats(),ev=c.bestEv,best=ev?pr(ev):null;
+  const parts=(p.name||"Your Name").trim().split(/\s+/);const first=parts.length>1?parts.slice(0,-1).join(" "):"",last=parts[parts.length-1];
+  const ls=Math.max(7,Math.min(13.5,90/Math.max(4,last.length)));
+  const photo=p.cardPhoto||p.photo;const pos=p.cardPos??30;
+  const logo=document.querySelector(".brandh .logo")?document.querySelector("header.top .brandh .logo").outerHTML.replace('class="logo"','class="tlogo"'):"";
+  const yr=(()=>{const d=new Date();const y=d.getMonth()>=7?d.getFullYear():d.getFullYear()-1;return `${y}–${String(y+1).slice(-2)}`})();
+  const num="#"+String(Math.abs([...(p.name||"x")].reduce((a,ch)=>a*31+ch.charCodeAt(0)|0,7))%999+1).padStart(3,"0");
+  const grp=ev?PLANS[planType(ev)].label.toUpperCase():"";
+  const sub=[p.grad?"CLASS OF "+p.grad:"",grp].filter(Boolean).join(" · ");
+  const ver=ev&&isVerified(ev);
+  const rows=c.evs.map(e=>{const r=pr(e);return `<tr><td>${esc(e)}</td><td>${esc(show(e,r.mark))}</td><td>${esc((r.meet||"").slice(0,18))}</td><td class="r ${isVerified(e)?"ck":""}">${isVerified(e)?"✓":"—"}</td></tr>`}).slice(0,6).join("");
+  const acc=(p.acc||[]).slice(0,3).map(a=>`<div>★ ${esc(a)}</div>`).join("");
+  el.innerHTML=`<div class="tface tfront" aria-label="Card front"><div class="tin">
+    <div class="tphoto">${photo?`<img src="${photo}" alt="" style="object-position:50% ${pos}%">`:""}</div>
+    ${photo?"":`<svg class="tlanes" viewBox="0 0 100 140" preserveAspectRatio="none" aria-hidden="true"><g stroke="#fff" stroke-opacity=".12" stroke-width=".8" fill="none"><path d="M-30 140 L50 -60"/><path d="M10 140 L50 -60"/><path d="M50 140 L50 -60"/><path d="M90 140 L50 -60"/><path d="M130 140 L50 -60"/></g><text x="40" y="70" text-anchor="middle" font-size="5" fill="#9aa6bd" font-family="sans-serif">Tap “Card photo”</text></svg>`}
+    <div class="tholo"></div>${logo}
+    <div class="tser">LANE 4 · ${yr}</div>${ev?`<div class="tev">${esc(ev.toUpperCase())}</div>`:""}
+    <div class="tname"><div class="tvn"><div class="l" style="--ls:${ls}cqw">${esc(last.toUpperCase())}</div>${first?`<div class="f">${esc(first.toUpperCase())}</div>`:""}</div></div>
+    <div class="tbanner"></div><div class="tschool">${esc([(p.school||"YOUR SCHOOL").toUpperCase(),p.state?p.state.toUpperCase():""].filter(Boolean).join(" · "))}</div><div class="tsub">${esc(sub)}</div>
+    <div class="tpr"><div class="lb">PERSONAL<br>BEST</div><div class="v">${best?esc(show(ev,best.mark)):"—"}</div>
+      <div class="tseal ${ver?"":"no"}">${ver?"<b>✓</b>VERIFIED":"<b>·</b>NOT YET<br>VERIFIED"}</div></div></div></div>
+  <div class="tface tback" aria-label="Card back">
+    <div class="tbh">${logo.replace('class="tlogo"','')}<div style="min-width:0"><div class="n">${esc((p.name||"Your Name").toUpperCase())}</div><div class="s">${esc([p.school,p.state,p.grad?"CLASS OF "+p.grad:""].filter(Boolean).join(" · ").toUpperCase())}</div></div><div class="num">${num}</div></div>
+    <div class="tstats"><div><b>${c.score}</b><span>LANE 4 SCORE</span></div><div><b>${c.reach||"—"}</b><span>COLLEGES</span></div><div><b>${c.nat}</b><span>${c.natLbl}</span></div></div>
+    <table class="ttab"><tr><th>EVENT</th><th>PR</th><th>MEET</th><th style="text-align:right">✓</th></tr>${rows||`<tr><td colspan="4">Add PRs to fill this in</td></tr>`}</table>
+    <div class="thl">${acc}</div>
+    <div class="tfoot">✓ = checked by a Lane 4 admin against official results</div></div>`;
+  const pl=document.getElementById("cardPos"),plb=document.getElementById("cardPosLbl");pl.hidden=plb.hidden=!photo;pl.value=pos;
+}
+document.getElementById("flipCard").onclick=()=>document.getElementById("tcard").classList.toggle("flipped");
+document.getElementById("cardPos").oninput=e=>{P().cardPos=+e.target.value;const im=document.querySelector(".tphoto img");if(im)im.style.objectPosition=`50% ${e.target.value}%`};
+document.getElementById("cardPos").onchange=()=>save();
+document.getElementById("cardPhotoIn").onchange=e=>{const f=e.target.files[0];if(!f)return;
+  if(!f.type.startsWith("image/")){toast("Pick a photo");return}
+  const img=new Image(),url=URL.createObjectURL(f);
+  img.onload=()=>{const W=600,H=840,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+    const r=Math.max(W/img.width,H/img.height),w=img.width*r,h=img.height*r;x.drawImage(img,(W-w)/2,(H-h)/2,w,h);
+    URL.revokeObjectURL(url);P().cardPhoto=c.toDataURL("image/jpeg",0.8);P().cardPos=50;save();renderTradingCard();toast("Card photo updated")};
+  img.onerror=()=>{URL.revokeObjectURL(url);toast("Couldn’t read that photo")};img.src=url;e.target.value=""};
+function renderCard(){renderTradingCard();const p=P(),lines=prLines(),el=document.getElementById("acard");
   document.getElementById("profBox").open=!p.name;
   const goals=Object.entries(S.goals);
   el.innerHTML=`<div class="top">${p.photo?`<img class="cphoto" src="${p.photo}" alt="">`:""}<div class="nm">${esc(p.name||"Your name")}</div>${p.username?`<div class="sub">@${esc(p.username)}</div>`:""}<div class="sub">${p.grad?"Class of "+esc(p.grad):"Class of —"} · ${esc(p.school||"High school")}${p.state?", "+esc(p.state):""}</div></div>
