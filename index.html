@@ -375,6 +375,30 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
 .empty-art [fill="#EADFDD"]{fill:var(--line)}.empty-art [stroke="#EADFDD"]{stroke:var(--line)}
 .empty-art [fill="#FAF8F6"]{fill:var(--surface)}.empty-art [stroke="#141010"]{stroke:var(--ink)}
 :root[data-theme="dark"] .empty-art{opacity:1}
+/* progress chart */
+.tag.pro{background:var(--track);color:#fff;font:700 12px "Barlow",sans-serif;vertical-align:middle;margin-left:4px}
+#projChart{margin-top:12px}
+#projChart svg{display:block;width:100%;height:auto;overflow:visible}
+.pc-grid{stroke:var(--line);stroke-width:1}
+.pc-std{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4}
+.pc-goal{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:6 4}
+.pc-line{fill:none;stroke:var(--track);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.pc-fill{fill:var(--track);opacity:.08}
+.pc-trend{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:5 5}
+.pc-dot{fill:var(--track);stroke:var(--surface);stroke-width:2}
+.pc-proj{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+.pc-lbl{fill:var(--muted);font:600 10px "Barlow",sans-serif;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.pc-badge{fill:var(--soft);stroke:var(--muted);stroke-width:1}
+.pc-badge.g{fill:var(--ink);stroke:var(--ink)}
+.pc-bn{fill:var(--ink);font:700 10px "Barlow",sans-serif}
+.pc-badge.g+.pc-bn{fill:var(--surface)}
+.pc-key{list-style:none;margin:10px 0 0;padding:0;font-size:14px}
+.pc-key li{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--line)}
+.pc-key li:first-child{border-top:0}
+.pc-n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--soft);border:1px solid var(--muted);font:700 11px/18px "Barlow",sans-serif;text-align:center}
+.pc-n.g{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.pc-kn{flex:1;min-width:0;overflow-wrap:anywhere}
+.pc-key b{flex:none;font:700 16px "Barlow Condensed",sans-serif}
 .tc-wrap{container-type:inline-size;max-width:380px;margin:0 auto;perspective:1400px}
 .tcard{position:relative;aspect-ratio:5/7;transition:transform .6s;transform-style:preserve-3d}
 .tcard.flipped{transform:rotateY(180deg)}
@@ -515,7 +539,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
       <h2 style="margin-top:22px">Latest races</h2>
       <div class="panel" id="recentRaces"></div>
       <button class="panel teaser" id="openRank"><span class="tz">Rankings</span><strong>See verified times from other Lane 4 athletes</strong><span class="hint" style="margin:0">Open rankings ›</span></button>
-      <button class="panel teaser" id="openComing"><span class="tz">Coming soon</span><strong>iCloud sync, Apple Health and Strava, race-day reminders, and Lane 4 Pro</strong><span class="hint" style="margin:0">See what’s coming ›</span></button>
+      <button class="panel teaser" id="openComing"><span class="tz">Coming soon</span><strong>iCloud sync, Apple Health and Strava, more colleges, and Recruiting Mode</strong><span class="hint" style="margin:0">See what’s coming ›</span></button>
       
       
       
@@ -586,6 +610,12 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
         <div id="goalChips"></div>
         <p class="hint">Times like 50.9 or 1:59.0. Jumps and throws in feet-inches, like 20-7. Or tap any college standard below to make it your goal.</p>
       </div>
+      <h2>Progress projections <span class="tag pro">Pro</span></h2>
+      <div class="panel" id="projBox">
+        <label for="projEvent" id="projLbl">Event</label><select id="projEvent"></select>
+        <div id="projChart"></div>
+        <p class="hint" id="projNote" role="status"></p>
+      </div>
       <h2>Nationals standards</h2>
       <div class="panel" id="natList"></div>
       <h2>My colleges</h2>
@@ -615,6 +645,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
       
       <div class="tc-wrap"><div class="tcard" id="tcard" role="group" aria-label="Your athlete card"></div></div>
       <div class="btnrow" style="margin-top:12px"><button class="go" id="flipCard">Flip card</button><label class="go alt filebtn" style="margin-top:14px">Card photo<input type="file" id="cardPhotoIn" accept="image/*" hidden></label></div>
+      <button class="go alt" id="shareCard">Share my card</button>
       <label for="cardPos" id="cardPosLbl" hidden>Move your photo up or down</label><input type="range" id="cardPos" min="0" max="100" value="30" hidden>
       <p class="hint" style="text-align:center">Screenshot your card to post it. ✓ means an admin checked that time against official results.</p>
       <details class="panel"><summary>Text version of your card</summary><div class="acard" id="acard"></div>
@@ -668,6 +699,8 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
           <div><label for="mTime">Estimated start</label><input type="time" id="mTime"></div>
         </div>
         <button class="go" id="buildPlan">Build my race-day plan</button>
+        <label class="check toggle" style="margin-top:12px"><span>Remind me at each step</span><input type="checkbox" class="switch" id="remindOn" role="switch"></label>
+        <p class="hint" id="remindMsg" role="status" style="margin:0"></p>
       </div>
       <div class="panel"><h3>Your timeline</h3><ul class="tl" id="tl"><li class="empty" style="padding-left:0">Your plan shows up here.</li></ul></div>
       <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><h3 style="margin:0">Bag check</h3><button class="ghost" id="resetBag">Reset</button></div><div id="bag"></div></div>
@@ -730,15 +763,13 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
   <div class="panel coming">
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18z"/></svg></span><div><strong>iCloud sync</strong><p>Your data saves to your own iCloud and follows you to every Apple device. No sign-up needed.</p></div></div>
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg></span><div><strong>Apple Health and Strava</strong><p>Runs from Strava, Garmin, and Apple Watch come in automatically through Apple Health.</p></div></div>
-    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><div><strong>Race-day reminders</strong><p>Your phone tells you when to eat, warm up, and check in, based on your event time.</p></div></div>
-    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg></span><div><strong>Share your athlete card</strong><p>Send your card or a coach email straight from your phone’s share menu or Mail.</p></div></div>
+    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><div><strong>Reminders with the app closed</strong><p>Race-day reminders work now while Lane 4 is open. The iPhone app will remind you even when it’s closed.</p></div></div>
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></svg></span><div><strong>Nike and adidas Nationals, plus state standards</strong><p>See how close you are to Nike and adidas Nationals and your state meet, next to New Balance.</p></div></div>
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg></span><div><strong>More colleges</strong><p>More conferences across D1, D2, and D3 beyond the 148 schools in this demo.</p></div></div>
   </div>
-  <h3>Lane 4 Pro</h3>
+  <h3>Coming soon to Lane 4 Pro</h3>
   <div class="panel coming">
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><div><strong>Recruiting Mode</strong><p>Track every school from first email to visit to offer, with follow-up reminders and a recruiting timeline.</p></div></div>
-    <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><div><strong>Progress Projections</strong><p>Charts of every event with college standards drawn in, and where your trend is heading. Pure math from your own times.</p></div></div>
   </div>
   <p class="hint" style="text-align:center">Lane 4 will never use AI coaching. Your coach is your coach.</p>
 </div></div>
@@ -1161,7 +1192,56 @@ function tiersHTML(sc,ev){
     return `<button class="tier ${cls}" data-ev="${ev}" data-m="${m}" aria-label="Set ${esc(sc.name)} ${LEVELS[i]} ${show(ev,m)} as my ${ev} goal"><span class="k">${LEVELS[i]}</span><span class="m">${esc(show(ev,m))}</span><span class="g">${g||"&nbsp;"}</span></button>`}).join("")}</div>`;
 }
 function bindTiers(el){el.querySelectorAll("button.tier").forEach(b=>b.onclick=()=>{S.goals[b.dataset.ev]=b.dataset.m;save();renderAll();gEvent.value=b.dataset.ev;fillGoal();toast(`Goal set: ${b.dataset.ev} ${show(b.dataset.ev,b.dataset.m)}`)})}
+/* ---------- progress projections: a straight line through your own times. Math only, no AI. ---------- */
+const DAY=864e5;
+function fmtVal(ev,v){if(EVENTS[ev].field){const ft=Math.floor(v/12);return `${ft}′ ${+(v-ft*12).toFixed(1)}″`}
+  return v<60?v.toFixed(2):`${Math.floor(v/60)}:${(v%60).toFixed(2).padStart(5,"0")}`}
+function fmtDay(t){return new Date(t).toLocaleDateString([],{month:"short",day:"numeric"})}
+function renderProjections(){
+  const sel=document.getElementById("projEvent"),box=document.getElementById("projChart"),note=document.getElementById("projNote");
+  const evs=EV_NAMES.filter(e=>S.races.some(r=>r.event===e&&r.date));
+  sel.hidden=document.getElementById("projLbl").hidden=!evs.length;
+  if(!evs.length){box.innerHTML="";note.textContent="Add race times with dates and your progress chart shows up here.";return}
+  const ev=evs.includes(sel.value)?sel.value:evs[0],E=EVENTS[ev];
+  sel.innerHTML=evs.map(e=>`<option${e===ev?" selected":""}>${e}</option>`).join("");
+  const pts=S.races.filter(r=>r.event===ev).map(r=>({t:Date.parse(r.date),v:val(ev,r.mark)})).filter(p=>!isNaN(p.t)&&!isNaN(p.v)).sort((a,b)=>a.t-b.t);
+  let trend=null;
+  if(pts.length>=3&&new Set(pts.map(p=>p.t)).size>=2){const n=pts.length,mx=pts.reduce((s,p)=>s+p.t,0)/n,my=pts.reduce((s,p)=>s+p.v,0)/n;
+    let sxy=0,sxx=0;pts.forEach(p=>{sxy+=(p.t-mx)*(p.v-my);sxx+=(p.t-mx)**2});const b=sxy/sxx;trend={a:my-b*mx,b}}
+  const last=pts[pts.length-1].t,end=trend?last+60*DAY:last,at=t=>trend.a+trend.b*t;
+  /* standards to draw: your goal, New Balance Nationals, and the easiest Target among your starred colleges */
+  const lines=[];
+  if(S.goals[ev]){const g=val(ev,S.goals[ev]);if(!isNaN(g))lines.push({v:g,l:"Goal",goal:true})}
+  NATS.forEach(n=>{const m=n[S.gender==="Women"?"Women":"Men"][ev];if(m)lines.push({v:val(ev,m),l:n.short})});
+  const tg=SCHOOLS.filter(x=>S.fav.includes(x.id)).map(sc=>{const st=schoolStd(sc,ev);return st&&st[0]?{v:val(ev,st[0]),l:"Target · "+sc.name}:null}).filter(x=>x&&!isNaN(x.v));
+  if(tg.length)lines.push(tg.reduce((a,b)=>better(ev,a.v,b.v)?b:a));
+  const vs=pts.map(p=>p.v).concat(lines.map(l=>l.v));if(trend)vs.push(at(end));
+  let lo=Math.min(...vs),hi=Math.max(...vs);const pad=(hi-lo)*.1||Math.abs(hi)*.02||1;lo-=pad;hi+=pad;
+  const t0=pts[0].t,t1=Math.max(end,t0+DAY),W=320,H=210,L=30,R=8,T=12,B=22;
+  const x=t=>L+(t-t0)/(t1-t0)*(W-L-R),y=v=>{const f=(v-lo)/(hi-lo);return T+(E.field?1-f:f)*(H-T-B)};
+  /* each standard gets a numbered badge in the left gutter (key below the chart), nudged apart so badges never overlap */
+  const lab=lines.map(l=>({...l,y:y(l.v)})).sort((a,b)=>a.y-b.y);lab.forEach((l,i)=>{l.n=i+1;l.ty=Math.max(l.y,i?lab[i-1].ty+16:8)});
+  const path=pts.map((p,i)=>`${i?"L":"M"}${x(p.t).toFixed(1)} ${y(p.v).toFixed(1)}`).join(" ");
+  const pass=trend?lines.filter(l=>!better(ev,l.v,at(end))&&better(ev,l.v,pts.reduce((b,p)=>better(ev,p.v,b)?p.v:b,pts[0].v))):[];
+  box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(ev)} times from ${fmtDay(t0)} to ${fmtDay(last)}${trend?", trend to "+fmtDay(end):""}">
+    <line class="pc-grid" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/>
+    ${lab.map(l=>`<line class="${l.goal?"pc-goal":"pc-std"}" x1="${L}" x2="${W-R}" y1="${l.y.toFixed(1)}" y2="${l.y.toFixed(1)}"/>${Math.abs(l.ty-l.y)>1?`<line class="pc-std" x1="18" x2="${L}" y1="${l.ty.toFixed(1)}" y2="${l.y.toFixed(1)}"/>`:""}<circle class="pc-badge${l.goal?" g":""}" cx="11" cy="${l.ty.toFixed(1)}" r="7.5"/><text class="pc-bn" x="11" y="${(l.ty+3.5).toFixed(1)}" text-anchor="middle">${l.n}</text>`).join("")}
+    ${trend?`<line class="pc-trend" x1="${x(t0).toFixed(1)}" y1="${y(at(t0)).toFixed(1)}" x2="${x(end).toFixed(1)}" y2="${y(at(end)).toFixed(1)}"/>`:""}
+    <path class="pc-line" d="${path}"/>
+    ${pts.map(p=>`<circle class="pc-dot" cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="4"><title>${fmtDay(p.t)}: ${esc(fmtVal(ev,p.v))}</title></circle>`).join("")}
+    ${trend?`<circle class="pc-proj" cx="${x(end).toFixed(1)}" cy="${y(at(end)).toFixed(1)}" r="5"/>`:""}
+    <text class="pc-lbl" x="${L}" y="${H-6}">${fmtDay(t0)}</text>
+    <text class="pc-lbl" x="${W-R}" y="${H-6}" text-anchor="end">${fmtDay(t1)}${trend?" (trend)":""}</text></svg>
+    ${lab.length?`<ul class="pc-key">${lab.map(l=>`<li><span class="pc-n${l.goal?" g":""}">${l.n}</span><span class="pc-kn">${esc(l.l)}</span><b>${esc(fmtVal(ev,l.v))}</b></li>`).join("")}</ul>`:""}`;
+  if(!trend){note.textContent=`Add ${Math.max(1,3-pts.length)} more ${ev} race${3-pts.length===1?"":"s"} on different days to see where your trend is heading.`;return}
+  const month=Math.abs(trend.b*30*DAY),up=better(ev,at(last+DAY),at(last));
+  note.textContent=`Trend: ${up?"getting better":"getting slower"} by about ${E.field?month.toFixed(1)+" in":month.toFixed(2)+"s"} a month. If it holds: about ${fmtVal(ev,at(end))} by ${fmtDay(end)}.`
+    +(pass.length?` That would reach ${pass.map(l=>l.goal?"your goal":l.l.replace("Target · ","the Target for ")).join(" and ")}.`:"")
+    +" It’s a straight line through your own times, so treat it as a rough guide.";
+}
+document.getElementById("projEvent").onchange=()=>renderProjections();
 function renderGoals(){
+  renderProjections();
   document.querySelectorAll(".segIn button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.gen===S.gender));
   const el=document.getElementById("goalList");
   const favs=SCHOOLS.filter(x=>S.fav.includes(x.id));
@@ -1265,11 +1345,12 @@ function bagList(){return BAG_BASE.concat(BAG_EXTRA[planType(S&&S.meet?S.meet.ev
 document.getElementById("buildPlan").onclick=()=>{
   const t=mTime.value;if(!t){mTime.focus();return}
   const[h,m]=t.split(":").map(Number);const d=new Date();d.setHours(h,m,0,0);
-  S.meet={event:mEvent.value,start:d.getTime()};save();renderMeet();
+  S.meet={event:mEvent.value,start:d.getTime(),remind:!!(S.meet&&S.meet.remind)};save();renderMeet();
 };
 mEvent.addEventListener("change",()=>{if(S&&S.meet){S.meet.event=mEvent.value;save();renderMeet()}renderBag()});
 function hhmm(ms){return new Date(ms).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
 function renderMeet(){
+  remindStatus();
   const tl=document.getElementById("tl");
   if(!S||!S.meet){tl.innerHTML=`<li class="empty" style="padding-left:0">Your plan shows up here.</li>`;document.getElementById("bEvent").textContent="Set your event time below";bClock.textContent="--:--:--";bNext.innerHTML="&nbsp;";return}
   mEvent.value=S.meet.event;
@@ -1282,6 +1363,7 @@ function renderMeet(){
 function tick(){
   if(!S||!S.meet)return;
   const now=Date.now(),diff=S.meet.start-now;
+  remindCheck(now);
   document.getElementById("bEvent").textContent=`${S.meet.event} · starts ${hhmm(S.meet.start)}`;
   if(diff<=0){bClock.textContent="RACE";bNext.textContent="Good luck. Add your time in the Times tab after.";return}
   const s=Math.floor(diff/1000);bClock.textContent=[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,"0")).join(":");
@@ -1289,6 +1371,22 @@ function tick(){
   if(nx){const mins=Math.ceil((S.meet.start+nx[0]*60000-now)/60000);bNext.textContent=`Next: ${nx[1]} in ${mins} min`}
 }
 setInterval(tick,1000);setInterval(()=>{if(S&&S.meet)renderMeet()},30000);
+/* reminders: fire while Lane 4 is open. A website can't wake a phone later; that needs the iPhone app. */
+const FIRED=new Set();
+function remindCheck(now){if(!S||!S.meet||!S.meet.remind)return;
+  plan().forEach(p=>{const at=S.meet.start+p[0]*60000,k=S.meet.start+":"+p[0];
+    if(at<=now&&now-at<60000&&!FIRED.has(k)){FIRED.add(k);remind(p[1],p[2])}})}
+function remind(title,body){toast(title);try{if(navigator.vibrate)navigator.vibrate([200,100,200])}catch(e){}
+  try{if("Notification"in window&&Notification.permission==="granted")new Notification("Lane 4: "+title,{body,icon:"lane4-icon-512.png",tag:"lane4-meet"})}catch(e){}}
+function remindStatus(){const on=!!(S&&S.meet&&S.meet.remind),el=document.getElementById("remindOn");el.checked=on;
+  const notif="Notification"in window&&Notification.permission==="granted";
+  document.getElementById("remindMsg").textContent=!on?"Keep Lane 4 open on race day and it reminds you at each step of your plan."
+    :notif?"On. Keep Lane 4 open: you’ll get a notification at each step.":"On. Keep Lane 4 open and on screen: each step pops up at the bottom of the page."}
+document.getElementById("remindOn").onchange=async e=>{
+  if(!S.meet){e.target.checked=false;toast("Build your race-day plan first");return}
+  S.meet.remind=e.target.checked;save();
+  if(e.target.checked&&"Notification"in window&&Notification.permission==="default"){try{await Notification.requestPermission()}catch(_){}}
+  remindStatus()};
 function renderBag(){
   const b=document.getElementById("bag");
   b.innerHTML=bagList().map((x,i)=>`<label class="check"><input type="checkbox" data-i="${i}" ${S.bag[i]?"checked":""}> ${x}</label>`).join("");
@@ -1388,6 +1486,10 @@ function renderCard(){renderTradingCard();const p=P(),lines=prLines(),el=documen
 }
 async function copyText(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg)}catch(e){const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();toast(ok?msg:"Couldn’t copy. Press and hold the text to copy it.")}}
 document.getElementById("copyCard").onclick=()=>copyText(cardText(),"Card copied");
+/* share: the phone's own share menu (Messages, Mail, Instagram...), or copy where there isn't one */
+document.getElementById("shareCard").onclick=async()=>{const t=cardText();
+  if(navigator.share){try{await navigator.share({title:"My Lane 4 athlete card",text:t})}catch(e){if(e&&e.name!=="AbortError")copyText(t,"Card copied. Paste it anywhere to share.")}}
+  else copyText(t,"Card copied. Paste it anywhere to share.")};
 function academics(p){return[p.gpa?`${p.gpa} GPA`:"",p.test||"",p.major?`interested in ${p.major}`:""].filter(Boolean).join(", ")}
 function primaryEvents(){const e=prLines().map(l=>l.ev);return e.length?e.slice(0,3).join("/"):BL}
 function coachEmail(sc){const p=P(),lines=prLines(),name=p.name||BL;
