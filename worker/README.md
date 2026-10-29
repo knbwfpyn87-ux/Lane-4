@@ -11,7 +11,8 @@ What it does
 - Workout tweaks: "Adjust for me" in the workout planner asks a small AI model (Cloudflare Workers AI, free
   daily allowance) to nudge a premade workout based on your recent log. Changes are capped at 1 rep per set,
   3% effort, and 30s rest. Past the free daily limit, requests simply fail and Lane 4 falls back to its own rules.
-  Nothing is billed on the free plan.
+  Nothing is billed on the free plan. This is turned off in the app for now (`AI_TWEAKS=false` in index.html),
+  so the planner uses Lane 4's fixed rules even with the Worker set up.
 
 Without this Worker, Lane 4 still works: the Strava box stays hidden, and reminders pop up only while
 Lane 4 is open (or through "Add my plan to my calendar").

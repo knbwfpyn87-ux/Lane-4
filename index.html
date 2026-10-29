@@ -615,6 +615,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">This week</h3><button class="ghost" id="planAdd">+ Add workout</button></div>
         <p class="hint" id="planLoad"></p>
         <div id="planDays"></div>
+        <button class="go alt" id="planFill">Fill my week with a sample plan</button>
+        <p class="hint" id="planFillNote" style="margin:6px 0 0">Adds a premade week for your event to the empty days from today on. Move things around your meets and your coach’s plan.</p>
       </div>
       <details class="panel" id="logBox">
         <summary>Log a workout</summary>
@@ -821,7 +823,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   <div class="panel coming">
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><div><strong>Recruiting Mode</strong><p>Track every school from first email to visit to offer, with follow-up reminders and a recruiting timeline.</p></div></div>
   </div>
-  <p class="hint" style="text-align:center">Lane 4’s AI only makes small, capped tweaks to premade workouts. Your coach’s plan always comes first.</p>
+  <p class="hint" style="text-align:center">Lane 4 doesn’t use AI coaching. Workouts adjust with simple, visible rules, and your coach’s plan always comes first.</p>
 </div></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
@@ -839,6 +841,8 @@ const EMPTY_RACES=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150"
 /* Lane 4 Worker on Cloudflare (Strava sync, push reminders). Paste its URL here after following worker/README.md,
    like "https://lane4.yourname.workers.dev". It's an address, not a secret. Empty = those features stay hidden. */
 const LANE4_WORKER="";
+/* AI workout tweaks are off for now: "Adjust for me" uses Lane 4's fixed rules only. Set true to use the Worker's capped AI tweaks. */
+const AI_TWEAKS=false;
 const KEY="lane4-data",SCHEMA=5,OLD_KEYS=["lane4-demo-v4","lane4-demo-v3","lane4-demo-v2","lane4-demo-v1"];
 function migrate(d){
   if(!d||typeof d!=="object")return null;
@@ -1298,7 +1302,7 @@ function ruleAdjust(w){const L=trainingLoad(),sets=w.parts.map(()=>0),main=w.par
   else if(canReps&&L.feel!=null&&L.feel>=4&&L.avg>=1&&L.n7<L.avg*0.8){sets[main]=1;why=`You’re feeling good (${L.feel.toFixed(1)}/5) and this week is lighter than usual, so there’s one extra rep.`}
   else why=L.n7||L.avg?"Your recent training looks normal, so this stays as written.":"Log a few workouts and Lane 4 will start fitting this to you.";
   return clampAdj(w,{sets,pct,rest,why,by:"rules"})}
-async function aiAdjust(w){if(!LANE4_WORKER)return null;const L=trainingLoad(),ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
+async function aiAdjust(w){if(!AI_TWEAKS||!LANE4_WORKER)return null;const L=trainingLoad(),ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
   try{const r=await fetch(LANE4_WORKER+"/ai/adjust",{method:"POST",signal:ctl.signal,headers:{"Content-Type":"application/json"},body:JSON.stringify({
       workout:{name:w.name,type:w.type,parts:w.parts.map(p=>({reps:p.n,meters:p.d,effortPct:p.pct,racePace:p.pace?PACE_NAME[p.pace]:null,restSec:p.rest,what:p.what||null}))},
       athlete:{eventGroup:myGroup(),workoutsLast7Days:L.n7,usualWorkoutsPerWeek:+L.avg.toFixed(1),milesLast7Days:+L.mi.toFixed(1),recentFeelOutOf5:L.feel==null?null:+L.feel.toFixed(1),
@@ -1312,7 +1316,17 @@ function renderPlanner(){if(!S)return;if(!S.wplan)S.wplan=[];const days=weekDays
   document.getElementById("planDays").innerHTML=days.map(d=>{const iso=isoDay(d),items=S.wplan.map((p,i)=>({...p,i})).filter(p=>p.date===iso);
     return `<div class="pday${iso===td?" today":""}"><div class="dl">${d.toLocaleDateString([],{weekday:"short"})}<small>${d.getDate()}</small></div><div class="items">${items.length?items.map(p=>{const w=WK.find(x=>x.id===p.id);
       return w?`<button class="pitem${p.done?" done":""}" data-pi="${p.i}"><span class="nm">${esc(w.name)}</span>${p.adj&&p.adj.by==="ai"?'<span class="tag ai">AI</span>':""}${p.done?'<span class="ck" aria-label="done">✓</span>':""}</button>`:""}).join(""):`<span class="prest">—</span>`}</div></div>`}).join("");
-  document.querySelectorAll("#planDays [data-pi]").forEach(b=>b.onclick=()=>openWk({planned:+b.dataset.pi}))}
+  document.querySelectorAll("#planDays [data-pi]").forEach(b=>b.onclick=()=>openWk({planned:+b.dataset.pi}));
+  const empty=days.filter(d=>isoDay(d)>=td&&!S.wplan.some(p=>p.date===isoDay(d))).length;
+  document.getElementById("planFill").hidden=document.getElementById("planFillNote").hidden=!empty}
+/* premade sample weeks, Monday to Sunday, one per event group. Fixed plans, not AI. */
+const WEEKS={sprint:["accel","t200","fly","t100","plyos","lift","recovery"],long:["s150","t200","se300","t100","accel","lift","recovery"],
+  hurdles:["hstart","t200","hrhythm","t100","accel","plyos","recovery"],mid:["p800","easy","pmile","easy","strides","fartlek","recovery"],
+  distance:["easy","pmile","easy","tempo","strides","long","recovery"],jump:["accel","t200","shortj","t100","approach","plyos","recovery"],
+  vault:["fly","t100","approach","lift","plyos","core","recovery"],throw:["throws","medball","lift","t100","throws","core","recovery"]};
+document.getElementById("planFill").onclick=()=>{const plan=WEEKS[myGroup()]||WEEKS.sprint;let n=0;
+  weekDays().forEach((d,i)=>{const iso=isoDay(d);if(iso>=today()&&!S.wplan.some(p=>p.date===iso)){S.wplan.push({id:plan[i],date:iso,adj:null,done:false});n++}});
+  save();renderAll();toast(n?`Added ${n} workout${n===1?"":"s"}. Tap one to adjust or remove it.`:"Your week is already full")};
 let wkFilter="mine";
 function openWk(o){openSheet("wkSheet");if(o&&(o.id||o.planned!=null))wkDetail(o);else wkList()}
 function wkList(){document.getElementById("wkTitle").textContent="Workouts";const g=myGroup(),body=document.getElementById("wkBody");
@@ -1329,7 +1343,7 @@ function wkDetail(o){const P=o.planned!=null?S.wplan[o.planned]:null,w=WK.find(x
     <div class="panel" style="margin-top:10px">${shown.parts.map((p,i)=>partHTML(p,w.parts[i])).join("")}<p class="hint" style="margin-top:8px">${esc(w.cue)}</p></div>
     ${adj?`<div class="adjnote"><span class="tag ${adj.by==="ai"?"ai":""}">${adj.by==="ai"?"AI tweak":"Adjusted by rules"}</span> ${esc(adj.why)}</div>`:""}
     ${P&&P.done?"":`<button class="go alt" id="wkAdj">${adj?"Adjust again":"Adjust for me"}</button>
-    <p class="hint">${LANE4_WORKER?"Sends this workout and a short summary of your recent log (no name) to Lane 4’s AI. ":"Uses your recent log: how much you’ve trained and how it felt. "}Changes are capped at 1 rep per set, 3% effort, and 30s rest.</p>`}
+    <p class="hint">${AI_TWEAKS&&LANE4_WORKER?"Sends this workout and a short summary of your recent log (no name) to Lane 4’s AI. ":"Uses your recent log: how much you’ve trained and how it felt. "}Changes are capped at 1 rep per set, 3% effort, and 30s rest.</p>`}
     ${P?(P.done?`<button class="go alt" id="wkUndo">Mark not done</button>`
       :`<label for="wkFeel">How it felt: <span id="wkFeelV">3</span>/5</label><input type="range" id="wkFeel" min="1" max="5" value="3"><button class="go" id="wkDone">Mark done</button>`)
       +`<button class="ghost" id="wkRemove" style="margin-top:12px;width:100%;padding:8px">Remove from my week</button>`
