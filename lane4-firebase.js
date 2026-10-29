@@ -37,6 +37,11 @@ function start({ initializeApp, getAuth, onAuthStateChanged, createUserWithEmail
   const auth = getAuth(app);
   const fs = getFirestore(app);
 
+  // Admin feature switches (config/features), readable by everyone. Offline, the app keeps the last ones it saw.
+  getDoc(doc(fs, "config/features"))
+    .then(s => { if (window.lane4Flags) window.lane4Flags(s.exists() ? (s.data().flags || {}) : {}); })
+    .catch(() => {});
+
   const D = p => {
     const ref = doc(fs, p);
     return {

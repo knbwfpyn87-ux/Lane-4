@@ -59,5 +59,10 @@ service cloud.firestore {
       allow read: if isMe(uid);
       allow write: if false;
     }
+    // Feature switches: anyone can read them, only admins can change them.
+    match /config/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }

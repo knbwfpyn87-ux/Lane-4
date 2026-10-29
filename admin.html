@@ -63,6 +63,15 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
 a,.msg{color:var(--accent)}
 @media (max-width:380px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 img.proof{display:block;width:100%;max-height:520px;object-fit:contain;border-radius:12px;background:var(--soft);margin:8px 0}
+.feat{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-weight:600;margin:0;color:var(--ink);font-size:16px}
+.feat:first-of-type{border-top:0}
+.feat span{min-width:0;overflow-wrap:anywhere}
+.feat small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.feat input{appearance:none;-webkit-appearance:none;flex:none;width:50px;height:30px;padding:0;border-radius:15px;background:var(--line);border:0;position:relative;cursor:pointer;transition:background .2s}
+.feat input::before{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.feat input:checked{background:var(--good)}
+.feat input:checked::before{transform:translateX(20px)}
+@media (prefers-reduced-motion:reduce){.feat input,.feat input::before{transition:none}}
 </style>
 </head>
 <body>
@@ -90,7 +99,7 @@ img.proof{display:block;width:100%;max-height:520px;object-fit:contain;border-ra
     <div class="tabs" role="group" aria-label="Show">
       <button data-t="pending" aria-pressed="true">Waiting</button><button data-t="approved" aria-pressed="false">Approved</button>
       <button data-t="rejected" aria-pressed="false">Rejected</button><button data-t="board" aria-pressed="false">Rankings board</button>
-      <button data-t="teams" aria-pressed="false">Teams</button>
+      <button data-t="teams" aria-pressed="false">Teams</button><button data-t="features" aria-pressed="false">Features</button>
     </div>
     <div id="list"></div>
   </section>
@@ -118,6 +127,12 @@ const linkOrText = s => /^https?:\/\/\S+$/.test(s) ? `<a href="${esc(s)}" target
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), fs = getFirestore(app);
 let subs = [], board = [], teams = [], optout = new Set(), tab = "pending";
+// Feature switches in config/features. A missing flag counts as on.
+const FEATS = [["colleges", "Colleges", "College standards and matches"], ["nationals", "Nationals", "Nationals standards in Goals"],
+  ["rankings", "Rankings", "The Rankings board"], ["splitCalc", "Split calculator", "In Race day"], ["raceDay", "Race-day plan", "Meet day mode, timeline, next-meet card"],
+  ["buildUp", "Build-up", "\"See build-up\" on PR races"], ["screenshotImport", "Screenshot import", "Reading results from screenshots"],
+  ["weeklyRecap", "Weekly recap", "Monday card on Home"], ["cardUpgrades", "Card finishes", "Holo, gold, and black & gold cards"]];
+let flags = {};
 
 onAuthStateChanged(auth, async user => {
   $("out").hidden = !user;
@@ -148,6 +163,7 @@ async function load() {
   board = b.docs.map(d => ({ id: d.id, ...d.data() }));
   teams = t.docs.map(d => ({ id: d.id, ...d.data() }));
   optout = new Set(o.docs.map(d => d.id));
+  try { const c = await getDoc(doc(fs, "config/features")); flags = c.exists() ? (c.data().flags || {}) : {}; } catch { flags = {}; }
   render();
 }
 
@@ -190,7 +206,16 @@ function render() {
     html = `<div class="panel"><p class="hint" style="margin:0">Approve a team only after you confirm the person coaches it. Coaches of approved teams post official results straight into Rankings for athletes on their roster who said yes.</p></div>`
       + ([...tWait, ...teams.filter(t => t.status !== "pending")].map(tcard).join("") || '<div class="panel"><p class="hint" style="margin:0">No teams yet.</p></div>');
   }
+  if (tab === "features") html = `<div class="panel"><p class="hint" style="margin:0 0 6px">Turned-off features stay visible in Lane 4 but greyed out, and say “Turned off for now.” Changes save right away.</p>
+    ${FEATS.map(([k, name, what]) => `<label class="feat"><span>${esc(name)}<small>${esc(what)}</small></span><input type="checkbox" role="switch" data-flag="${k}" ${flags[k] !== false ? "checked" : ""} aria-label="${esc(name)}"></label>`).join("")}</div>`;
   $("list").innerHTML = html;
+  document.querySelectorAll("[data-flag]").forEach(i => i.onchange = async () => {
+    const k = i.dataset.flag, was = flags[k] !== false;
+    flags = { ...flags, [k]: i.checked }; i.disabled = true;
+    try { await setDoc(doc(fs, "config/features"), { flags }); toast(`${FEATS.find(f => f[0] === k)[1]} turned ${i.checked ? "on" : "off"}`); }
+    catch { flags = { ...flags, [k]: was }; i.checked = was; toast("Couldn’t save. Check your connection and that the new rules are published."); }
+    i.disabled = false;
+  });
   document.querySelectorAll("[data-tok]").forEach(b => b.onclick = () => tact(b, b.dataset.tok, { status: "approved", reason: "" }, "Team approved"));
   document.querySelectorAll("[data-tno]").forEach(b => b.onclick = () => tact(b, b.dataset.tno, { status: "rejected", reason: "An admin couldn’t confirm you coach this team" }, "Team not approved"));
   document.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => act(b, async x => {

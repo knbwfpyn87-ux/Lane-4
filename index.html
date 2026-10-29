@@ -128,6 +128,61 @@ a{color:var(--track)}
 .segIn button:disabled{opacity:.4;cursor:default}
 #rIO{margin-bottom:4px}
 .pr .num small.io{font-size:12px;font-weight:600;color:var(--muted)}
+/* tap a PR card to see this season's chart */
+.prs{grid-auto-flow:row dense}
+button.pr{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+button.pr[aria-expanded="true"]{border-color:var(--track);box-shadow:0 0 0 2px var(--track)}
+.prx{grid-column:1/-1;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.prx h3{margin:0 0 4px;font-size:16px}
+.prchart{display:block;width:100%;height:auto}
+.prchart .ln{fill:none;stroke:var(--track);stroke-width:2.5;stroke-linejoin:round}
+.prchart .pt{fill:var(--surface);stroke:var(--track);stroke-width:2}
+.prchart .gl{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4}
+.prchart text{fill:var(--muted);font:600 11px "Barlow",sans-serif}
+/* Home cards: next meet, weekly recap */
+.nextmeet{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;margin:0 0 12px;border-left:5px solid var(--track)}
+.nextmeet .k{display:block;font-size:13px;font-weight:700;color:var(--track);text-transform:uppercase;letter-spacing:.5px}
+.nextmeet strong{display:block;overflow-wrap:anywhere}
+.nextmeet .cd{display:block;font:800 30px/1.1 "Barlow Condensed",sans-serif;margin:4px 0 2px}
+.recap{margin:0 0 12px}
+.recap .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 4px;text-align:center}
+.rstats b{display:block;font:800 26px "Barlow Condensed",sans-serif}
+.rstats span{font-size:12px;color:var(--muted);font-weight:600}
+.recap ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+/* PR celebration */
+.celebrate{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,16,16,.6)}
+.celbox{position:relative;overflow:hidden;width:100%;max-width:360px;background:var(--surface);color:var(--ink);border-radius:20px;padding:26px 16px 16px;text-align:center;animation:celpop .45s cubic-bezier(.2,1.4,.4,1)}
+.celbox h2{margin:0;font-size:40px;color:var(--accent)}
+.celbox .big{font:800 26px/1.15 "Barlow Condensed",sans-serif;margin:4px 0;overflow-wrap:anywhere}
+#celConf{position:absolute;inset:0;pointer-events:none}
+#celConf i{position:absolute;top:-14px;left:var(--x);width:8px;height:14px;background:var(--c);border-radius:2px;animation:conf 1.7s var(--d) ease-in forwards}
+@keyframes conf{to{transform:translateY(440px) rotate(540deg);opacity:0}}
+@keyframes celpop{from{transform:scale(.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){.celbox{animation:none}#celConf{display:none}}
+/* card finishes */
+.fins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.fins button{font:inherit;color:inherit;text-align:left;background:var(--soft);border:2px solid transparent;border-radius:12px;padding:8px;cursor:pointer;min-width:0}
+.fins button[aria-pressed="true"]{border-color:var(--track)}
+.fins button[aria-disabled="true"]{cursor:default;opacity:.75}
+.fins .sw{display:block;height:34px;border-radius:8px;margin-bottom:6px;background:linear-gradient(135deg,#8e1018,#C62832 40%,#e0454e 55%,#C62832 70%,#7a0e15)}
+.fins .sw.holo{background:linear-gradient(125deg,#ff9ad5,#9ad8ff 25%,#c3ff9a 50%,#ffe39a 75%,#ff9ad5)}
+.fins .sw.gold{background:linear-gradient(135deg,#8a6a12,#f4d36b 35%,#fff3c4 50%,#d4a82a 65%,#7a5a0c)}
+.fins .sw.nat{background:linear-gradient(135deg,#d4a82a,#f4d36b 30%,#141010 31%,#141010 69%,#a07a14 70%)}
+.fins b{display:block;font-size:15px}
+.fins small{display:block;font-size:12px;color:var(--muted);line-height:1.3}
+.tcard.fin-holo .tfront{background:linear-gradient(125deg,#ff9ad5,#9ad8ff 25%,#c3ff9a 50%,#ffe39a 75%,#ff9ad5);background-size:300% 300%;animation:foil 8s linear infinite}
+.tcard.fin-holo .tholo{background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.35) 40%,rgba(120,200,255,.35) 48%,rgba(255,120,220,.3) 56%,transparent 76%);background-size:250% 100%}
+@keyframes foil{to{background-position:300% 0}}
+.tcard.fin-gold .tfront{background:linear-gradient(135deg,#8a6a12,#f4d36b 35%,#fff3c4 50%,#d4a82a 65%,#7a5a0c)}
+.tcard.fin-nat .tfront{background:linear-gradient(135deg,#a07a14,#f4d36b 45%,#d4a82a 60%,#7a5a0c)}
+.tcard.fin-nat .tin,.tcard.fin-nat .tphoto{background:#0b0b0b}
+.tcard.fin-nat .tev{background:#141010;color:#f4d36b}
+.tcard.fin-nat .tvn .f{color:#f4d36b}
+.tcard.fin-nat .tback{background:#141010;color:#f4d36b}
+@media (prefers-reduced-motion:reduce){.tcard.fin-holo .tfront{animation:none}}
+/* admin feature switches: turned-off features stay visible but can't be used */
+.feat-off{filter:grayscale(1);opacity:.45;cursor:not-allowed}
 .welcome h1{font:800 54px/0.95 "Barlow Condensed",sans-serif;margin:0 0 12px}
 .welcome p{margin:0 0 10px;font-size:17px;opacity:.95}
 .welcome .card>.step>button{display:block;width:100%;margin-top:12px;padding:14px;border-radius:12px;border:0;font:700 19px "Barlow Condensed",sans-serif;cursor:pointer}
@@ -580,15 +635,17 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
         </div>
         <div class="pstats" id="pStats"></div>
       </div>
+      <button class="panel nextmeet" id="nextMeet" data-feat="raceDay" hidden></button>
+      <div class="panel recap" id="recap" data-feat="weeklyRecap" hidden></div>
       <nav class="hub" aria-label="Sections">
         <button class="tile main" data-go="times" data-focus="rMark"><span class="ti"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9.5 2h5M12 2v3"/></svg></span><b>Add a race time</b><span id="hubRace"></span></button>
         <button class="tile" data-go="times" data-scroll="planBox"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><b>This week</b><span id="hubPlan"></span></button>
         <button class="tile" data-go="goals"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></span><b>Goals</b><span id="hubGoals"></span></button>
-        <button class="tile" data-go="colleges"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></span><b>Colleges</b><span id="hubCol"></span></button>
+        <button class="tile" data-go="colleges" data-feat="colleges"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></span><b>Colleges</b><span id="hubCol"></span></button>
         <button class="tile" data-go="card"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8.5" cy="11" r="2.5"/><path d="M5 16c.6-1.6 2-2.5 3.5-2.5S11.4 14.4 12 16M14 10h5M14 13h4"/></svg></span><b>Athlete card</b><span>Flip it, share it</span></button>
-        <button class="tile" data-go="meet"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/><path d="M9 4v8M13 4v8" stroke-width="1.2"/></svg></span><b>Race day</b><span id="hubMeet"></span></button>
-        <button class="tile" id="hubRank"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></svg></span><b>Rankings</b><span>Verified times</span></button>
-        <button class="tile" data-go="times" data-scroll="shotBox"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 15V8M9 10.5L12 7.5l3 3"/></svg></span><b>Upload results</b><span>From a screenshot</span></button>
+        <button class="tile" data-go="meet" data-feat="raceDay splitCalc"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/><path d="M9 4v8M13 4v8" stroke-width="1.2"/></svg></span><b>Race day</b><span id="hubMeet"></span></button>
+        <button class="tile" id="hubRank" data-feat="rankings"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></svg></span><b>Rankings</b><span>Verified times</span></button>
+        <button class="tile" data-go="times" data-scroll="shotBox" data-feat="screenshotImport"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 15V8M9 10.5L12 7.5l3 3"/></svg></span><b>Upload results</b><span>From a screenshot</span></button>
         <button class="tile" data-go="team"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9.5" r="2.5"/><path d="M3 19c.6-3 3-4.5 6-4.5s5.4 1.5 6 4.5M15 14.6c2.6-.3 4.8 1 5.5 3.9"/></svg></span><b>Team</b><span id="hubTeam">Join or coach a team</span></button>
       </nav>
       <h2>Personal bests</h2>
@@ -596,7 +653,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       <p class="hint" id="prHint">PRs update automatically when you add race times.</p>
       <button class="go alt" id="addPRs" style="margin-top:10px">Add PRs for more events</button>
       <h2 style="margin-top:22px">Where you stand</h2>
-      <div class="panel" id="standing"></div>
+      <div class="panel" id="standing" data-feat="colleges"></div>
       <h2 style="margin-top:22px">Latest races</h2>
       <div class="panel" id="recentRaces"></div>
       <button class="panel teaser" id="openComing"><span class="tz">Coming soon</span><strong>iCloud sync, Apple Health, more colleges, and Recruiting Mode</strong><span class="hint" style="margin:0">See what’s coming ›</span></button>
@@ -627,7 +684,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       </div>
 
       <h2>Upload a screenshot</h2>
-      <div class="panel" id="shotBox">
+      <div class="panel" id="shotBox" data-feat="screenshotImport">
         <p class="hint" style="margin:0 0 6px">Screenshot your results on Athletic.net, MileSplit, or a meet’s results page. Lane 4 reads the events and official times on your phone. The picture only leaves your phone if you send it to an admin to check.</p>
         <label class="go alt filebtn">Choose a screenshot<input type="file" id="shotIn" accept="image/*" hidden></label>
         <p class="hint" id="shotMsg" role="status"></p>
@@ -708,7 +765,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
         <p class="hint" id="projNote" role="status"></p>
       </div>
       <h2>Nationals standards</h2>
-      <div class="panel" id="natList"></div>
+      <div class="panel" id="natList" data-feat="nationals"></div>
       <h2>My colleges</h2>
       <div class="segIn" style="margin-bottom:12px" role="group" aria-label="Standards"><button data-gen="Men">Men’s</button><button data-gen="Women">Women’s</button></div>
       <div class="panel" id="goalList"></div>
@@ -739,6 +796,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       <div class="tc-wrap"><div class="tcard" id="tcard" role="group" aria-label="Your athlete card"></div></div>
       <div class="btnrow" style="margin-top:12px"><button class="go" id="flipCard">Flip card</button><label class="go alt filebtn" style="margin-top:14px">Card photo<input type="file" id="cardPhotoIn" accept="image/*" hidden></label></div>
       <button class="go alt" id="shareCard">Share my card</button>
+      <div class="panel" id="finBox" data-feat="cardUpgrades" style="margin-top:14px"><h3 style="margin:0">Card finish</h3><div class="fins" id="fins" role="group" aria-label="Card finish"></div></div>
       <label for="cardPos" id="cardPosLbl" hidden>Move your photo up or down</label><input type="range" id="cardPos" min="0" max="100" value="30" hidden>
       <p class="hint" style="text-align:center">Screenshot your card to post it. ✓ means an admin checked that time against official results.</p>
       <details class="panel"><summary>Text version of your card</summary><div class="acard" id="acard"></div>
@@ -802,7 +860,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
     <!-- MEET DAY -->
     <section class="view" id="v-meet">
       <h2>Split calculator</h2>
-      <div class="panel">
+      <div class="panel" data-feat="splitCalc">
         <div class="row">
           <div><label for="scEvent">Event</label><select id="scEvent"><option>200m</option><option selected>400m</option><option>800m</option><option>1600m</option><option>Mile</option><option>3200m</option><option>5K</option></select></div>
           <div><span class="flabel" id="scLbl">Goal time</span><div class="mmss" role="group" aria-labelledby="scLbl"><input id="scMin" inputmode="numeric" placeholder="min" aria-label="Minutes" autocomplete="off"><span>:</span><input id="scSec" inputmode="decimal" placeholder="sec" aria-label="Seconds" autocomplete="off"></div></div>
@@ -810,6 +868,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
         <div id="scOut"></div>
       </div>
       <h2>Meet day mode</h2>
+      <div data-feat="raceDay">
       <div class="board" aria-live="polite">
         <div class="lbl" id="bEvent">Set your event time below</div>
         <div class="clock" id="bClock">--:--:--</div>
@@ -829,9 +888,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       <div class="panel"><h3>Your timeline</h3><ul class="tl" id="tl"><li class="empty" style="padding-left:0">Your plan shows up here.</li></ul></div>
       <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><h3 style="margin:0">Bag check</h3><button class="ghost" id="resetBag">Reset</button></div><div id="bag"></div></div>
       <p class="note">Food and timing tips are general guidance. Follow your coach and what works for your body.</p>
+      </div>
     </section>
   </main>
 </div>
+<div class="celebrate" id="celebrate" hidden><div class="celbox" role="dialog" aria-modal="true" aria-labelledby="celT" aria-describedby="celMsg">
+  <div id="celConf" aria-hidden="true"></div>
+  <h2 id="celT">New PR!</h2><p class="big" id="celMsg"></p><p class="hint" id="celSub"></p>
+  <button class="go" id="celShare">Share your new card</button><button class="go alt" id="celClose">Nice!</button></div></div>
 
 <div class="sheet" id="sheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheethead"><h3 id="sheetTitle" style="margin:0"></h3><button class="iconbtn" id="sheetClose" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -1112,6 +1176,7 @@ const TITLES={times:"Training log",goals:"Goals",colleges:"Colleges",card:"Athle
 let curView="home",pushedFromHome=false;
 function go(v,how){
   if(!document.getElementById("v-"+v))v="home";
+  const vf={colleges:"colleges",meet:"raceDay splitCalc"}[v];if(vf&&featOff(vf)){if(how!=="replace")toast("Turned off for now");v="home"}
   if(how!=="pop"){const url=location.pathname+location.search+(v==="home"?"":"#"+v);
     if(how==="replace"||v===curView)history.replaceState({v},"",url);else{history.pushState({v},"",url);pushedFromHome=curView==="home"&&v!=="home"}}
   curView=v;
@@ -1207,7 +1272,7 @@ function convHTML(r){const o=outEq(r);return o?`<div class="d conv">${esc(convTe
 function isSB(r){if(isPR(r))return false;const y=r.date.slice(0,4),io=ioOf(r);let b=null;S.races.filter(x=>x.event===r.event&&ioOf(x)===io&&x.date.slice(0,4)===y).forEach(x=>{if(!b||better(r.event,val(r.event,x.mark),val(r.event,b.mark)))b=x});return b===r}
 function isNat(r){const v=val(r.event,r.mark);return natStd(r.event).some(m=>!better(r.event,val(r.event,m),v))}
 function raceHTML(r,del){
-  return `<div class="entry"><div class="grow"><div>${isPR(r)?'<span class="tag pb">PR</span>':isSB(r)?'<span class="tag sb">SB</span>':''}${isNat(r)?'<span class="tag nat">★ Nationals</span>':''}${r.coach?'<span class="tag ver">✓ Coach</span>':''}<span class="tag">${esc(r.event)}</span>${ioOf(r)==="in"?'<span class="tag">Indoor</span>':''}</div><div class="d">${esc(r.date)} · ${esc(r.meet)}</div>${convHTML(r)}${splitsHTML(r)}${isPR(r)?`<button class="linkbtn" data-build="${S.races.indexOf(r)}">See build-up ›</button>`:""}</div><div class="num">${esc(show(r.event,r.mark))}</div>${del?`<button class="ghost" data-del="${S.races.indexOf(r)}" aria-label="Delete">✕</button>`:""}</div>`}
+  return `<div class="entry"><div class="grow"><div>${isPR(r)?'<span class="tag pb">PR</span>':isSB(r)?'<span class="tag sb">SB</span>':''}${isNat(r)?'<span class="tag nat">★ Nationals</span>':''}${r.coach?'<span class="tag ver">✓ Coach</span>':''}<span class="tag">${esc(r.event)}</span>${ioOf(r)==="in"?'<span class="tag">Indoor</span>':''}</div><div class="d">${esc(r.date)} · ${esc(r.meet)}</div>${convHTML(r)}${splitsHTML(r)}${isPR(r)?`<button class="linkbtn" data-build="${S.races.indexOf(r)}" data-feat="buildUp">See build-up ›</button>`:""}</div><div class="num">${esc(show(r.event,r.mark))}</div>${del?`<button class="ghost" data-del="${S.races.indexOf(r)}" aria-label="Delete">✕</button>`:""}</div>`}
 function workoutHTML(e){return `<div class="entry"><div class="grow"><span class="tag">${esc(e.type)}</span><span class="d">${esc(e.date)} · felt ${e.feel}/5</span><div>${esc(e.note||"")}</div></div></div>`}
 function tierSpread(ev,st){const v=st.filter(Boolean).map(m=>val(ev,m));if(v.length<2)return 0;return Math.max(...v)-Math.min(...v)}
 function spreadPos(ev,st,pv){const v=st.filter(Boolean).map(m=>val(ev,m));if(v.length<2)return null;
@@ -1270,7 +1335,7 @@ function renderProfileHead(){
 function renderHome(){renderStanding();renderProfileHead();renderHub();
   document.getElementById("modePill").textContent=S.started==="sample"?"Beta · sample athlete":"Beta";
   const evs=shownEvents();
-  document.getElementById("prGrid").innerHTML=evs.length?evs.map(ev=>{const p=pr(ev);return `<div class="pr"><div class="ev">${ev}</div><div class="num">${esc(show(ev,p&&p.mark))}${p&&BOTH.has(ev)&&ioOf(p)==="in"?'<small class="io"> indoor</small>':""}</div><div class="goal">Goal ${esc(show(ev,S.goals[ev]))}</div></div>`}).join(""):`<div class="panel" style="grid-column:1/-1"><p class="empty">No times yet. Add your first race in the Training log and your PRs show up here.</p></div>`;
+  document.getElementById("prGrid").innerHTML=evs.length?evs.map(ev=>{const p=pr(ev),open=prOpen===ev;return `<button class="pr" data-prc="${esc(ev)}" aria-expanded="${open}" aria-controls="prx"><div class="ev">${ev}</div><div class="num">${esc(show(ev,p&&p.mark))}${p&&BOTH.has(ev)&&ioOf(p)==="in"?'<small class="io"> indoor</small>':""}</div><div class="goal">Goal ${esc(show(ev,S.goals[ev]))}</div></button>${open?`<div class="prx" id="prx">${prChartHTML(ev)}</div>`:""}`}).join(""):`<div class="panel" style="grid-column:1/-1"><p class="empty">No times yet. Add your first race in the Training log and your PRs show up here.</p></div>`;
   const rr=[...S.races].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);
   document.getElementById("recentRaces").innerHTML=rr.length?rr.map(r=>raceHTML(r,false)).join(""):`<div class="emptybox">${EMPTY_RACES}<p class="empty">No races yet. Add your first time in the Training log.</p></div>`;
 
@@ -1287,6 +1352,7 @@ document.getElementById("addRace").onclick=()=>{
   if(BOTH.has(ev)&&io==="in")race.io="in";
   S.races.push(race);save();
   const o=outEq(race);
+  if(old&&better(ev,val(ev,mark),val(ev,old.mark)))celebrate(ev,race.mark,old.mark);
   msg.textContent=((!old||better(ev,val(ev,mark),val(ev,old.mark)))?`New ${where}PR in the ${ev}: ${show(ev,mark)}.`:`Added ${show(ev,mark)} in the ${where}${ev}.`)+(o?` That’s about ${fmtT(o.sec)} in the outdoor ${o.event}.`:"");
   rMark.value="";rMeet.value="";rSplits.value="";renderAll();rConvShow();
 };
@@ -1876,6 +1942,7 @@ function renderTradingCard(){
     <table class="ttab"><tr><th>EVENT</th><th>PR</th><th>MEET</th><th style="text-align:right">✓</th></tr>${rows||`<tr><td colspan="4">Add PRs to fill this in</td></tr>`}</table>
     <div class="thl">${acc}</div>
     <div class="tfoot">✓ = checked by a Lane 4 admin against official results</div></div>`;
+  const fin=cardFinish();["holo","gold","nat"].forEach(f=>el.classList.toggle("fin-"+f,fin===f));renderFins();
   const pl=document.getElementById("cardPos"),plb=document.getElementById("cardPosLbl");pl.hidden=plb.hidden=!photo;pl.value=pos;
 }
 document.getElementById("flipCard").onclick=()=>document.getElementById("tcard").classList.toggle("flipped");
@@ -2425,7 +2492,99 @@ async function postTeam(){
   TEAM.post=left;renderPost();
   msg.textContent=`Posted ${n} result${n===1?"":"s"}${ranked?`, and updated Rankings for ${ranked} athlete${ranked===1?"":"s"}`:""}.${left.length?` ${left.length} couldn’t be posted. Try them again.`:""}`}
 
-function renderAll(){if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits()}
+/* ---------- feature switches: admins turn features off in admin.html (Firestore config/features).
+   A missing flag counts as on. The last flags seen are kept on the device, so this works offline. ---------- */
+const FLAGS_KEY="lane4-flags";let FLAGS={};
+try{FLAGS=JSON.parse(localStorage.getItem(FLAGS_KEY)||"{}")||{}}catch(_){}
+/* "raceDay splitCalc" = off only when every listed feature is off */
+function featOff(list){return String(list).split(/\s+/).every(f=>FLAGS[f]===false)}
+function applyFlags(){document.querySelectorAll("[data-feat]").forEach(el=>{const off=featOff(el.dataset.feat);
+  el.classList.toggle("feat-off",off);if(off)el.setAttribute("aria-disabled","true");else el.removeAttribute("aria-disabled");
+  if(!/^(BUTTON|A)$/.test(el.tagName))[...el.children].forEach(c=>c.inert=off)})}
+window.lane4Flags=f=>{FLAGS=f&&typeof f==="object"?f:{};try{localStorage.setItem(FLAGS_KEY,JSON.stringify(FLAGS))}catch(_){}
+  if(S){renderTradingCard();renderHomeCards()}applyFlags()};
+document.addEventListener("click",e=>{const el=e.target.closest("[data-feat]");
+  if(el&&featOff(el.dataset.feat)){e.preventDefault();e.stopImmediatePropagation();toast("Turned off for now")}},true);
+
+/* ---------- PR celebration ---------- */
+function celebrate(ev,mark,oldMark){const el=document.getElementById("celebrate");
+  document.getElementById("celMsg").textContent=`${show(ev,mark)} in the ${ev}`;
+  const d=Math.abs(val(ev,mark)-val(ev,oldMark));
+  document.getElementById("celSub").textContent=`Better than your old PR of ${show(ev,oldMark)} by ${EVENTS[ev].field?+d.toFixed(1)+"″":d.toFixed(2)+"s"}.`;
+  const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById("celConf").innerHTML=calm?"":Array.from({length:30},(_,i)=>`<i style="--x:${(i*37)%100}%;--d:${(i%8)*.1}s;--c:${["#C62832","#F2B705","#1B8A5A","#3A7BD5"][i%4]}"></i>`).join("");
+  el.hidden=false;document.getElementById("celShare").focus()}
+function closeCelebrate(){document.getElementById("celebrate").hidden=true;document.getElementById("celConf").innerHTML=""}
+document.getElementById("celClose").onclick=closeCelebrate;
+document.getElementById("celebrate").onclick=e=>{if(e.target.id==="celebrate")closeCelebrate()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("celebrate").hidden)closeCelebrate()});
+document.getElementById("celShare").onclick=()=>{closeCelebrate();go("card");document.getElementById("shareCard").click()};
+
+/* ---------- Home: tap a PR card for this season's chart ---------- */
+let prOpen=null;
+function seasonOf(date){const y=+date.slice(0,4),m=+date.slice(5,7);return m>=8?y:y-1}
+function prChartHTML(ev){
+  const all=S.races.filter(r=>r.event===ev&&r.date);if(!all.length)return `<p class="hint" style="margin:0">No ${esc(ev)} races yet.</p>`;
+  /* this season (school year from August); if none yet, the latest season with races */
+  const now=seasonOf(today()),sy=all.some(r=>seasonOf(r.date)===now)?now:Math.max(...all.map(r=>seasonOf(r.date)));
+  const pts=all.filter(r=>seasonOf(r.date)===sy).map(r=>({t:Date.parse(r.date+"T12:00"),v:cmpVal(r)})).filter(p=>!isNaN(p.t)&&p.v>0).sort((a,b)=>a.t-b.t);
+  const g=S.goals[ev]?val(ev,S.goals[ev]):NaN,f=EVENTS[ev].field,vs=pts.map(p=>p.v).concat(isNaN(g)?[]:[g]);
+  let lo=Math.min(...vs),hi=Math.max(...vs);const pad=(hi-lo||hi*.02||1)*.18;lo-=pad;hi+=pad;
+  const W=300,H=140,L=8,R=8,T=12,B=24,t0=pts[0].t,t1=pts[pts.length-1].t;
+  const x=t=>t1===t0?W/2:L+(t-t0)/(t1-t0)*(W-L-R),y=v=>{const k=(v-lo)/(hi-lo);return T+(f?1-k:k)*(H-T-B)};
+  const gy=isNaN(g)?0:y(g),label=`${sy}–${String(sy+1).slice(-2)} season`;
+  return `<h3>${esc(ev)} · ${label}</h3><svg class="prchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(ev)}, ${label}: ${pts.map(p=>fmtDay(p.t)+" "+fmtVal(ev,p.v)).join(", ")}${isNaN(g)?"":". Goal "+esc(show(ev,S.goals[ev]))}">
+    ${isNaN(g)?"":`<line x1="0" x2="${W}" y1="${gy.toFixed(1)}" y2="${gy.toFixed(1)}" class="gl"/><text x="${W-4}" y="${(gy<20?gy+14:gy-5).toFixed(1)}" text-anchor="end">Goal ${esc(show(ev,S.goals[ev]))}</text>`}
+    <polyline points="${pts.map(p=>x(p.t).toFixed(1)+","+y(p.v).toFixed(1)).join(" ")}" class="ln"/>${pts.map(p=>`<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="4" class="pt"/>`).join("")}
+    <text x="${L}" y="${H-6}">${fmtDay(t0)}</text>${t1>t0?`<text x="${W-R}" y="${H-6}" text-anchor="end">${fmtDay(t1)}</text>`:""}</svg>
+  ${isNaN(g)?`<p class="hint" style="margin:0">Set a goal in Goals to see it here.</p>`:""}`}
+document.getElementById("prGrid").addEventListener("click",e=>{const b=e.target.closest("[data-prc]");if(!b)return;
+  prOpen=prOpen===b.dataset.prc?null:b.dataset.prc;renderHome();const nb=document.querySelector(`[data-prc="${CSS.escape(b.dataset.prc)}"]`);if(nb)nb.focus()});
+
+/* ---------- Home: next meet (within 7 days) and the Monday recap ---------- */
+function renderNextMeet(){const el=document.getElementById("nextMeet"),m=S&&S.meet,now=Date.now();
+  if(!m||!(m.start>now)||m.start-now>7*864e5){el.hidden=true;return}
+  const s=Math.floor((m.start-now)/1000),dd=Math.floor(s/86400),hh=Math.floor(s%86400/3600),mm=Math.floor(s%3600/60);
+  const cd=(dd?dd+"d ":"")+(dd||hh?hh+"h ":"")+mm+"m";
+  el.hidden=false;el.setAttribute("aria-label",`Next meet: ${m.event}, ${new Date(m.start).toLocaleString()}. Starts in ${cd}. Open your race-day plan.`);
+  el.innerHTML=`<span class="k">Next meet</span><strong>${esc(m.event)} · ${new Date(m.start).toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})} · ${hhmm(m.start)}</strong><span class="cd">${cd}</span><span class="hint" style="margin:0">Open your race-day plan ›</span>`}
+document.getElementById("nextMeet").onclick=()=>go("meet");
+setInterval(()=>{if(S&&curView==="home")renderNextMeet()},30000);
+function renderRecap(){const el=document.getElementById("recap");
+  if(new Date().getDay()!==1||S.recapSeen===today()){el.hidden=true;return}
+  const from=today(-7),to=today(-1),inW=x=>x.date>=from&&x.date<=to;
+  const w=S.log.filter(inW).length,rs=S.races.filter(inW),prs=rs.filter(isPR).length;
+  const moves=Object.keys(S.goals).filter(ev=>EVENTS[ev]).map(ev=>{
+    const best=a=>a.reduce((b,r)=>b==null||better(ev,cmpVal(r),b)?cmpVal(r):b,null);
+    const b0=best(S.races.filter(r=>r.event===ev&&r.date<from)),b1=best(S.races.filter(r=>r.event===ev&&r.date<=to));
+    if(b1==null||b0===b1)return null;const g=val(ev,S.goals[ev]);
+    if(!better(ev,g,b1))return `${ev}: you reached your goal!`;
+    if(b0==null)return `${ev}: first mark, ${fmtVal(ev,Math.abs(b1-g))} from your goal`;
+    const d=Math.abs(b1-b0);return `${ev}: ${EVENTS[ev].field?+d.toFixed(1)+"″":d.toFixed(2)+"s"} closer to your goal`}).filter(Boolean);
+  el.hidden=false;
+  el.innerHTML=`<div class="rh"><h3 style="margin:0">Last week</h3><button class="ghost" id="recapX" aria-label="Dismiss last week’s recap">✕</button></div>
+    <div class="rstats"><div><b>${w}</b><span>workout${w===1?"":"s"}</span></div><div><b>${rs.length}</b><span>race${rs.length===1?"":"s"}</span></div><div><b>${prs}</b><span>PR${prs===1?"":"s"}</span></div></div>
+    ${moves.length?`<ul>${moves.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`:`<p class="hint" style="margin:4px 0 0">No change toward your goals last week. ${w?"Keep stacking workouts.":"A fresh week starts today."}</p>`}`;
+  document.getElementById("recapX").onclick=()=>{S.recapSeen=today();save();el.hidden=true}}
+function renderHomeCards(){if(!S)return;renderNextMeet();renderRecap()}
+
+/* ---------- card finishes, unlocked by what the athlete has done ---------- */
+const FINS=[{id:"std",name:"Classic",how:"Every card"},{id:"holo",name:"Holo foil",how:"Get a time verified by an admin"},
+  {id:"gold",name:"Gold border",how:"Reach one of your goals"},{id:"nat",name:"Black & gold",how:"Hit a nationals standard"}];
+function finUnlocked(id){const evs=shownEvents().filter(ev=>pr(ev));
+  if(id==="holo")return evs.some(isVerified);
+  if(id==="gold")return evs.some(ev=>S.goals[ev]&&!better(ev,val(ev,S.goals[ev]),cmpVal(pr(ev))));
+  if(id==="nat")return evs.some(ev=>natStd(ev).some(m=>!better(ev,val(ev,m),cmpVal(pr(ev)))));
+  return true}
+function cardFinish(){const f=S.cardFin;return !featOff("cardUpgrades")&&f&&f!=="std"&&finUnlocked(f)?f:"std"}
+function renderFins(){const el=document.getElementById("fins"),cur=cardFinish();
+  el.innerHTML=FINS.map(f=>{const ok=finUnlocked(f.id);return `<button type="button" data-fin="${f.id}" aria-pressed="${cur===f.id}"${ok?"":` aria-disabled="true"`}>
+    <span class="sw ${f.id}" aria-hidden="true"></span><b>${ok?"":"🔒 "}${f.name}</b><small>${ok?(cur===f.id?"On your card":"Unlocked"):esc(f.how)}</small></button>`}).join("")}
+document.getElementById("fins").addEventListener("click",e=>{const b=e.target.closest("[data-fin]");if(!b)return;
+  if(b.getAttribute("aria-disabled")==="true"){toast("Locked: "+FINS.find(f=>f.id===b.dataset.fin).how);return}
+  S.cardFin=b.dataset.fin;save();renderTradingCard()});
+
+function renderAll(){if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits();renderHomeCards();applyFlags()}
 
 if(!S){welcome.hidden=false;S=fresh();renderAll();S=null}else{if(!S.gender)S.gender="Men";if(!S.fav)S.fav=[];renderAll()}
 const h=location.hash.slice(1);if(!/^strava/.test(h))go(["times","goals","colleges","card","meet","team"].includes(h)?h:"home","replace");
