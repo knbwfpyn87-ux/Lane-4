@@ -471,6 +471,19 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .go{border-radius:12px}.go.alt{border-width:2px}
 button.ghost{border-radius:12px}
 .cmain::after{border-color:var(--ink)}
+/* UI kit header buttons: white line icons straight on the red, no white circle */
+header.top .themebtn{background:none;box-shadow:none;border:0;color:#fff;border-radius:14px}
+header.top .themebtn:hover{background:rgba(255,255,255,.14)}
+header.top .themebtn svg{width:30px;height:30px;stroke-width:2}
+header.top .themebtn:focus-visible{outline:2px solid #fff}
+/* UI kit checkboxes: red rounded square with a white check */
+input[type=checkbox]:not(.switch){-webkit-appearance:none;appearance:none;width:24px;height:24px;flex:none;margin:0;padding:0;border-radius:7px;border:2px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center}
+input[type=checkbox]:not(.switch):checked{background:var(--track) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat;border-color:var(--track)}
+.authcard input[type=checkbox]:not(:checked),.agecheck input:not(:checked){background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.7)}
+.agecheck input:checked{background-color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23C62832' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");border-color:#fff}
+/* UI kit stepped slider: dots on the track for the 1–5 "how it felt" scale */
+input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background:radial-gradient(circle at 5px 50%,var(--muted) 3.5px,transparent 4px),radial-gradient(circle at 25% 50%,var(--muted) 3.5px,transparent 4px),radial-gradient(circle at 50% 50%,var(--muted) 3.5px,transparent 4px),radial-gradient(circle at 75% 50%,var(--muted) 3.5px,transparent 4px),radial-gradient(circle at calc(100% - 5px) 50%,var(--muted) 3.5px,transparent 4px),linear-gradient(var(--track),var(--track)) 0 50%/var(--p,50%) 4px no-repeat,linear-gradient(var(--line),var(--line)) 0 50%/100% 4px no-repeat}input[type=range][max="5"]::-webkit-slider-thumb{margin-top:-6px}
+.board{border-radius:20px;border:0;background:#1F1B1B;box-shadow:var(--shadow)}
 /* search: white pill, as in the UI kit */.searchbar{background:var(--surface);color:var(--muted);box-shadow:var(--shadow)}:root[data-theme="dark"] .searchbar{background:var(--soft);box-shadow:none}.searchbar input{color:var(--ink);font-weight:500}.searchbar input::placeholder{color:var(--muted)}
 /* progress chart */
 .go.strava{background:#FC4C02;box-shadow:none}
@@ -1106,7 +1119,10 @@ const LEVELS=["Target","Recruit","Walk-on"];
 const SCHOOLS=[];CONF.forEach((c,ci)=>c.s.forEach(x=>SCHOOLS.push({name:x[0],state:x[1],official:!!x[2],ci,id:x[0]})));
 SCHOOLS.sort((a,b)=>a.name.localeCompare(b.name));
 function stdIndex(ev){const g=(S&&S.gender)||"Men";if(ev==="110m hurdles")return g==="Men"?6:-1;if(ev==="100m hurdles")return g==="Women"?6:-1;return STD_EVENTS.indexOf(ev)}
-function schoolStd(sc,ev){const i=stdIndex(ev);if(i<0)return null;const c=CONF[sc.ci];const arr=((S&&S.gender)==="Women"?c.w:c.m).slice(i*3,i*3+3);return arr.some(Boolean)?arr:null}
+/* charts have no 5K or Mile: estimate them from the 3200m and 1600m standards (Riegel, exponent 1.06) */
+const STD_EST={"5K XC":["3200m",5000/3200],"Mile":["1600m",1609.34/1600]};
+function schoolStd(sc,ev){const e=STD_EST[ev];if(e){const b=schoolStd(sc,e[0]);return b?b.map(m=>m?fmtT(Math.round(toSec(m)*Math.pow(e[1],1.06))).replace(/\.00$/,""):""):null}
+  const i=stdIndex(ev);if(i<0)return null;const c=CONF[sc.ci];const arr=((S&&S.gender)==="Women"?c.w:c.m).slice(i*3,i*3+3);return arr.some(Boolean)?arr:null}
 function confUrl(c){return `https://trackandfieldstandards.com/conferences/${c.u}-track-standards.html`}
 /* best level the athlete has hit at a school: 0 Target, 1 Recruit, 2 Walk-on, 3 none, -1 no comparable events */
 function schoolFit(sc){
@@ -1814,11 +1830,12 @@ function normMark(ev,m){if(!EVENTS[ev].field)return m.trim();const i=toIn(m);if(
 function renderGoalChips(){const el=document.getElementById("goalChips");const g=EV_NAMES.filter(e=>S.goals[e]);
   el.innerHTML=g.length?`<div class="lbl3">Your goals</div>`+g.map(e=>`<div class="acc"><span><strong>${e}</strong> ${esc(show(e,S.goals[e]))}</span><button class="ghost" data-gdel="${e}" aria-label="Remove ${e} goal">✕</button></div>`).join(""):"";
   el.querySelectorAll("[data-gdel]").forEach(b=>b.onclick=()=>{delete S.goals[b.dataset.gdel];save();renderAll()})}
-function gapText(ev,diff){return EVENTS[ev].field?`${+(diff).toFixed(1)} in to go`:`${diff.toFixed(2)}s to go`}
+function gapText(ev,diff){return EVENTS[ev].field?`${+(diff).toFixed(1)} in to go`:(diff>=60?`${fmtT(Math.round(diff)).replace(/\.00$/,"")} to go`:`${diff.toFixed(2)}s to go`)}
 function tiersHTML(sc,ev){
   const st=schoolStd(sc,ev);if(!st)return `<p class="hint" style="margin:0">No standard for this event.</p>`;
   const p=pr(ev),pv=p?cmpVal(p):NaN;
-  return `<div class="tiers">${st.map((m,i)=>{
+  const est=STD_EST[ev]?`<p class="hint" style="margin:0 0 6px">Estimated from the ${STD_EST[ev][0]} standard. Colleges don’t list one for this event.</p>`:"";
+  return `${est}<div class="tiers">${st.map((m,i)=>{
     if(!m)return `<div class="tier off"><span class="k">${LEVELS[i]}</span><span class="m">—</span><span class="g">Not used</span></div>`;
     const mv=val(ev,m);let cls="",g="";
     if(!isNaN(pv)){if(!better(ev,mv,pv)){cls="hit";g="✓ Got it"}else g=gapText(ev,Math.abs(pv-mv))}
