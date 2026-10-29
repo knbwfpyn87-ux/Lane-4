@@ -459,6 +459,17 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .empty-art [fill="#FAF8F6"]{fill:var(--surface)}.empty-art [stroke="#141010"]{stroke:var(--ink)}
 :root[data-theme="dark"] .empty-art{opacity:1}
 /* jump links at the top of long screens: stay in reach while you scroll */.jump{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-16px -16px 10px;padding:10px 16px;background:var(--bg)}.jump::-webkit-scrollbar{display:none}.jump button{flex:none;border:0;border-radius:20px;padding:6px 12px;font:600 14px "Barlow",sans-serif;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);cursor:pointer;white-space:nowrap}:root[data-theme="dark"] .jump button{background:var(--soft);box-shadow:none}.jump button[aria-current="true"]{background:var(--track);color:#fff}section.view h2,section.view details{scroll-margin-top:60px}
+/* closer to the UI kit: warm paper background, hairline-edged cards, rounded-square icon tiles */
+:root{--bg:#F4F0ED;--soft:#F3EEEB;--line:#E9E2DE}
+:root[data-theme="dark"]{--bg:#121010;--surface:#1D1A1A;--soft:#2A2525;--line:#332C2B}
+.panel,.pr,.stat,.tile,.phead{border:1px solid var(--line)}
+.tile .ti,.coming .ci .ic{border-radius:14px;background:var(--surface);box-shadow:0 1px 2px rgba(70,20,20,.06),0 4px 12px rgba(70,20,20,.08);color:var(--icon)}
+:root[data-theme="dark"] .tile .ti,:root[data-theme="dark"] .coming .ci .ic{background:var(--soft);box-shadow:none;color:var(--ink)}
+.tile.main .ti,:root[data-theme="dark"] .tile.main .ti{border-radius:14px;box-shadow:none;background:rgba(255,255,255,.18);color:#fff}
+.chips button,.jump button{border-radius:12px}
+.go{border-radius:12px}.go.alt{border-width:2px}
+button.ghost{border-radius:12px}
+.cmain::after{border-color:var(--ink)}
 /* search: white pill, as in the UI kit */.searchbar{background:var(--surface);color:var(--muted);box-shadow:var(--shadow)}:root[data-theme="dark"] .searchbar{background:var(--soft);box-shadow:none}.searchbar input{color:var(--ink);font-weight:500}.searchbar input::placeholder{color:var(--muted)}
 /* progress chart */
 .go.strava{background:#FC4C02;box-shadow:none}
@@ -1845,7 +1856,7 @@ function renderProjections(){
 document.getElementById("projEvent").onchange=()=>renderProjections();
 function renderGoals(){
   renderProjections();
-  document.querySelectorAll(".segIn button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.gen===S.gender));
+  document.querySelectorAll(".segIn button[data-gen]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.gen===S.gender));
   const el=document.getElementById("goalList");
   const favs=SCHOOLS.filter(x=>S.fav.includes(x.id));
   const evs=shownEvents();
