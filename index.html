@@ -458,6 +458,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .empty-art [fill="#EADFDD"]{fill:var(--line)}.empty-art [stroke="#EADFDD"]{stroke:var(--line)}
 .empty-art [fill="#FAF8F6"]{fill:var(--surface)}.empty-art [stroke="#141010"]{stroke:var(--ink)}
 :root[data-theme="dark"] .empty-art{opacity:1}
+/* jump links at the top of long screens: stay in reach while you scroll */.jump{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-16px -16px 10px;padding:10px 16px;background:var(--bg)}.jump::-webkit-scrollbar{display:none}.jump button{flex:none;border:0;border-radius:20px;padding:6px 12px;font:600 14px "Barlow",sans-serif;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);cursor:pointer;white-space:nowrap}:root[data-theme="dark"] .jump button{background:var(--soft);box-shadow:none}.jump button[aria-current="true"]{background:var(--track);color:#fff}section.view h2,section.view details{scroll-margin-top:60px}
+/* search: white pill, as in the UI kit */.searchbar{background:var(--surface);color:var(--muted);box-shadow:var(--shadow)}:root[data-theme="dark"] .searchbar{background:var(--soft);box-shadow:none}.searchbar input{color:var(--ink);font-weight:500}.searchbar input::placeholder{color:var(--muted)}
 /* progress chart */
 .go.strava{background:#FC4C02;box-shadow:none}
 .btnrow[hidden],.go[hidden]{display:none}
@@ -686,25 +688,23 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
         <p class="hint" id="addMsg" role="status"></p>
       </div>
 
-      <h2>Upload a screenshot</h2>
-      <div class="panel" id="shotBox" data-feat="screenshotImport">
+      <details class="panel" id="shotBox" data-feat="screenshotImport"><summary>Upload a results screenshot</summary>
         <p class="hint" style="margin:0 0 6px">Screenshot your results on Athletic.net, MileSplit, or a meet’s results page. Lane 4 reads the events and official times on your phone. The picture only leaves your phone if you send it to an admin to check.</p>
         <label class="go alt filebtn">Choose a screenshot<input type="file" id="shotIn" accept="image/*" hidden></label>
         <p class="hint" id="shotMsg" role="status"></p>
         <div id="shotPreview"></div>
-      </div>
+      </details>
 
-      <h2>Import from Athletic.net or MileSplit</h2>
-      <div class="panel">
+      <details class="panel" id="importBox"><summary>Import from Athletic.net or MileSplit</summary>
         <p class="hint" style="margin:0 0 6px"><strong>How:</strong> open your athlete page on Athletic.net or MileSplit, select your results (press and hold, then drag to select a season or the whole page), copy, and paste here. Lane 4 finds the events, times, dates, and meets. You can also type races one per line.</p>
         <textarea id="paste" placeholder="400m 50.91 5/17/2026 State Open&#10;110m hurdles 15.20 4/12/2026 Spring Invite&#10;Shot put 45-6 5/3/2026 County Meet"></textarea>
         <button class="go alt" id="readPaste">Read my results</button>
         <div id="pastePreview"></div>
-      </div>
+      </details>
 
       <h2>All races</h2>
       <div class="panel" id="raceList"></div>
-          <h2 id="trainingH">Training</h2>
+      <h2 id="trainingH">Training</h2>
       <div class="panel" id="planBox">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">This week</h3><button class="ghost" id="planAdd">+ Add workout</button></div>
         <p class="hint" id="planLoad"></p>
@@ -1177,6 +1177,19 @@ function isPR(r){return pr(r.event,ioOf(r))===r}
    Each screen gets a history entry, so the phone's back gesture returns Home too. ---------- */
 const TITLES={times:"Training log",goals:"Goals",colleges:"Colleges",card:"Athlete card",meet:"Race day",team:"Team"};
 let curView="home",pushedFromHome=false;
+/* Long screens get a row of jump links built from their headings; the one you're reading lights up. */
+const JUMP_SHORT={"Add a race time":"Add time","Upload a results screenshot":"Screenshot","Import from Athletic.net or MileSplit":"Import","All races":"Races","Set a goal":"Set goal","Progress projections":"Projections","Nationals standards":"Nationals","My colleges":"My colleges","Personal bests":"PRs","Where you stand":"Standing","Latest races":"Latest","Split calculator":"Splits","Meet day mode":"Meet day","My team":"My team","Coach a team":"Coach","Add official results":"Results","Log a workout":"Log","Upload workouts (Strava, Garmin, watch)":"Upload"};
+let jumpObs=null;
+function buildJump(v){const sec=document.getElementById("v-"+v);if(!sec)return;sec.querySelector(".jump")?.remove();if(jumpObs){removeEventListener("scroll",jumpObs);jumpObs=null}
+  if(v==="home")return;
+  const heads=[...sec.querySelectorAll("h2, details.panel>summary")].filter(h=>!h.closest("[hidden]")&&!h.closest(".jump")).map(h=>{const t=h.tagName==="SUMMARY"?h.parentElement:h;
+    const name=h.childNodes[0].textContent.trim();if(!t.id)t.id="j-"+name.toLowerCase().replace(/[^a-z0-9]+/g,"-");return{t,name}});
+  if(heads.length<3)return;
+  const bar=document.createElement("nav");bar.className="jump";bar.setAttribute("aria-label","Jump to");
+  bar.innerHTML=heads.map(h=>`<button type="button" data-j="${h.t.id}">${esc(JUMP_SHORT[h.name]||h.name)}</button>`).join("");sec.prepend(bar);
+  bar.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.j);if(t.tagName==="DETAILS")t.open=true;t.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})});
+  jumpObs=()=>{let cur=heads[0].t.id;for(const h of heads)if(h.t.getBoundingClientRect().top<90)cur=h.t.id;bar.querySelectorAll("[data-j]").forEach(b=>{const on=b.dataset.j===cur;if(on&&b.getAttribute("aria-current")!=="true")bar.scrollLeft=b.offsetLeft-16;b.setAttribute("aria-current",on)})};
+  addEventListener("scroll",jumpObs,{passive:true});jumpObs()}
 function go(v,how){
   if(!document.getElementById("v-"+v))v="home";
   const vf={colleges:"colleges",meet:"raceDay splitCalc"}[v];if(vf&&featOff(vf)){if(how!=="replace")toast("Turned off for now");v="home"}
@@ -1187,12 +1200,13 @@ function go(v,how){
   document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
   document.querySelectorAll('input[type=range]').forEach(r=>typeof rangeFill==="function"&&rangeFill(r));
   if(v==="team")renderTeam();
+  buildJump(v);
   window.scrollTo(0,0);
 }
 window.addEventListener("popstate",e=>go((e.state&&e.state.v)||"home","pop"));
 document.getElementById("backBtn").onclick=()=>{if(pushedFromHome){pushedFromHome=false;history.back()}else go("home","replace")};
 document.querySelectorAll(".hub [data-go]").forEach(b=>b.onclick=()=>{go(b.dataset.go);
-  if(b.dataset.scroll)document.getElementById(b.dataset.scroll).scrollIntoView({block:"start"});
+  if(b.dataset.scroll){const t=document.getElementById(b.dataset.scroll);if(t.tagName==="DETAILS")t.open=true;t.scrollIntoView({block:"start"})}
   if(b.dataset.focus)document.getElementById(b.dataset.focus).focus({preventScroll:true})});
 /* the small live line under each Home button */
 function renderHub(){if(!S)return;const now=Date.now(),set=(id,t)=>{document.getElementById(id).textContent=t};
@@ -1651,7 +1665,7 @@ function wkSrcOf(w){return w.id.startsWith("u-")?"mine":w.id.startsWith("p-")?"s
 function openWk(o){openSheet("wkSheet");if(o&&o.make)wkMake(o.make===true?null:o.make);else if(o&&(o.id||o.planned!=null))wkDetail(o);else wkList()}
 function wkList(){document.getElementById("wkTitle").textContent="Workouts";const body=document.getElementById("wkBody");if(wkPh===null)wkPh=fit().phase;
   const opt=(v,l,cur)=>`<option value="${v}"${v===cur?" selected":""}>${esc(l)}</option>`;
-  body.innerHTML=`<input id="wkQ" type="search" placeholder="Search workouts" aria-label="Search workouts" value="${esc(wkQ)}" autocomplete="off">
+  body.innerHTML=`<div class="searchbar"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input id="wkQ" type="search" placeholder="Search workouts" aria-label="Search workouts" value="${esc(wkQ)}" autocomplete="off"></div>
     <div class="wkf"><select id="wkG" aria-label="Event group">${opt("mine","For you",wkFilter)}${opt("all","All events",wkFilter)}${Object.entries(WGROUP).map(([k,l])=>opt(k,l,wkFilter)).join("")}</select>
     <select id="wkPh" aria-label="Part of the season">${opt("","Any season",wkPh)}${Object.entries(PHASES).map(([k,l])=>opt(k,l,wkPh)).join("")}</select>
     <select id="wkT" aria-label="Kind">${opt("","All kinds",wkType)}${WTYPES.map(t=>opt(t,t,wkType)).join("")}</select></div>
