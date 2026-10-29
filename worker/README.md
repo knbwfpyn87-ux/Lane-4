@@ -8,6 +8,10 @@ What it does
   Lane 4 itself only keeps a random session id, never a Strava token.
 - Reminders: stores each step time of your race-day plan and sends a push notification when it's due,
   even when Lane 4 is closed. Each reminder is deleted as soon as it's sent.
+- Workout tweaks: "Adjust for me" in the workout planner asks a small AI model (Cloudflare Workers AI, free
+  daily allowance) to nudge a premade workout based on your recent log. Changes are capped at 1 rep per set,
+  3% effort, and 30s rest. Past the free daily limit, requests simply fail and Lane 4 falls back to its own rules.
+  Nothing is billed on the free plan.
 
 Without this Worker, Lane 4 still works: the Strava box stays hidden, and reminders pop up only while
 Lane 4 is open (or through "Add my plan to my calendar").
@@ -34,6 +38,7 @@ Never paste the Strava Client Secret into any file in this repo. It goes only in
 ## 4. Settings on the Worker
 In Workers & Pages → lane4 → Settings:
 1. Bindings → Add → D1 database → Variable name `DB` → database `lane4` → Save.
+   Then Bindings → Add → Workers AI → Variable name `AI` → Save.
 2. Variables and Secrets → Add each:
    - `APP_URL` (Text): `https://knbwfpyn87-ux.github.io/Lane-4/`
    - `STRAVA_CLIENT_ID` (Text): the Client ID from Strava
@@ -55,7 +60,11 @@ That address isn't a secret. Commit and push, then:
   each phone's push address and the step times of its plan (deleted once sent), and the Worker's own
   notification signing key (made automatically the first time).
 - Nothing from Strava is shared publicly or with other athletes. Lane 4 only reads activities; it never posts to Strava.
+- Workout tweaks send the workout plus a short summary of the athlete's last few log entries (no name or email)
+  to Cloudflare Workers AI. The Worker doesn't store them.
 
 ## Costs and limits
-Cloudflare's free plan covers 100,000 Worker requests a day and the every-minute cron trigger.
+Cloudflare's free plan covers 100,000 Worker requests a day, the every-minute cron trigger, and 10,000 Workers AI
+"neurons" a day (roughly 200 workout tweaks). Past that, AI requests fail until midnight UTC; you're never charged
+unless you upgrade to the paid plan yourself.
 Strava's default API limit is 200 requests every 15 minutes and 2,000 a day, shared by everyone using your app.

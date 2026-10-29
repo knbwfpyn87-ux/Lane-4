@@ -74,9 +74,10 @@ Your separate admin page lives at https://knbwfpyn87-ux.github.io/Lane-4/admin.h
 - Photos, workouts, goals, and contact info are never public.
 - Strava tokens and race-day push reminders live only in your own Cloudflare Worker's database (see below).
 
-## Strava sync and push reminders (optional)
+## Strava sync, push reminders, and AI workout tweaks (optional)
 Set up the free Cloudflare Worker in `worker/` by following `worker/README.md`. Until then, the Strava box
-stays hidden and race-day reminders work only while Lane 4 is open or through "Add my plan to my calendar."
+stays hidden, race-day reminders work only while Lane 4 is open or through "Add my plan to my calendar,"
+and the workout planner adjusts workouts with its own fixed rules instead of AI.
 
 ## What each person can do (enforced by firestore.rules, not just hidden buttons)
 - Read and write only their own saved data.

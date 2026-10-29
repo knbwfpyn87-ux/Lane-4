@@ -381,6 +381,26 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
 /* progress chart */
 .go.strava{background:#FC4C02;box-shadow:none}
 .btnrow[hidden],.go[hidden]{display:none}
+/* workout planner */
+.pday{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+.pday:first-child{border-top:0}
+.pday .dl{flex:none;width:46px;font:700 15px/1.2 "Barlow Condensed",sans-serif;color:var(--muted)}
+.pday.today .dl{color:var(--accent)}
+.pday .dl small{display:block;font:500 12px "Barlow",sans-serif}
+.pday .items{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.pitem{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:var(--soft);border:0;border-radius:12px;padding:8px 10px;font:inherit;color:var(--ink);cursor:pointer}
+.pitem .nm{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.pitem.done{opacity:.6}.pitem.done .nm{text-decoration:line-through}
+.pitem .ck{flex:none;color:var(--good);font-weight:700}
+.prest{color:var(--muted);font-size:14px;padding:6px 0}
+.wkpart{padding:10px 0;border-top:1px solid var(--line)}
+.wkpart:first-child{border-top:0}
+.wkpart b{font:700 18px "Barlow Condensed",sans-serif}
+.wkpart .tg{display:block;font-size:14px;color:var(--muted)}
+.wkpart .tg strong{color:var(--accent)}
+.chg{color:var(--accent);font-weight:600}
+.adjnote{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:14px}
+.tag.ai{background:var(--ink);color:var(--surface)}
 .tag.pro{background:var(--track);color:#fff;font:700 12px "Barlow",sans-serif;vertical-align:middle;margin-left:4px}
 #projChart{margin-top:12px}
 #projChart svg{display:block;width:100%;height:auto;overflow:visible}
@@ -579,6 +599,11 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
       <h2>All races</h2>
       <div class="panel" id="raceList"></div>
           <h2 id="trainingH">Training</h2>
+      <div class="panel" id="planBox">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">This week</h3><button class="ghost" id="planAdd">+ Add workout</button></div>
+        <p class="hint" id="planLoad"></p>
+        <div id="planDays"></div>
+      </div>
       <details class="panel" id="logBox">
         <summary>Log a workout</summary>
         <div class="row">
@@ -770,6 +795,10 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
   <p class="hint" style="margin:0 0 10px">Check each athlete’s times against their results page, then approve or reject. Only approved times appear in Rankings.</p>
   <div id="adminList"></div>
 </div></div>
+<div class="sheet" id="wkSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="wkTitle">
+  <div class="sheethead"><h3 id="wkTitle" style="margin:0">Workouts</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div id="wkBody"></div>
+</div></div>
 <div class="sheet" id="comingSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="comingTitle">
   <div class="sheethead"><h3 id="comingTitle" style="margin:0">Coming soon</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <p class="hint" style="margin:0 0 12px">This is a demo of Lane 4. These features are being built into the iPhone app.</p>
@@ -783,7 +812,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:5
   <div class="panel coming">
     <div class="ci"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><div><strong>Recruiting Mode</strong><p>Track every school from first email to visit to offer, with follow-up reminders and a recruiting timeline.</p></div></div>
   </div>
-  <p class="hint" style="text-align:center">Lane 4 will never use AI coaching. Your coach is your coach.</p>
+  <p class="hint" style="text-align:center">Lane 4’s AI only makes small, capped tweaks to premade workouts. Your coach’s plan always comes first.</p>
 </div></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <nav class="tabs" aria-label="Sections">
@@ -1178,9 +1207,129 @@ document.getElementById("saveW").onclick=()=>{
   saveW.textContent="Saved";setTimeout(()=>saveW.textContent="Save workout",1200);
 };
 let logAll=false;
-function renderLog(){const h=document.getElementById("history");const list=logAll?S.log:S.log.slice(0,4);
+function renderLog(){renderPlanner();const h=document.getElementById("history");const list=logAll?S.log:S.log.slice(0,4);
   h.innerHTML=S.log.length?list.map(workoutHTML).join("")+(S.log.length>4?`<button class="ghost" id="logMore" style="margin-top:10px;width:100%;padding:8px">${logAll?"Show less":`Show all ${S.log.length} workouts`}</button>`:""):`<p class="empty">No workouts yet. Tap “Log a workout” above.</p>`;
   const b=document.getElementById("logMore");if(b)b.onclick=()=>{logAll=!logAll;renderLog()}}
+
+/* ---------- workout planner: premade workouts, paced from your PRs, nudged a little by what you've logged.
+   Nudges come from fixed rules, or from Lane 4's AI when the Worker is set up. Either way clampAdj() caps them:
+   at most 1 rep per set, 3% pace, 30s rest. The AI never writes workouts. ---------- */
+const ALLG=["sprint","long","hurdles","mid","distance","jump","vault","throw"];
+const WK=[
+ {id:"accel",name:"Acceleration starts",type:"Speed",g:["sprint","long","hurdles","jump"],parts:[{n:6,d:30,pct:95,rest:120,what:"from a 3-point or block start"}],cue:"Push, don’t pop up. Full recovery between reps."},
+ {id:"fly",name:"Flying 30s",type:"Speed",g:["sprint","long","jump","vault"],parts:[{n:4,d:30,pct:97,rest:180,what:"after a 20–30m build-in"}],cue:"Relaxed top speed: loose face and hands."},
+ {id:"s150",name:"Speed 150s",type:"Speed",g:["sprint","long","hurdles"],parts:[{n:3,d:150,pct:92,rest:300}],cue:"Smooth and fast. Full rest so every rep is quality."},
+ {id:"se300",name:"Special endurance 300s",type:"Workout",g:["long","sprint"],parts:[{n:2,d:300,pct:90,rest:600}],cue:"Hard but controlled. The long rest is on purpose."},
+ {id:"l250",name:"Lactate 250s",type:"Workout",g:["long","mid"],parts:[{n:3,d:250,pct:88,rest:420}],cue:"Hold your form when it gets tough."},
+ {id:"t200",name:"Tempo 200s",type:"Tempo",g:["sprint","long","hurdles","jump"],parts:[{n:8,d:200,pct:70,rest:60}],cue:"Conversational effort. This is aerobic work, not a race."},
+ {id:"t100",name:"Grass tempo 100s",type:"Tempo",g:["sprint","hurdles","jump","vault","throw"],parts:[{n:12,d:100,pct:65,rest:45,what:"on grass, walk back"}],cue:"Easy rhythm. It should feel like recovery."},
+ {id:"hrhythm",name:"Hurdle rhythm",type:"Speed",g:["hurdles"],parts:[{n:6,d:null,rest:120,what:"runs over 5 hurdles at a lowered height"}],cue:"Fast three-step rhythm, snap the trail leg through."},
+ {id:"hstart",name:"Starts to hurdle 3",type:"Speed",g:["hurdles"],parts:[{n:5,d:null,rest:180,what:"block starts over the first 3 hurdles"}],cue:"Attack hurdle 1. Same steps every time."},
+ {id:"p800",name:"200s at 800 pace",type:"Workout",g:["mid","long"],parts:[{n:6,d:200,pace:800,rest:120}],cue:"Lock into race rhythm."},
+ {id:"pmile",name:"400s at mile pace",type:"Workout",g:["mid","distance"],parts:[{n:6,d:400,pace:1609,rest:90}],cue:"Even splits. The last rep should match the first."},
+ {id:"p3200",name:"1000s at 3200 pace",type:"Workout",g:["distance","mid"],parts:[{n:4,d:1000,pace:3200,rest:120}],cue:"Patient first half, strong finish."},
+ {id:"tempo",name:"Tempo run",type:"Tempo",g:["distance","mid"],parts:[{n:1,d:null,rest:0,what:"20 min comfortably hard, after a 10 min warm-up"}],cue:"You could say a few words, but not hold a chat."},
+ {id:"easy",name:"Easy run",type:"Run",g:["distance","mid"],parts:[{n:1,d:null,rest:0,what:"30 min easy"}],cue:"Truly easy. Slow is fine."},
+ {id:"long",name:"Long run",type:"Run",g:["distance"],parts:[{n:1,d:null,rest:0,what:"50–70 min easy"}],cue:"Steady and relaxed. Bring water."},
+ {id:"fartlek",name:"Fartlek",type:"Workout",g:["mid","distance"],parts:[{n:10,d:null,rest:60,what:"1 min hard, then easy jog"}],cue:"Hard means strong, not all-out."},
+ {id:"hills",name:"Hill sprints",type:"Speed",g:["sprint","long","hurdles","mid","distance","jump"],parts:[{n:8,d:null,rest:90,what:"10-second hill sprints, walk down"}],cue:"Drive the knees, stay tall."},
+ {id:"strides",name:"Strides",type:"Speed",g:["mid","distance","long"],parts:[{n:6,d:100,pct:85,rest:60}],cue:"Build up smoothly. Never strain."},
+ {id:"approach",name:"Approach run-throughs",type:"Speed",g:["jump","vault"],parts:[{n:6,d:null,rest:180,what:"full approach run-throughs, no take-off"}],cue:"Hit your check mark the same way every time."},
+ {id:"shortj",name:"Short-approach jumps",type:"Workout",g:["jump"],parts:[{n:8,d:null,rest:120,what:"jumps from a 6-step approach"}],cue:"Quick last two steps, tall at take-off."},
+ {id:"plyos",name:"Bounds and box jumps",type:"Plyos",g:["sprint","long","hurdles","jump","vault","throw"],parts:[{n:3,d:null,rest:120,what:"× 5 bounds"},{n:3,d:null,rest:90,what:"× 5 single-leg hops each leg"},{n:3,d:null,rest:90,what:"× 5 box jumps, step down"}],cue:"Quality over quantity. Stop if your landings get sloppy."},
+ {id:"medball",name:"Med-ball throws",type:"Plyos",g:["throw","sprint","jump"],parts:[{n:4,d:null,rest:60,what:"× 5 overhead back throws"},{n:4,d:null,rest:60,what:"× 5 chest passes"}],cue:"Explode from the legs, not just the arms."},
+ {id:"throws",name:"Stand throws to full throws",type:"Workout",g:["throw"],parts:[{n:10,d:null,rest:60,what:"stand throws"},{n:10,d:null,rest:90,what:"full throws"}],cue:"Same rhythm on every throw. Distance comes from position."},
+ {id:"lift",name:"Total-body lift",type:"Weights",g:ALLG,parts:[{n:3,d:null,rest:120,what:"× 5 squats"},{n:3,d:null,rest:120,what:"× 5 Romanian deadlifts"},{n:3,d:null,rest:60,what:"× 8 push-ups"},{n:3,d:null,rest:60,what:"× 8 rows"}],cue:"Moderate weight, perfect form. Lift with a coach or a spotter."},
+ {id:"core",name:"Core and mobility",type:"Weights",g:ALLG,parts:[{n:3,d:null,rest:30,what:"× 30s plank"},{n:3,d:null,rest:30,what:"× 10 dead bugs"},{n:1,d:null,rest:0,what:"10 min hip and ankle mobility"}],cue:"Slow and controlled."},
+ {id:"recovery",name:"Recovery day",type:"Rest",g:ALLG,parts:[{n:1,d:null,rest:0,what:"20 min walk or very easy jog, then stretching"}],cue:"Recovery is part of training."}
+];
+/* targets: your nearest running PR scaled to the rep distance (Riegel's formula), then to the effort */
+const RUN_M={"55m":55,"60m":60,"100m":100,"200m":200,"300m":300,"400m":400,"500m":500,"600m":600,"800m":800,"1000m":1000,"1600m":1600,"Mile":1609,"3200m":3200,"5K XC":5000};
+function raceTime(d){let best=null;Object.keys(RUN_M).forEach(ev=>{const r=pr(ev);if(!r)return;const t=val(ev,r.mark);if(!(t>0))return;
+  const k=Math.abs(Math.log(d/RUN_M[ev]));if(!best||k<best.k)best={k,t,m:RUN_M[ev]}});return best?best.t*Math.pow(d/best.m,1.06):null}
+function repTarget(p){if(!p.d||p.d<100)return null;if(p.pace){const t=raceTime(p.pace);return t?t*p.d/p.pace:null}return p.pct?(raceTime(p.d)||NaN)/(p.pct/100)||null:null}
+function fmtSec(s){return s<60?s.toFixed(1):`${Math.floor(s/60)}:${(s%60).toFixed(1).padStart(4,"0")}`}
+function restTxt(s){return s>=60?(s%60?`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")} min`:`${s/60} min`):`${s}s`}
+const PACE_NAME={800:"800",1609:"mile",3200:"3200"};
+function partText(p){const effort=p.pace?` at ${PACE_NAME[p.pace]} pace`:p.pct?` at ${p.pct}%`:"";
+  if(p.d)return `${p.n} × ${p.d}m${effort}${p.what?" "+p.what:""}`;
+  if(p.what.startsWith("×"))return `${p.n} sets ${p.what}`;return p.n>1?`${p.n} × ${p.what}`:p.what}
+function wkSummary(w){return w.parts.map(partText).join(", ")}
+function partHTML(p,base){const t=repTarget(p),chg=[];
+  if(base.n!==p.n)chg.push(`was ${base.n}`);if(base.pct!==p.pct)chg.push(`was ${base.pct}%`);if(base.rest!==p.rest)chg.push(`rest was ${restTxt(base.rest)}`);
+  return `<div class="wkpart"><b>${esc(partText(p))}</b>${chg.length?` <span class="chg">(${chg.join(", ")})</span>`:""}
+    <span class="tg">${t?`Target <strong>~${fmtSec(t)}</strong> each · `:""}${p.rest?restTxt(p.rest)+" rest":""}</span></div>`}
+function myGroup(){const c={};S.races.forEach(r=>c[r.event]=(c[r.event]||0)+1);const ev=Object.keys(c).sort((a,b)=>c[b]-c[a])[0]||Object.keys(S.goals)[0];return ev?planType(ev):"sprint"}
+function trainingLoad(){const age=d=>Math.floor((Date.now()-Date.parse(d+"T12:00:00"))/864e5);
+  const L=S.log.filter(w=>w.type!=="Rest"&&w.date),last7=L.filter(w=>age(w.date)>=0&&age(w.date)<7),prev=L.filter(w=>age(w.date)>=7&&age(w.date)<35);
+  const f=S.log.filter(w=>w.feel).slice(0,3).map(w=>+w.feel);
+  return{n7:last7.length,avg:prev.length/4,mi:last7.reduce((s,w)=>s+(w.miles||0),0),feel:f.length?f.reduce((a,b)=>a+b,0)/f.length:null}}
+/* the caps: whatever the rules or the AI suggest, only this much can change */
+function clampAdj(w,a){const c=(v,lo,hi)=>Math.max(lo,Math.min(hi,Math.round(+v||0)));
+  return{sets:w.parts.map((p,i)=>p.n<2?0:c(a.sets&&a.sets[i],-1,1)),pct:w.parts.some(p=>p.pct)?c(a.pct,-3,3):0,
+    rest:w.parts.some(p=>p.rest)?Math.round(c(a.rest,-30,30)/15)*15:0,why:String(a.why||"").replace(/[\u0000-\u001f]/g," ").slice(0,160),by:a.by==="ai"?"ai":"rules"}}
+function applyAdj(w,a){if(!a)return w;return{...w,parts:w.parts.map((p,i)=>({...p,n:Math.max(1,p.n+(a.sets[i]||0)),
+  pct:p.pct?Math.max(50,Math.min(100,p.pct+a.pct)):p.pct,rest:p.rest?Math.max(15,p.rest+a.rest):p.rest}))}}
+function ruleAdjust(w){const L=trainingLoad(),sets=w.parts.map(()=>0),main=w.parts.reduce((b,p,i)=>p.n>w.parts[b].n?i:b,0),canReps=w.parts[main].n>=2;
+  let pct=0,rest=0,why;
+  if(w.type==="Rest")why="Recovery days stay as written.";
+  /* compare to "usual" only with at least 4 workouts in the 4 weeks before */
+  else if((L.feel!=null&&L.feel<2.5)||(L.avg>=1&&L.n7>L.avg*1.3)){if(canReps)sets[main]=-1;pct=-2;rest=30;
+    why=L.feel!=null&&L.feel<2.5?`Your last workouts felt rough (${L.feel.toFixed(1)}/5), so this one is a little easier.`:`You’ve logged ${L.n7} workouts this week, more than your usual ${L.avg.toFixed(1)}, so this one is a little easier.`}
+  else if(canReps&&L.feel!=null&&L.feel>=4&&L.avg>=1&&L.n7<L.avg*0.8){sets[main]=1;why=`You’re feeling good (${L.feel.toFixed(1)}/5) and this week is lighter than usual, so there’s one extra rep.`}
+  else why=L.n7||L.avg?"Your recent training looks normal, so this stays as written.":"Log a few workouts and Lane 4 will start fitting this to you.";
+  return clampAdj(w,{sets,pct,rest,why,by:"rules"})}
+async function aiAdjust(w){if(!LANE4_WORKER)return null;const L=trainingLoad(),ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
+  try{const r=await fetch(LANE4_WORKER+"/ai/adjust",{method:"POST",signal:ctl.signal,headers:{"Content-Type":"application/json"},body:JSON.stringify({
+      workout:{name:w.name,type:w.type,parts:w.parts.map(p=>({reps:p.n,meters:p.d,effortPct:p.pct,racePace:p.pace?PACE_NAME[p.pace]:null,restSec:p.rest,what:p.what||null}))},
+      athlete:{eventGroup:myGroup(),workoutsLast7Days:L.n7,usualWorkoutsPerWeek:+L.avg.toFixed(1),milesLast7Days:+L.mi.toFixed(1),recentFeelOutOf5:L.feel==null?null:+L.feel.toFixed(1),
+        recent:S.log.slice(0,5).map(x=>({date:x.date,type:x.type,feel:x.feel||null,note:String(x.note||"").slice(0,60)}))}})});
+    if(!r.ok)return null;const a=await r.json();return a&&Array.isArray(a.sets)?clampAdj(w,{...a,by:"ai"}):null}
+  catch(e){return null}finally{clearTimeout(t)}}
+function weekDays(){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7);return[...Array(7)].map((_,i)=>{const x=new Date(d);x.setDate(d.getDate()+i);return x})}
+function isoDay(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function renderPlanner(){if(!S)return;if(!S.wplan)S.wplan=[];const days=weekDays(),td=today(),L=trainingLoad();
+  document.getElementById("planLoad").textContent=L.n7||L.avg?`Last 7 days: ${L.n7} workout${L.n7===1?"":"s"}${L.mi?`, ${L.mi.toFixed(1)} mi`:""}${L.feel!=null?`, felt ${L.feel.toFixed(1)}/5 lately`:""}.`:"Add workouts to your week. Targets come from your PRs.";
+  document.getElementById("planDays").innerHTML=days.map(d=>{const iso=isoDay(d),items=S.wplan.map((p,i)=>({...p,i})).filter(p=>p.date===iso);
+    return `<div class="pday${iso===td?" today":""}"><div class="dl">${d.toLocaleDateString([],{weekday:"short"})}<small>${d.getDate()}</small></div><div class="items">${items.length?items.map(p=>{const w=WK.find(x=>x.id===p.id);
+      return w?`<button class="pitem${p.done?" done":""}" data-pi="${p.i}"><span class="nm">${esc(w.name)}</span>${p.adj&&p.adj.by==="ai"?'<span class="tag ai">AI</span>':""}${p.done?'<span class="ck" aria-label="done">✓</span>':""}</button>`:""}).join(""):`<span class="prest">—</span>`}</div></div>`}).join("");
+  document.querySelectorAll("#planDays [data-pi]").forEach(b=>b.onclick=()=>openWk({planned:+b.dataset.pi}))}
+let wkFilter="mine";
+function openWk(o){openSheet("wkSheet");if(o&&(o.id||o.planned!=null))wkDetail(o);else wkList()}
+function wkList(){document.getElementById("wkTitle").textContent="Workouts";const g=myGroup(),body=document.getElementById("wkBody");
+  const F=[["mine","For you"],["all","All"],["Speed","Speed"],["Tempo","Tempo"],["Workout","Workouts"],["Run","Runs"],["Plyos","Plyos"],["Weights","Weights"]];
+  const list=WK.filter(w=>wkFilter==="mine"?w.g.includes(g):wkFilter==="all"||w.type===wkFilter);
+  body.innerHTML=`<div class="chips" role="group" aria-label="Filter">${F.map(([k,l])=>`<button data-wf="${k}" aria-pressed="${k===wkFilter}">${l}</button>`).join("")}</div>
+    <div class="panel" style="padding:4px 12px">${list.length?list.map(w=>`<div class="crow"><button class="cmain" data-wk="${w.id}"><span class="cname">${esc(w.name)}</span><span class="cmeta">${w.type} · ${esc(wkSummary(w))}</span></button></div>`).join(""):`<p class="empty" style="padding:10px 0">No workouts here yet.</p>`}</div>`;
+  body.querySelectorAll("[data-wf]").forEach(b=>b.onclick=()=>{wkFilter=b.dataset.wf;wkList()});
+  body.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>wkDetail({id:b.dataset.wk}))}
+function wkDetail(o){const P=o.planned!=null?S.wplan[o.planned]:null,w=WK.find(x=>x.id===(P?P.id:o.id));if(!w){wkList();return}
+  const adj=P?P.adj:o.adj||null,shown=applyAdj(w,adj),body=document.getElementById("wkBody"),days=weekDays(),td=today();
+  document.getElementById("wkTitle").textContent=w.name;
+  body.innerHTML=`<span class="tag">${w.type}</span>${P?` <span class="tag">${new Date(P.date+"T12:00:00").toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"})}</span>`:""}
+    <div class="panel" style="margin-top:10px">${shown.parts.map((p,i)=>partHTML(p,w.parts[i])).join("")}<p class="hint" style="margin-top:8px">${esc(w.cue)}</p></div>
+    ${adj?`<div class="adjnote"><span class="tag ${adj.by==="ai"?"ai":""}">${adj.by==="ai"?"AI tweak":"Adjusted by rules"}</span> ${esc(adj.why)}</div>`:""}
+    ${P&&P.done?"":`<button class="go alt" id="wkAdj">${adj?"Adjust again":"Adjust for me"}</button>
+    <p class="hint">${LANE4_WORKER?"Sends this workout and a short summary of your recent log (no name) to Lane 4’s AI. ":"Uses your recent log: how much you’ve trained and how it felt. "}Changes are capped at 1 rep per set, 3% effort, and 30s rest.</p>`}
+    ${P?(P.done?`<button class="go alt" id="wkUndo">Mark not done</button>`
+      :`<label for="wkFeel">How it felt: <span id="wkFeelV">3</span>/5</label><input type="range" id="wkFeel" min="1" max="5" value="3"><button class="go" id="wkDone">Mark done</button>`)
+      +`<button class="ghost" id="wkRemove" style="margin-top:12px;width:100%;padding:8px">Remove from my week</button>`
+      :`<label for="wkDay">Day</label><select id="wkDay">${days.map(d=>{const iso=isoDay(d);return `<option value="${iso}"${iso===td?" selected":""}>${d.toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"})}</option>`}).join("")}</select><button class="go" id="wkAddBtn">Add to my week</button>`}
+    <button class="linkbtn" id="wkBack" style="margin-top:10px">‹ All workouts</button>`;
+  const $=id=>document.getElementById(id);
+  $("wkBack").onclick=()=>wkList();
+  if($("wkAdj"))$("wkAdj").onclick=async()=>{const b=$("wkAdj");b.disabled=true;b.textContent="Adjusting…";
+    const a=(await aiAdjust(w))||ruleAdjust(w);if(P){P.adj=a;save();renderPlanner();wkDetail(o)}else wkDetail({id:w.id,adj:a})};
+  if($("wkAddBtn"))$("wkAddBtn").onclick=()=>{S.wplan.push({id:w.id,date:$("wkDay").value,adj:adj||null,done:false});
+    const cut=isoDay(new Date(Date.now()-60*864e5));S.wplan=S.wplan.filter(p=>p.date>=cut);save();renderPlanner();toast(`${w.name} added`);wkList()};
+  if($("wkFeel")){$("wkFeel").oninput=e=>$("wkFeelV").textContent=e.target.value;rangeFill($("wkFeel"))}
+  if($("wkDone"))$("wkDone").onclick=()=>{const src="plan-"+P.date+"-"+P.id;
+    S.log.unshift({date:P.date>td?td:P.date,type:w.type,note:`${w.name}: ${wkSummary(shown)}`,feel:+$("wkFeel").value,src});
+    S.log.sort((a,b)=>b.date.localeCompare(a.date));P.done=true;save();renderAll();toast("Logged");wkDetail(o)};
+  if($("wkUndo"))$("wkUndo").onclick=()=>{const src="plan-"+P.date+"-"+P.id;S.log=S.log.filter(x=>x.src!==src);P.done=false;save();renderAll();wkDetail(o)};
+  if($("wkRemove"))$("wkRemove").onclick=()=>{S.wplan.splice(o.planned,1);save();renderPlanner();wkList()};
+}
+document.getElementById("planAdd").onclick=()=>openWk();
 
 /* ---------- goals ---------- */
 let gTouched=false;

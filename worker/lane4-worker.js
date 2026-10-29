@@ -1,9 +1,10 @@
-/* Lane 4 Worker (Cloudflare): Strava sync and race-day push reminders.
+/* Lane 4 Worker (Cloudflare): Strava sync, race-day push reminders, and small AI tweaks to premade workouts.
    Setup steps are in worker/README.md.
    Secrets live only in Cloudflare (Settings → Variables and Secrets). Never paste them into this file: the repo is public.
 
    Needs:
      D1 database bound as DB
+     Workers AI bound as AI (free daily allowance)
      Variables: APP_URL (e.g. https://knbwfpyn87-ux.github.io/Lane-4/), STRAVA_CLIENT_ID
      Secret:    STRAVA_CLIENT_SECRET
      Cron trigger: * * * * *  (sends due reminders every minute)
@@ -162,6 +163,28 @@ async function stravaDisconnect(req, env) {
   return json(env, { ok: true });
 }
 
+/* ---------- AI workout tweak, on Cloudflare's free Workers AI allowance (requests just fail past the daily limit; nothing is billed).
+   The AI may only nudge a premade workout. The caps are enforced here and again in the app. ---------- */
+const AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8-fast";
+const AI_RULES = `You adjust a high school track athlete's premade workout a little, based on their recent training. You never write new workouts and never give medical advice.
+Reply with JSON only, no other text: {"sets":[...],"pct":0,"rest":0,"why":"..."}
+- "sets": one number per workout part, in order: -1 (one fewer rep), 0, or 1 (one more rep).
+- "pct": change to the effort percent, a whole number from -3 to 3.
+- "rest": change to rest in seconds: -30, -15, 0, 15, or 30.
+- "why": one short, friendly sentence (under 25 words) about their recent training.
+Make it easier when recent workouts felt rough (recentFeelOutOf5 under 2.5) or they trained more than usual. Make it slightly harder only when they feel good and trained less than usual. Otherwise keep it as written. When unsure, change nothing.`;
+async function aiAdjust(req, env) {
+  if (!env.AI) return json(env, { error: "AI not set up" }, 503);
+  const { workout: w, athlete: a } = await req.json().catch(() => ({}));
+  if (!w || !Array.isArray(w.parts) || w.parts.length < 1 || w.parts.length > 6) return json(env, { error: "bad request" }, 400);
+  const out = await env.AI.run(AI_MODEL, { messages: [{ role: "system", content: AI_RULES }, { role: "user", content: JSON.stringify({ workout: w, athlete: a || {} }).slice(0, 4000) }], max_tokens: 160, temperature: 0.2 });
+  let r = out && out.response;
+  if (typeof r !== "object") { const m = String(r || "").match(/\{[\s\S]*\}/); try { r = JSON.parse(m ? m[0] : ""); } catch { return json(env, { error: "no answer" }, 502); } }
+  const c = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+v || 0)));
+  return json(env, { sets: w.parts.map((_, i) => c(Array.isArray(r.sets) ? r.sets[i] : 0, -1, 1)), pct: c(r.pct, -3, 3),
+    rest: Math.round(c(r.rest, -30, 30) / 15) * 15, why: String(r.why || "").replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, 160) });
+}
+
 export default {
   async fetch(req, env) {
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(env) });
@@ -175,6 +198,7 @@ export default {
       if (m === "GET" && path === "/strava/callback") return await stravaCallback(req, env);
       if (m === "GET" && path === "/strava/activities") return await stravaActivities(req, env);
       if (m === "POST" && path === "/strava/disconnect") return await stravaDisconnect(req, env);
+      if (m === "POST" && path === "/ai/adjust") return await aiAdjust(req, env);
       if (m === "GET" && path === "/") return new Response("Lane 4 Worker is running.", { headers: { "Content-Type": "text/plain" } });
     } catch (e) { return json(env, { error: "server error" }, 500); }
     return json(env, { error: "not found" }, 404);
