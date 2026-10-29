@@ -679,7 +679,12 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       <div id="cTools">
         <div class="searchbar"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input id="cSearch" type="search" placeholder="School, state, or conference" autocomplete="off" aria-label="Search colleges"></div>
         <div class="chips" id="cChips" role="group" aria-label="Filter"><button data-d="All">All</button><button data-d="D1">D1</button><button data-d="D2">D2</button><button data-d="D3">D3</button><button data-d="Mine">★ Mine</button></div>
-        <div class="sortrow"><span class="hint" id="cCount" style="margin:0"></span><div id="cSort" class="chips small" role="group" aria-label="Sort"><button data-s="fit">Best match</button><button data-s="az">A–Z</button></div></div>
+        <div class="row" style="margin-bottom:8px">
+          <div><label for="cConf">Conference</label><select id="cConf"></select></div>
+          <div><label for="cState">State</label><select id="cState"></select></div>
+        </div>
+        <div class="sortrow"><span class="hint" id="cCount" style="margin:0"></span><div id="cSort" class="chips small" role="group" aria-label="Sort"><button data-s="fit">Best match</button><button data-s="tough">Toughest standards</button><button data-s="az">A–Z</button></div></div>
+        <p class="hint" id="cToughNote" hidden style="margin:-4px 0 10px">Ranked by how fast each conference’s Target marks are across all events. Not an official national ranking.</p>
       </div>
       <div class="panel" id="cList" style="padding:4px 12px"></div>
       <div id="cDetail" hidden></div>
@@ -1456,7 +1461,24 @@ function renderGoals(){
 }
 
 /* ---------- colleges ---------- */
-let cDiv="All",cSort="fit",cOpen=null;
+let cDiv="All",cSort="fit",cOpen=null,cConf="",cState="";
+/* conference toughness: rank each conference's Target mark in every event (1 = fastest/farthest), then average.
+   Built only from the standards Lane 4 has; it is not a national team ranking. */
+const TOUGH={};
+function confTough(g){if(TOUGH[g])return TOUGH[g];const score=CONF.map(()=>[]);
+  STD_EVENTS.forEach((ev,ei)=>{const field=FIELD.has(ev);
+    const vals=CONF.map((c,ci)=>{const m=(g==="Women"?c.w:c.m)[ei*3];return{ci,v:m?(field?toIn(m):toSec(m)):NaN}}).filter(x=>!isNaN(x.v))
+      .sort((a,b)=>field?b.v-a.v:a.v-b.v);
+    vals.forEach((x,r)=>score[x.ci].push(vals.length>1?r/(vals.length-1):0))});
+  const avg=score.map(s=>s.length?s.reduce((a,b)=>a+b,0)/s.length:1),order=avg.map((v,ci)=>ci).sort((a,b)=>avg[a]-avg[b]);
+  return TOUGH[g]={avg,rank:Object.fromEntries(order.map((ci,i)=>[ci,i+1]))}}
+function fillCollegeFilters(){const cs=document.getElementById("cConf"),ss=document.getElementById("cState");
+  if(!cs.options.length){
+    cs.innerHTML=`<option value="">All conferences</option>`+["D1","D2","D3"].map(d=>`<optgroup label="${d}">${CONF.filter(c=>c.d===d).map(c=>c.n).sort().map(n=>`<option>${esc(n)}</option>`).join("")}</optgroup>`).join("");
+    ss.innerHTML=`<option value="">All states</option>`+[...new Set(SCHOOLS.map(s=>s.state))].sort().map(s=>`<option>${esc(s)}</option>`).join("");
+    cs.onchange=()=>{cConf=cs.value;const c=CONF.find(x=>x.n===cConf);if(c&&["D1","D2","D3"].includes(cDiv)&&c.d!==cDiv)cDiv="All";renderColleges()};
+    ss.onchange=()=>{cState=ss.value;renderColleges()}}
+  cs.value=cConf;ss.value=cState}
 function fitBadge(f){
   if(f.level===-1)return `<span class="badge none">Add a PR to compare</span>`;
   if(f.level<3)return `<span class="badge lv${f.level}">${LEVELS[f.level]} level in the ${f.bestEv}</span>`;
@@ -1468,18 +1490,24 @@ function renderColleges(){
   document.querySelectorAll("#cChips button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===cDiv));
   document.querySelectorAll("#cSort button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===cSort));
   if(cOpen){list.hidden=true;document.getElementById("cTools").hidden=true;detail.hidden=false;renderCollege(cOpen);return}
-  list.hidden=false;document.getElementById("cTools").hidden=false;detail.hidden=true;
+  list.hidden=false;document.getElementById("cTools").hidden=false;detail.hidden=true;fillCollegeFilters();
+  document.getElementById("cToughNote").hidden=cSort!=="tough";
   const q=cSearch.value.trim().toLowerCase();
   let items=SCHOOLS.filter(sc=>{const c=CONF[sc.ci];
     if(cDiv==="Mine"&&!S.fav.includes(sc.id))return false;
     if(["D1","D2","D3"].includes(cDiv)&&c.d!==cDiv)return false;
+    if(cConf&&c.n!==cConf)return false;
+    if(cState&&sc.state!==cState)return false;
     if(!q)return true;
     return (sc.name+" "+sc.state+" "+c.n+" "+c.d).toLowerCase().includes(q)});
   const fits=new Map(items.map(sc=>[sc.id,schoolFit(sc)]));
   if(cSort==="fit")items.sort((a,b)=>{const fa=fits.get(a.id),fb=fits.get(b.id);const la=fa.level<0?9:fa.level,lb=fb.level<0?9:fb.level;if(la!==lb)return la-lb;const ga=fa.closest?fa.closest.g:9,gb=fb.closest?fb.closest.g:9;return ga-gb||a.name.localeCompare(b.name)});
+  const T=confTough(S.gender);
+  if(cSort==="tough")items.sort((a,b)=>T.avg[a.ci]-T.avg[b.ci]||a.name.localeCompare(b.name));
+  else if(cSort==="az")items.sort((a,b)=>a.name.localeCompare(b.name));
   document.getElementById("cCount").textContent=`${items.length} college${items.length===1?"":"s"}`;
   list.innerHTML=items.length?items.map(sc=>{const c=CONF[sc.ci],fav=S.fav.includes(sc.id);
-    return `<div class="crow"><button class="cmain" data-id="${esc(sc.id)}"><span class="cname">${esc(sc.name)}${sc.official?' <span class="star-off" title="Publishes its own chart">★</span>':""}</span><span class="cmeta">${c.d} · ${esc(c.n)} · ${sc.state}</span>${fitBadge(fits.get(sc.id))}</button><button class="fav ${fav?"on":""}" data-fav="${esc(sc.id)}" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>`}).join(""):`<p class="empty" style="padding:8px 0">No colleges match. Try a school name, state like CT, or a conference.</p>`;
+    return `<div class="crow"><button class="cmain" data-id="${esc(sc.id)}"><span class="cname">${esc(sc.name)}${sc.official?' <span class="star-off" title="Publishes its own chart">★</span>':""}</span><span class="cmeta">${c.d} · ${esc(c.n)} · ${sc.state}${cSort==="tough"?` · #${T.rank[sc.ci]} of ${CONF.length} conferences`:""}</span>${fitBadge(fits.get(sc.id))}</button><button class="fav ${fav?"on":""}" data-fav="${esc(sc.id)}" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>`}).join(""):`<p class="empty" style="padding:8px 0">No colleges match. Try a different conference or state, or clear the search.</p>`;
   list.querySelectorAll(".cmain").forEach(b=>b.onclick=()=>{cOpen=b.dataset.id;renderColleges();window.scrollTo(0,0)});
   list.querySelectorAll("[data-fav]").forEach(b=>b.onclick=()=>toggleFav(b.dataset.fav));
 }
