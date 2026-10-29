@@ -322,6 +322,8 @@ header.top.sub .brandh,header.top.sub>p,header.top.sub .demo-pill,header.top:not
 .mrow .grow{flex:1;min-width:0;overflow-wrap:anywhere}.mrow .hint{margin:0}
 img.proof{display:block;width:100%;max-height:420px;object-fit:contain;border-radius:10px;border:1px solid var(--line);background:var(--soft);margin:6px 0 4px}
 #tpManual{margin-top:12px}#tpManual summary{cursor:pointer;font-weight:600}
+[hidden]{display:none!important}
+.go.signin{margin-top:12px}
 .tile:active{transform:scale(.98)}
 @media (prefers-reduced-motion:reduce){.tile:active{transform:none}}
 .demo-pill{background:none;border:1.5px solid rgba(255,255,255,.7)}
@@ -726,8 +728,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       <label for="cardPos" id="cardPosLbl" hidden>Move your photo up or down</label><input type="range" id="cardPos" min="0" max="100" value="30" hidden>
       <p class="hint" style="text-align:center">Screenshot your card to post it. ✓ means an admin checked that time against official results.</p>
       <details class="panel"><summary>Text version of your card</summary><div class="acard" id="acard"></div>
+      <p class="hint">Paste it into an email, a DM, or a recruiting questionnaire.</p>
       <button class="go alt" id="copyCard">Copy card as text</button></details>
-      <p class="hint" style="text-align:center">Paste it into an email, a DM, or a recruiting questionnaire.</p>
       <details class="panel" id="profBox">
         <summary>Edit my info</summary>
         <label for="pUser">Username</label><input id="pUser" autocomplete="username" placeholder="e.g. xavier_runs" autocapitalize="none" spellcheck="false">
@@ -936,6 +938,7 @@ const CLOUD={ref:null,timer:null,chain:Promise.resolve(),state:"checking"};
 function setSync(st){CLOUD.state=st;const el=document.getElementById("syncLine");if(!el)return;
   const u=S&&S.profile&&S.profile.username?` as @${S.profile.username}`:"";
   el.textContent={checking:"Checking your account…",syncing:"Saving…",cloud:`☁️ Saved to your account${u}`,device:"📱 Saved on this device only",full:"⚠️ Account storage is full. Saved on this device only."}[st]||"";
+  if(st==="device"&&canSignIn())el.insertAdjacentHTML("beforeend",` · <button class="linkbtn" data-signin>Sign in to back it up</button>`)
   el.dataset.state=st}
 function queueCloud(){if(!CLOUD.ref)return;clearTimeout(CLOUD.timer);setSync("syncing");CLOUD.timer=setTimeout(pushCloud,1200)}
 function pushCloud(){if(!CLOUD.ref||!S)return;const body={state:JSON.parse(JSON.stringify(S)),updatedAt:S.updatedAt||Date.now()};
@@ -2033,7 +2036,7 @@ document.getElementById("pubSubmit").onclick=async()=>{
   refreshPublic()};
 async function openRankings(){
   openSheet("rankSheet");const list=document.getElementById("rankList");list.innerHTML=`<p class="hint">Loading…</p>`;
-  if(!PUB.db){list.innerHTML=`<p class="empty">Rankings need an account. Sign in with your Lane 4 account to see them.</p>`;return}
+  if(!PUB.db){list.innerHTML=`<p class="empty">Rankings need a Lane 4 account.</p>${signInBtn()}`;return}
   try{const [b,o]=await Promise.all([PUB.db.collection("board").get(),PUB.db.collection("optout").get()]);
     PUB.optout=new Set(o.docs.map(x=>x.id));PUB.board=b.docs.filter(x=>x.exists&&!PUB.optout.has(x.id)).map(x=>({id:x.id,...x.data()}))}
   catch(_){list.innerHTML=`<p class="empty">Couldn’t load rankings right now.</p>`;return}
@@ -2152,6 +2155,10 @@ async function sendShot(rows){
 /* ---------- teams: a coach registers a team, an admin approves it, athletes join with the team code.
    Coaches of approved teams post official results: straight into their athletes' logs, and into Rankings for
    athletes who said yes. firestore.rules enforces each step, not just these screens. ---------- */
+/* Sign-in button for screens that need an account; it opens the same sign-in screen as Settings. */
+function canSignIn(){const b=document.getElementById("acctSignIn"),box=document.getElementById("acctBox");return !!b&&!b.hidden&&!(box&&box.hidden)}
+function signInBtn(){return canSignIn()?`<button class="go signin" data-signin>Sign in</button>`:""}
+document.addEventListener("click",e=>{if(e.target.closest("[data-signin]"))document.getElementById("acctSignIn").click()});
 const TEAM={mine:null,err:false,coach:null,members:[],post:[]};
 function newCode(){const ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",a=new Uint32Array(6);crypto.getRandomValues(a);return[...a].map(n=>ch[n%ch.length]).join("")}
 /* results the coach posted wait on the athlete's team record until the athlete's app copies them into their log */
@@ -2167,7 +2174,7 @@ async function teamSync(){
 async function renderTeam(){
   if(!S)return;const mine=document.getElementById("teamMine"),coach=document.getElementById("teamCoach");
   document.getElementById("teamPost").hidden=true;
-  if(!PUB.db){mine.innerHTML=`<p class="empty">Teams need a Lane 4 account. Sign in from Settings, then come back here.</p>`;coach.innerHTML=`<p class="hint" style="margin:0">Coaches sign in too, then register their team here.</p>`;return}
+  if(!PUB.db){mine.innerHTML=`<p class="empty">Teams need a Lane 4 account.</p>${signInBtn()}`;coach.innerHTML=`<p class="hint" style="margin:0">Coaches sign in too, then register their team here.</p>`;return}
   mine.innerHTML=coach.innerHTML=`<p class="hint" style="margin:0">Loading…</p>`;
   await teamSync();renderMine();await loadCoach();renderCoach();renderHub()}
 function renderMine(){
