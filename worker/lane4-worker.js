@@ -15,6 +15,7 @@ const SCHEMA = [
   "CREATE TABLE IF NOT EXISTS oauth_state (state TEXT PRIMARY KEY, created INTEGER)",
   "CREATE TABLE IF NOT EXISTS strava (sid TEXT PRIMARY KEY, athlete INTEGER, access TEXT, refresh TEXT, expires INTEGER, created INTEGER)",
   "CREATE TABLE IF NOT EXISTS reminders (endpoint TEXT, at INTEGER, p256dh TEXT, auth TEXT, title TEXT, body TEXT, PRIMARY KEY (endpoint, at))",
+  "CREATE TABLE IF NOT EXISTS ai_cache (k TEXT PRIMARY KEY, v TEXT, created INTEGER)",
 ];
 let ready = null;
 function ensure(env) { return ready ||= env.DB.batch(SCHEMA.map(s => env.DB.prepare(s))); }
@@ -103,7 +104,7 @@ async function sendDue(env) {
     if (now - r.at > 10 * 60e3) return; /* too late to be useful; just drop it */
     try { const res = await sendPush(env, r); if (res.status === 404 || res.status === 410) gone.add(r.endpoint); } catch {}
   }));
-  const stmts = [env.DB.prepare("DELETE FROM reminders WHERE at <= ?").bind(now), env.DB.prepare("DELETE FROM oauth_state WHERE created < ?").bind(now - 3600e3)];
+  const stmts = [env.DB.prepare("DELETE FROM reminders WHERE at <= ?").bind(now), env.DB.prepare("DELETE FROM oauth_state WHERE created < ?").bind(now - 3600e3), env.DB.prepare("DELETE FROM ai_cache WHERE created < ?").bind(now - 30 * 864e5)];
   gone.forEach(e => stmts.push(env.DB.prepare("DELETE FROM reminders WHERE endpoint = ?").bind(e)));
   await env.DB.batch(stmts);
 }
@@ -164,25 +165,45 @@ async function stravaDisconnect(req, env) {
 }
 
 /* ---------- AI workout tweak, on Cloudflare's free Workers AI allowance (requests just fail past the daily limit; nothing is billed).
-   The AI may only nudge a premade workout. The caps are enforced here and again in the app. ---------- */
+   The AI may only nudge a premade workout, and it sees only: the workout, the athlete's events, their sore spots, and their
+   part of the season. Anything else in the request is dropped. The caps are enforced here and again in the app (clampAdj).
+   Answers are cached in D1, so the same question never uses the free allowance twice. ---------- */
 const AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8-fast";
-const AI_RULES = `You adjust a high school track athlete's premade workout a little, based on their recent training. You never write new workouts and never give medical advice.
-Reply with JSON only, no other text: {"sets":[...],"pct":0,"rest":0,"why":"..."}
+const PHASES = { off: "off-season", pre: "pre-season", early: "early season", mid: "mid-season", champ: "championship season" };
+const SORE = { hamstring: "hamstring", quad: "quad", calf: "calf or Achilles", shin: "shins", knee: "knee", foot: "foot or ankle", hip: "hip or groin", back: "back", arm: "shoulder or elbow" };
+const AI_RULES = `You make a very small change to a high school track athlete's premade workout. You only consider three things: their events, their part of the season, and any sore spots. You never write new workouts, never write any text, and never give medical advice.
+Reply with JSON only, no other text: {"sets":[...],"pct":0,"rest":0}
 - "sets": one number per workout part, in order: -1 (one fewer rep), 0, or 1 (one more rep).
 - "pct": change to the effort percent, a whole number from -3 to 3.
 - "rest": change to rest in seconds: -30, -15, 0, 15, or 30.
-- "why": one short, friendly sentence (under 25 words) about their recent training.
-Make it easier when recent workouts felt rough (recentFeelOutOf5 under 2.5) or they trained more than usual. Make it slightly harder only when they feel good and trained less than usual. Otherwise keep it as written. When unsure, change nothing.`;
+Sore spots: make the workout a little easier (fewer reps, less effort, more rest), never harder.
+Championship season: never add reps; trimming a rep keeps them fresh. Off-season: never raise effort.
+Pre-season: one extra rep is fine for aerobic work if nothing is sore.
+If the workout doesn't fit their events well, keep the changes small. When unsure, change nothing.`;
+const clean = (v, n) => String(v || "").replace(/[^\w ’'.()-]/g, "").slice(0, n);
+async function sha(s) { return b64u(await crypto.subtle.digest("SHA-256", enc.encode(s))); }
 async function aiAdjust(req, env) {
   if (!env.AI) return json(env, { error: "AI not set up" }, 503);
-  const { workout: w, athlete: a } = await req.json().catch(() => ({}));
-  if (!w || !Array.isArray(w.parts) || w.parts.length < 1 || w.parts.length > 6) return json(env, { error: "bad request" }, 400);
-  const out = await env.AI.run(AI_MODEL, { messages: [{ role: "system", content: AI_RULES }, { role: "user", content: JSON.stringify({ workout: w, athlete: a || {} }).slice(0, 4000) }], max_tokens: 160, temperature: 0.2 });
+  const body = await req.json().catch(() => ({})), w = body.workout || {}, a = body.athlete || {};
+  if (!Array.isArray(w.parts) || w.parts.length < 1 || w.parts.length > 6) return json(env, { error: "bad request" }, 400);
+  const n = (v, hi) => Number.isFinite(+v) && v !== null ? Math.max(0, Math.min(hi, Math.round(+v))) : null;
+  /* rebuild the request from allowed fields only */
+  const workout = { id: clean(w.id, 20), parts: w.parts.map(p => ({ reps: n(p && p.reps, 50), meters: n(p && p.meters, 10000), effortPct: n(p && p.effortPct, 100), restSec: n(p && p.restSec, 1200) })) };
+  const sore = [...new Set(Array.isArray(a.sore) ? a.sore.filter(s => SORE[s]) : [])];
+  const athlete = { events: (Array.isArray(a.events) ? a.events : []).slice(0, 4).map(e => clean(e, 24)).filter(Boolean),
+    partOfSeason: PHASES[a.phase] || "not set", sore: sore.map(s => SORE[s]) };
+  const q = JSON.stringify({ workout, athlete }), key = await sha(AI_MODEL + AI_RULES + q);
+  const hit = await env.DB.prepare("SELECT v FROM ai_cache WHERE k = ?").bind(key).first();
+  if (hit) return json(env, JSON.parse(hit.v));
+  const out = await env.AI.run(AI_MODEL, { messages: [{ role: "system", content: AI_RULES }, { role: "user", content: q }], max_tokens: 60, temperature: 0.1 });
   let r = out && out.response;
-  if (typeof r !== "object") { const m = String(r || "").match(/\{[\s\S]*\}/); try { r = JSON.parse(m ? m[0] : ""); } catch { return json(env, { error: "no answer" }, 502); } }
-  const c = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+v || 0)));
-  return json(env, { sets: w.parts.map((_, i) => c(Array.isArray(r.sets) ? r.sets[i] : 0, -1, 1)), pct: c(r.pct, -3, 3),
-    rest: Math.round(c(r.rest, -30, 30) / 15) * 15, why: String(r.why || "").replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, 160) });
+  if (typeof r !== "object" || !r) { const m = String(r || "").match(/\{[\s\S]*\}/); try { r = JSON.parse(m ? m[0] : ""); } catch { return json(env, { error: "no answer" }, 502); } }
+  /* caps, and never harder when something is sore, no added reps at championships, no added effort in the off-season */
+  const c = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+v || 0))), hurt = sore.length > 0, ph = a.phase;
+  const ans = { sets: workout.parts.map((p, i) => (p.reps || 0) < 2 ? 0 : c(Array.isArray(r.sets) ? r.sets[i] : 0, -1, hurt || ph === "champ" ? 0 : 1)),
+    pct: c(r.pct, -3, hurt || ph === "off" ? 0 : 3), rest: Math.round(c(r.rest, hurt ? 0 : -30, 30) / 15) * 15 };
+  await env.DB.prepare("INSERT OR REPLACE INTO ai_cache (k, v, created) VALUES (?, ?, ?)").bind(key, JSON.stringify(ans), Date.now()).run();
+  return json(env, ans);
 }
 
 export default {

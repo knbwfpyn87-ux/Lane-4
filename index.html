@@ -401,6 +401,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .go.strava{background:#FC4C02;box-shadow:none}
 .btnrow[hidden],.go[hidden]{display:none}
 /* workout planner */
+#fitBox{margin:6px 0 4px}#fitBox summary{cursor:pointer;font-weight:600;color:var(--track)}#fitBox select{width:100%}
 .pday{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
 .pday:first-child{border-top:0}
 .pday .dl{flex:none;width:46px;font:700 15px/1.2 "Barlow Condensed",sans-serif;color:var(--muted)}
@@ -641,6 +642,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       <div class="panel" id="planBox">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">This week</h3><button class="ghost" id="planAdd">+ Add workout</button></div>
         <p class="hint" id="planLoad"></p>
+        <details id="fitBox"><summary>Fit workouts to me</summary>
+          <label for="fitPhase">Part of the season</label>
+          <select id="fitPhase"><option value="">Not set</option><option value="off">Off-season</option><option value="pre">Pre-season</option><option value="early">Early season</option><option value="mid">Mid-season</option><option value="champ">Championship season</option></select>
+          <label id="fitHurtL">Anything sore or injured?</label>
+          <div class="chips small" id="fitHurt" role="group" aria-labelledby="fitHurtL"></div>
+          <p class="hint" style="margin:8px 0 0">“Adjust for me” uses only this and your events. Sore spots only ever make a workout easier. Lane 4 can’t check an injury: if something hurts, tell your coach or athletic trainer and don’t train through pain.</p>
+        </details>
         <div id="planDays"></div>
         <button class="go alt" id="planFill">Fill my week with a sample plan</button>
         <p class="hint" id="planFillNote" style="margin:6px 0 0">Adds a premade week for your event to the empty days from today on. Move things around your meets and your coach’s plan.</p>
@@ -903,8 +911,9 @@ const EMPTY_RACES=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150"
 /* Lane 4 Worker on Cloudflare (Strava sync, push reminders). Paste its URL here after following worker/README.md,
    like "https://lane4.yourname.workers.dev". It's an address, not a secret. Empty = those features stay hidden. */
 const LANE4_WORKER="";
-/* AI workout tweaks are off for now: "Adjust for me" uses Lane 4's fixed rules only. Set true to use the Worker's capped AI tweaks. */
-const AI_TWEAKS=false;
+/* AI workout tweaks: "Adjust for me" asks the Worker's free AI only when LANE4_WORKER is set. It sees just the workout, your events,
+   your sore spots, and your part of the season, and its answer is capped by clampAdj(). Set false to use the fixed rules only. */
+const AI_TWEAKS=true;
 const KEY="lane4-data",SCHEMA=5,OLD_KEYS=["lane4-demo-v4","lane4-demo-v3","lane4-demo-v2","lane4-demo-v1"];
 function migrate(d){
   if(!d||typeof d!=="object")return null;
@@ -1352,31 +1361,58 @@ function trainingLoad(){const age=d=>Math.floor((Date.now()-Date.parse(d+"T12:00
   const L=S.log.filter(w=>w.type!=="Rest"&&w.date),last7=L.filter(w=>age(w.date)>=0&&age(w.date)<7),prev=L.filter(w=>age(w.date)>=7&&age(w.date)<35);
   const f=S.log.filter(w=>w.feel).slice(0,3).map(w=>+w.feel);
   return{n7:last7.length,avg:prev.length/4,mi:last7.reduce((s,w)=>s+(w.miles||0),0),feel:f.length?f.reduce((a,b)=>a+b,0)/f.length:null}}
-/* the caps: whatever the rules or the AI suggest, only this much can change */
-function clampAdj(w,a){const c=(v,lo,hi)=>Math.max(lo,Math.min(hi,Math.round(+v||0)));
-  return{sets:w.parts.map((p,i)=>p.n<2?0:c(a.sets&&a.sets[i],-1,1)),pct:w.parts.some(p=>p.pct)?c(a.pct,-3,3):0,
-    rest:w.parts.some(p=>p.rest)?Math.round(c(a.rest,-30,30)/15)*15:0,why:String(a.why||"").replace(/[\u0000-\u001f]/g," ").slice(0,160),by:a.by==="ai"?"ai":"rules"}}
+/* "Fit workouts to me": part of the season and sore spots. Both are optional, and both only steer the caps below. */
+const PHASES={off:"Off-season",pre:"Pre-season",early:"Early season",mid:"Mid-season",champ:"Championship season"};
+const HURT={hamstring:"hamstring",quad:"quad",calf:"calf or Achilles",shin:"shins",knee:"knee",foot:"foot or ankle",hip:"hip or groin",back:"back",arm:"shoulder or elbow"};
+function fit(){const f=S.fit||{};return{phase:PHASES[f.phase]?f.phase:"",hurt:(f.hurt||[]).filter(h=>HURT[h])}}
+function myEvents(){const c={};S.races.forEach(r=>c[r.event]=(c[r.event]||0)+1);Object.keys(S.goals).forEach(e=>c[e]=c[e]||0);
+  return Object.keys(c).sort((a,b)=>c[b]-c[a]).slice(0,4)}
+/* sore spots that matter for this workout: arms for throws and lifting, everything else for any training day */
+function hurtFor(w){if(w.type==="Rest")return[];return fit().hurt.filter(h=>h==="arm"?w.g.includes("throw")||["lift","medball","plyos"].includes(w.id):!["core","medball"].includes(w.id))}
+/* the caps: whatever the rules or the AI suggest, only this much can change, and never in the wrong direction */
+function clampAdj(w,a){const c=(v,lo,hi)=>Math.max(lo,Math.min(hi,Math.round(+v||0))),hurt=hurtFor(w).length>0,ph=fit().phase;
+  const up=hurt||ph==="champ"?0:1;
+  return{sets:w.parts.map((p,i)=>p.n<2?0:c(a.sets&&a.sets[i],-1,up)),pct:w.parts.some(p=>p.pct)?c(a.pct,-3,hurt||ph==="off"?0:3):0,
+    rest:w.parts.some(p=>p.rest)?Math.round(c(a.rest,hurt?0:-30,30)/15)*15:0,why:String(a.why||"").replace(/[\u0000-\u001f]/g," ").slice(0,160),by:a.by==="ai"?"ai":"rules"}}
 function applyAdj(w,a){if(!a)return w;return{...w,parts:w.parts.map((p,i)=>({...p,n:Math.max(1,p.n+(a.sets[i]||0)),
   pct:p.pct?Math.max(50,Math.min(100,p.pct+a.pct)):p.pct,rest:p.rest?Math.max(15,p.rest+a.rest):p.rest}))}}
-function ruleAdjust(w){const L=trainingLoad(),sets=w.parts.map(()=>0),main=w.parts.reduce((b,p,i)=>p.n>w.parts[b].n?i:b,0),canReps=w.parts[main].n>=2;
+function ruleAdjust(w){const L=trainingLoad(),F=fit(),sore=hurtFor(w),sets=w.parts.map(()=>0),main=w.parts.reduce((b,p,i)=>p.n>w.parts[b].n?i:b,0),canReps=w.parts[main].n>=2;
   let pct=0,rest=0,why;
   if(w.type==="Rest")why="Recovery days stay as written.";
+  else if(sore.length){if(canReps)sets[main]=-1;pct=-3;rest=30;
+    why=`A little easier on your sore ${sore.map(h=>HURT[h]).join(" and ")}. If it hurts, stop and tell your coach or trainer.`}
+  else if(F.phase==="champ"&&canReps){sets[main]=-1;rest=15;why="Championship season: one fewer rep so you stay fresh and sharp."}
+  else if(F.phase==="off"&&w.parts.some(p=>p.pct)){pct=-3;why="Off-season: a bit less effort while you build back up."}
   /* compare to "usual" only with at least 4 workouts in the 4 weeks before */
   else if((L.feel!=null&&L.feel<2.5)||(L.avg>=1&&L.n7>L.avg*1.3)){if(canReps)sets[main]=-1;pct=-2;rest=30;
     why=L.feel!=null&&L.feel<2.5?`Your last workouts felt rough (${L.feel.toFixed(1)}/5), so this one is a little easier.`:`You’ve logged ${L.n7} workouts this week, more than your usual ${L.avg.toFixed(1)}, so this one is a little easier.`}
+  else if(F.phase==="pre"&&canReps&&["Tempo","Run","Workout"].includes(w.type)){sets[main]=1;why="Pre-season: one extra rep to build your base."}
   else if(canReps&&L.feel!=null&&L.feel>=4&&L.avg>=1&&L.n7<L.avg*0.8){sets[main]=1;why=`You’re feeling good (${L.feel.toFixed(1)}/5) and this week is lighter than usual, so there’s one extra rep.`}
-  else why=L.n7||L.avg?"Your recent training looks normal, so this stays as written.":"Log a few workouts and Lane 4 will start fitting this to you.";
+  else why=F.phase||L.n7||L.avg?"This fits where you are, so it stays as written.":"Set your part of the season under “Fit workouts to me” and Lane 4 will start fitting this to you.";
   return clampAdj(w,{sets,pct,rest,why,by:"rules"})}
-async function aiAdjust(w){if(!AI_TWEAKS||!LANE4_WORKER)return null;const L=trainingLoad(),ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
+/* Lane 4 writes the explanation itself from the capped numbers, so the AI never puts words on screen. */
+function aiWhy(w,a){const F=fit(),sore=hurtFor(w),n=a.sets.reduce((s,x)=>s+x,0),ch=[];
+  if(n)ch.push(`${Math.abs(n)} ${n>0?"more":"fewer"} rep${Math.abs(n)===1?"":"s"}`);if(a.pct)ch.push(`${Math.abs(a.pct)}% ${a.pct>0?"more":"less"} effort`);
+  if(a.rest)ch.push(`${Math.abs(a.rest)}s ${a.rest>0?"more":"less"} rest`);
+  const ev=myEvents().slice(0,2).join(" and "),ctx=[ev&&`your ${ev}`,F.phase&&PHASES[F.phase].toLowerCase(),sore.length&&`your sore ${sore.map(h=>HURT[h]).join(" and ")}`].filter(Boolean).join(", ");
+  return `${ch.length?ch.join(", ").replace(/^./,c=>c.toUpperCase()):"No change"}${ctx?`, fitted to ${ctx}`:""}.${sore.length?" If it hurts, stop and tell your coach or trainer.":""}`}
+/* The AI sees only the workout, your events, your sore spots, and your part of the season. No name, log, notes, or times. */
+async function aiAdjust(w){if(!AI_TWEAKS||!LANE4_WORKER||w.type==="Rest")return null;const F=fit(),ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
   try{const r=await fetch(LANE4_WORKER+"/ai/adjust",{method:"POST",signal:ctl.signal,headers:{"Content-Type":"application/json"},body:JSON.stringify({
-      workout:{name:w.name,type:w.type,parts:w.parts.map(p=>({reps:p.n,meters:p.d,effortPct:p.pct,racePace:p.pace?PACE_NAME[p.pace]:null,restSec:p.rest,what:p.what||null}))},
-      athlete:{eventGroup:myGroup(),workoutsLast7Days:L.n7,usualWorkoutsPerWeek:+L.avg.toFixed(1),milesLast7Days:+L.mi.toFixed(1),recentFeelOutOf5:L.feel==null?null:+L.feel.toFixed(1),
-        recent:S.log.slice(0,5).map(x=>({date:x.date,type:x.type,feel:x.feel||null,note:String(x.note||"").slice(0,60)}))}})});
-    if(!r.ok)return null;const a=await r.json();return a&&Array.isArray(a.sets)?clampAdj(w,{...a,by:"ai"}):null}
+      workout:{id:w.id,parts:w.parts.map(p=>({reps:p.n,meters:p.d,effortPct:p.pct||null,restSec:p.rest}))},
+      athlete:{events:myEvents(),phase:F.phase||null,sore:hurtFor(w)}})});
+    if(!r.ok)return null;const a=await r.json();if(!a||!Array.isArray(a.sets))return null;const c=clampAdj(w,{...a,by:"ai"});
+    /* something sore but the AI changed nothing: the fixed rules make it a little easier instead */
+    if(hurtFor(w).length&&!c.pct&&!c.rest&&!c.sets.some(x=>x))return null;c.why=aiWhy(w,c);return c}
   catch(e){return null}finally{clearTimeout(t)}}
+function renderFit(){if(!S)return;const F=fit();document.getElementById("fitPhase").value=F.phase;
+  document.getElementById("fitHurt").innerHTML=`<button data-hurt="" aria-pressed="${!F.hurt.length}">Nothing</button>`+Object.entries(HURT).map(([k,l])=>`<button data-hurt="${k}" aria-pressed="${F.hurt.includes(k)}">${l[0].toUpperCase()+l.slice(1)}</button>`).join("")}
+document.getElementById("fitPhase").onchange=e=>{S.fit={...fit(),phase:e.target.value};save();renderFit()};
+document.getElementById("fitHurt").onclick=e=>{const b=e.target.closest("[data-hurt]");if(!b)return;const h=b.dataset.hurt,F=fit();
+  S.fit={...F,hurt:!h?[]:F.hurt.includes(h)?F.hurt.filter(x=>x!==h):[...F.hurt,h]};save();renderFit()};
 function weekDays(){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7);return[...Array(7)].map((_,i)=>{const x=new Date(d);x.setDate(d.getDate()+i);return x})}
 function isoDay(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
-function renderPlanner(){if(!S)return;if(!S.wplan)S.wplan=[];const days=weekDays(),td=today(),L=trainingLoad();
+function renderPlanner(){if(!S)return;if(!S.wplan)S.wplan=[];renderFit();const days=weekDays(),td=today(),L=trainingLoad();
   document.getElementById("planLoad").textContent=L.n7||L.avg?`Last 7 days: ${L.n7} workout${L.n7===1?"":"s"}${L.mi?`, ${L.mi.toFixed(1)} mi`:""}${L.feel!=null?`, felt ${L.feel.toFixed(1)}/5 lately`:""}.`:"Add workouts to your week. Targets come from your PRs.";
   document.getElementById("planDays").innerHTML=days.map(d=>{const iso=isoDay(d),items=S.wplan.map((p,i)=>({...p,i})).filter(p=>p.date===iso);
     return `<div class="pday${iso===td?" today":""}"><div class="dl">${d.toLocaleDateString([],{weekday:"short"})}<small>${d.getDate()}</small></div><div class="items">${items.length?items.map(p=>{const w=WK.find(x=>x.id===p.id);
@@ -1408,7 +1444,7 @@ function wkDetail(o){const P=o.planned!=null?S.wplan[o.planned]:null,w=WK.find(x
     <div class="panel" style="margin-top:10px">${shown.parts.map((p,i)=>partHTML(p,w.parts[i])).join("")}<p class="hint" style="margin-top:8px">${esc(w.cue)}</p></div>
     ${adj?`<div class="adjnote"><span class="tag ${adj.by==="ai"?"ai":""}">${adj.by==="ai"?"AI tweak":"Adjusted by rules"}</span> ${esc(adj.why)}</div>`:""}
     ${P&&P.done?"":`<button class="go alt" id="wkAdj">${adj?"Adjust again":"Adjust for me"}</button>
-    <p class="hint">${AI_TWEAKS&&LANE4_WORKER?"Sends this workout and a short summary of your recent log (no name) to Lane 4’s AI. ":"Uses your recent log: how much you’ve trained and how it felt. "}Changes are capped at 1 rep per set, 3% effort, and 30s rest.</p>`}
+    <p class="hint">${AI_TWEAKS&&LANE4_WORKER?"Sends only this workout, your events, your sore spots, and your part of the season to Lane 4’s free AI. ":"Uses your part of the season, sore spots, and recent log. "}Changes are capped at 1 rep per set, 3% effort, and 30s rest.</p>`}
     ${P?(P.done?`<button class="go alt" id="wkUndo">Mark not done</button>`
       :`<label for="wkFeel">How it felt: <span id="wkFeelV">3</span>/5</label><input type="range" id="wkFeel" min="1" max="5" value="3"><button class="go" id="wkDone">Mark done</button>`)
       +`<button class="ghost" id="wkRemove" style="margin-top:12px;width:100%;padding:8px">Remove from my week</button>`

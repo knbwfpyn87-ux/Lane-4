@@ -78,8 +78,9 @@ Your separate admin page lives at https://knbwfpyn87-ux.github.io/Lane-4/admin.h
 ## Strava sync, push reminders, and AI workout tweaks (optional)
 Set up the free Cloudflare Worker in `worker/` by following `worker/README.md`. Until then, the Strava box
 stays hidden, race-day reminders work only while Lane 4 is open or through "Add my plan to my calendar,"
-and the workout planner adjusts workouts with its own fixed rules. AI workout tweaks are turned off in the app
-for now (`AI_TWEAKS=false` in index.html), so the planner uses the fixed rules either way.
+and the workout planner adjusts workouts with its own fixed rules. Once the Worker is set up, "Adjust for me"
+uses a small free AI that only fits a workout to the athlete's events, sore spots, and part of the season,
+within the same caps.
 
 ## Screenshots, teams, and coach uploads
 - Athletes can upload a screenshot of their results (Training log → Upload a screenshot). The text is read on the

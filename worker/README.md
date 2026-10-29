@@ -1,4 +1,8 @@
-# Lane 4 Worker: Strava sync and race-day push reminders
+# Lane 4 Worker: workout AI, Strava sync, and race-day push reminders
+
+Only want the workout AI? Do steps 1 and 2, then in step 4 add just the `DB` and `AI` bindings and `APP_URL`,
+and skip Strava (step 3) and the cron trigger. Then do step 5. Everything here is on Cloudflare's free plan,
+which needs no credit card and can't charge you.
 
 Lane 4 runs on GitHub Pages, which can't keep secrets or send notifications on a schedule.
 This small Cloudflare Worker does both. It's free on Cloudflare's free plan.
@@ -9,10 +13,12 @@ What it does
 - Reminders: stores each step time of your race-day plan and sends a push notification when it's due,
   even when Lane 4 is closed. Each reminder is deleted as soon as it's sent.
 - Workout tweaks: "Adjust for me" in the workout planner asks a small AI model (Cloudflare Workers AI, free
-  daily allowance) to nudge a premade workout based on your recent log. Changes are capped at 1 rep per set,
-  3% effort, and 30s rest. Past the free daily limit, requests simply fail and Lane 4 falls back to its own rules.
-  Nothing is billed on the free plan. This is turned off in the app for now (`AI_TWEAKS=false` in index.html),
-  so the planner uses Lane 4's fixed rules even with the Worker set up.
+  daily allowance) to fit a premade workout to the athlete's events, sore spots, and part of the season
+  (set under Training log → This week → Fit workouts to me). That's all it sees: no name, log, notes, or times.
+  Changes are capped at 1 rep per set, 3% effort, and 30s rest; sore spots can only make a workout easier,
+  championship season never adds reps, and the off-season never adds effort. The AI only returns numbers;
+  Lane 4 writes the explanation itself. Answers are cached for 30 days, so the same question never uses the
+  allowance twice. Past the free daily limit, requests simply fail and Lane 4 falls back to its own rules.
 
 Without this Worker, Lane 4 still works: the Strava box stays hidden, and reminders pop up only while
 Lane 4 is open (or through "Add my plan to my calendar").
@@ -61,8 +67,9 @@ That address isn't a secret. Commit and push, then:
   each phone's push address and the step times of its plan (deleted once sent), and the Worker's own
   notification signing key (made automatically the first time).
 - Nothing from Strava is shared publicly or with other athletes. Lane 4 only reads activities; it never posts to Strava.
-- Workout tweaks send the workout plus a short summary of the athlete's last few log entries (no name or email)
-  to Cloudflare Workers AI. The Worker doesn't store them.
+- Workout tweaks send only the workout's reps, distances, effort, and rest, plus the athlete's events, sore spots
+  (from a fixed list), and part of the season to Cloudflare Workers AI. The Worker keeps only the numeric answer,
+  cached in D1 for 30 days under a fingerprint of that question. Nothing identifies the athlete.
 
 ## Costs and limits
 Cloudflare's free plan covers 100,000 Worker requests a day, the every-minute cron trigger, and 10,000 Workers AI
