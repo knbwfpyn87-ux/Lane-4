@@ -62,6 +62,7 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
 .tag{background:var(--soft);border-color:transparent}
 a,.msg{color:var(--accent)}
 @media (max-width:380px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.proof{display:block;width:100%;max-height:520px;object-fit:contain;border-radius:12px;background:var(--soft);margin:8px 0}
 </style>
 </head>
 <body>
@@ -89,6 +90,7 @@ a,.msg{color:var(--accent)}
     <div class="tabs" role="group" aria-label="Show">
       <button data-t="pending" aria-pressed="true">Waiting</button><button data-t="approved" aria-pressed="false">Approved</button>
       <button data-t="rejected" aria-pressed="false">Rejected</button><button data-t="board" aria-pressed="false">Rankings board</button>
+      <button data-t="teams" aria-pressed="false">Teams</button>
     </div>
     <div id="list"></div>
   </section>
@@ -106,9 +108,16 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const toast = m => { const t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2000); };
 const FIELD = /jump|vault|put|discus|javelin|hammer/i;
 const show = (ev, m) => { if (!FIELD.test(ev)) return m; const p = String(m).split("-"); return `${p[0]}′ ${p[1] || 0}″`; };
+// Approving adds to what's already in Rankings (a coach may have posted some), keeping the better mark per event.
+const toSec = t => { t = String(t); if (t.includes(":")) { const [m, s] = t.split(":"); return +m * 60 + parseFloat(s); } return parseFloat(t); };
+const toIn = t => { const [f, i] = String(t).split("-"); return +f * 12 + (parseFloat(i) || 0); };
+const better = (ev, a, b) => FIELD.test(ev) ? toIn(a) > toIn(b) : toSec(a) < toSec(b);
+const merge = (a, b) => { const o = { ...(a || {}) }; for (const [ev, v] of Object.entries(b || {})) if (!o[ev] || better(ev, v.mark, o[ev].mark)) o[ev] = v; return o; };
+const isProof = s => typeof s === "string" && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s);
+const linkOrText = s => /^https?:\/\/\S+$/.test(s) ? `<a href="${esc(s)}" target="_blank" rel="noopener noreferrer">${esc(s)}</a>` : esc(s);
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), fs = getFirestore(app);
-let subs = [], board = [], optout = new Set(), tab = "pending";
+let subs = [], board = [], teams = [], optout = new Set(), tab = "pending";
 
 onAuthStateChanged(auth, async user => {
   $("out").hidden = !user;
@@ -133,9 +142,11 @@ $("google").onclick = async () => {
 $("out").onclick = () => signOut(auth);
 
 async function load() {
-  const [s, b, o] = await Promise.all([getDocs(collection(fs, "subs")), getDocs(collection(fs, "board")), getDocs(collection(fs, "optout"))]);
+  const [s, b, o, t] = await Promise.all([getDocs(collection(fs, "subs")), getDocs(collection(fs, "board")), getDocs(collection(fs, "optout")),
+    getDocs(collection(fs, "teams")).catch(() => ({ docs: [] }))]);
   subs = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.public);
   board = b.docs.map(d => ({ id: d.id, ...d.data() }));
+  teams = t.docs.map(d => ({ id: d.id, ...d.data() }));
   optout = new Set(o.docs.map(d => d.id));
   render();
 }
@@ -148,7 +159,10 @@ function card(x, actions) {
     ${x.status === "approved" ? '<span class="tag ok">Approved</span>' : x.status === "rejected" ? '<span class="tag no">Rejected</span>' : ""}
     ${optout.has(x.id) ? '<span class="tag">Hidden by athlete</span>' : ""}
     <p class="hint">${esc([x.school, x.grad ? "Class of " + x.grad : "", x.state].filter(Boolean).join(" · "))}</p>
-    ${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : '<p class="hint">No results link given. Ask them to add one before approving.</p>'}
+    ${x.team ? `<p class="hint">Posted by the coach of team ${esc(x.team)}</p>` : ""}
+    ${isProof(x.proof) ? `<p class="hint">Screenshot they sent:</p><img class="proof" src="${x.proof}" alt="Results screenshot from ${esc(x.name)}">`
+      : x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : x.team ? "" : '<p class="hint">No results link given. Ask them to add one before approving.</p>'}
+    ${isProof(x.proof) && x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : ""}
     <table>${events.map(([ev, v]) => `<tr><td>${esc(ev)}<div class="hint" style="margin:0">${esc(v.meet || "")} ${esc(v.date || "")}</div></td><td class="m">${esc(show(ev, v.mark))}</td></tr>`).join("")}</table>
     ${actions}</div>`;
 }
@@ -156,7 +170,8 @@ function card(x, actions) {
 function render() {
   document.querySelectorAll("[data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tab));
   const pending = subs.filter(x => x.status === "pending"), approved = subs.filter(x => x.status === "approved"), rejected = subs.filter(x => x.status === "rejected");
-  $("stats").innerHTML = [[pending.length, "Waiting"], [approved.length, "Approved"], [board.length, "On rankings"], [optout.size, "Hidden"]]
+  const tWait = teams.filter(t => t.status === "pending");
+  $("stats").innerHTML = [[pending.length, "Waiting"], [tWait.length, "Teams waiting"], [board.length, "On rankings"], [optout.size, "Hidden"]]
     .map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
   let html = "";
   if (tab === "pending") html = pending.length ? pending.map(x => card(x, `<div class="row"><button class="btn" data-ok="${x.id}">Approve</button><button class="btn alt" data-no="${x.id}">Reject</button></div>
@@ -164,15 +179,29 @@ function render() {
   if (tab === "approved") html = approved.map(x => card(x, `<button class="btn alt" data-rm="${x.id}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No approved athletes yet.</p></div>';
   if (tab === "rejected") html = rejected.map(x => card(x, `<p class="hint">Reason: ${esc(x.reason || "none given")}</p><button class="btn alt" data-ok="${x.id}">Approve after all</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No rejected submissions.</p></div>';
   if (tab === "board") html = board.map(x => card(x, `<button class="btn alt" data-rm="${x.id}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">Rankings are empty.</p></div>';
+  if (tab === "teams") {
+    const tcard = t => `<div class="panel"><strong>${esc(t.name)}</strong><span class="tag">${esc(t.id)}</span>
+      ${t.status === "approved" ? '<span class="tag ok">Approved</span>' : t.status === "rejected" ? '<span class="tag no">Not approved</span>' : ""}
+      <p class="hint">${esc([t.school, t.state].filter(Boolean).join(" · "))}</p>
+      <p style="margin:4px 0">${esc(t.coachName || "")}${t.role ? ", " + esc(t.role) : ""}</p>
+      ${t.proof ? `<p class="hint" style="overflow-wrap:anywhere">To confirm: ${linkOrText(t.proof)}</p>` : ""}
+      ${t.status === "pending" ? `<div class="row"><button class="btn" data-tok="${t.id}">Approve team</button><button class="btn alt" data-tno="${t.id}">Reject</button></div>`
+        : t.status === "approved" ? `<button class="btn alt" data-tno="${t.id}">Remove approval</button>` : `<button class="btn alt" data-tok="${t.id}">Approve after all</button>`}</div>`;
+    html = `<div class="panel"><p class="hint" style="margin:0">Approve a team only after you confirm the person coaches it. Coaches of approved teams post official results straight into Rankings for athletes on their roster who said yes.</p></div>`
+      + ([...tWait, ...teams.filter(t => t.status !== "pending")].map(tcard).join("") || '<div class="panel"><p class="hint" style="margin:0">No teams yet.</p></div>');
+  }
   $("list").innerHTML = html;
+  document.querySelectorAll("[data-tok]").forEach(b => b.onclick = () => tact(b, b.dataset.tok, { status: "approved", reason: "" }, "Team approved"));
+  document.querySelectorAll("[data-tno]").forEach(b => b.onclick = () => tact(b, b.dataset.tno, { status: "rejected", reason: "An admin couldn’t confirm you coach this team" }, "Team not approved"));
   document.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => act(b, async x => {
-    await setDoc(doc(fs, "board/" + x.id), { name: x.name, school: x.school || "", grad: x.grad || "", state: x.state || "", gender: x.gender || "Men", events: x.events || {}, approvedAt: Date.now() });
+    const old = await getDoc(doc(fs, "board/" + x.id));
+    await setDoc(doc(fs, "board/" + x.id), { name: x.name, school: x.school || "", grad: x.grad || "", state: x.state || "", gender: x.gender || "Men", events: merge(old.exists() ? old.data().events : {}, x.events), approvedAt: Date.now() });
     await updateDoc(doc(fs, "subs/" + x.id), { status: "approved", reason: "" });
   }, "Approved", b.dataset.ok));
+  // Rejecting leaves times already in Rankings alone; "Remove from rankings" takes those down.
   document.querySelectorAll("[data-no]").forEach(b => b.onclick = () => act(b, async x => {
     const reason = ($("r-" + x.id).value || "").trim() || "Times didn’t match the results page";
     await updateDoc(doc(fs, "subs/" + x.id), { status: "rejected", reason });
-    await deleteDoc(doc(fs, "board/" + x.id)).catch(() => {});
   }, "Rejected", b.dataset.no));
   document.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => act(b, async x => {
     await deleteDoc(doc(fs, "board/" + x.id));
@@ -180,6 +209,11 @@ function render() {
   }, "Removed", b.dataset.rm));
 }
 
+async function tact(btn, id, change, done) {
+  btn.disabled = true;
+  try { await updateDoc(doc(fs, "teams/" + id), change); toast(done); await load(); }
+  catch { toast("Couldn’t save. Check your connection and try again."); btn.disabled = false; }
+}
 async function act(btn, fn, done, id) {
   const x = subs.find(s => s.id === id) || board.find(s => s.id === id); if (!x) return;
   btn.disabled = true;

@@ -4,6 +4,15 @@ service cloud.firestore {
     function signedIn() { return request.auth != null && request.auth.token.email_verified == true; }
     function isMe(uid) { return signedIn() && request.auth.uid == uid; }
     function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function team(t) { return get(/databases/$(database)/documents/teams/$(t)).data; }
+    // The signed-in person coaches team t, and an admin has approved that team.
+    function isCoach(t) { return signedIn() && team(t).coach == request.auth.uid && team(t).status == "approved"; }
+    // The coach accepted this athlete onto team t, and the athlete said yes to posting to Rankings.
+    function sharesWith(t, uid) {
+      let m = get(/databases/$(database)/documents/teams/$(t)/members/$(uid)).data;
+      return m.status == "accepted" && m.share == true;
+    }
+    function onlyChanges(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
 
     // Each athlete's own data: only they can read or write it.
     match /data/users/{uid}/{rest=**} {
@@ -15,15 +24,35 @@ service cloud.firestore {
       allow create, update: if (isMe(uid) && request.resource.data.status == "pending") || isAdmin();
       allow delete: if isMe(uid) || isAdmin();
     }
-    // Verified Rankings: every signed-in athlete can read; only admins can write.
+    // Verified Rankings: every signed-in athlete can read; admins can write.
+    // Coaches of admin-approved teams can also post official results, only for athletes on their own roster who said yes.
     match /board/{uid} {
       allow read: if signedIn();
       allow write: if isAdmin();
+      allow create, update: if request.resource.data.team is string
+        && isCoach(request.resource.data.team) && sharesWith(request.resource.data.team, uid);
     }
     // "Hide me from Rankings" switches.
     match /optout/{uid} {
       allow read: if signedIn();
       allow write: if isMe(uid) || isAdmin();
+    }
+    // Teams: anyone signed in can look up one team by its code. Only admins can list them all or approve one.
+    match /teams/{t} {
+      allow get: if signedIn();
+      allow list: if isAdmin();
+      allow create: if signedIn() && request.resource.data.coach == request.auth.uid && request.resource.data.status == "pending";
+      allow update: if isAdmin();
+      allow delete: if isAdmin() || (signedIn() && resource.data.coach == request.auth.uid);
+      // Athletes ask to join an approved team as "pending". Only the coach (or an admin) accepts them.
+      match /members/{uid} {
+        allow get: if isMe(uid) || isCoach(t) || isAdmin();
+        allow list: if isCoach(t) || isAdmin();
+        allow create: if isMe(uid) && request.resource.data.status == "pending" && team(t).status == "approved";
+        allow update: if (isMe(uid) && onlyChanges(["share", "added", "name", "full"]))
+          || (isCoach(t) && onlyChanges(["status", "added"])) || isAdmin();
+        allow delete: if isMe(uid) || isCoach(t) || isAdmin();
+      }
     }
     // Admin list: managed only in the Firebase console.
     match /admins/{uid} {

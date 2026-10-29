@@ -72,6 +72,7 @@ Your separate admin page lives at https://knbwfpyn87-ux.github.io/Lane-4/admin.h
 - Emails are never shown anywhere in the app, not even to admins. The account box only says "Signed in with Google" or "with email."
 - Rankings show only the name each athlete types in, plus school and class year.
 - Photos, workouts, goals, and contact info are never public.
+- Results screenshots are seen only by the athlete and admins. An athlete's full name on a team is seen only by their coach.
 - Strava tokens and race-day push reminders live only in your own Cloudflare Worker's database (see below).
 
 ## Strava sync, push reminders, and AI workout tweaks (optional)
@@ -80,11 +81,26 @@ stays hidden, race-day reminders work only while Lane 4 is open or through "Add 
 and the workout planner adjusts workouts with its own fixed rules. AI workout tweaks are turned off in the app
 for now (`AI_TWEAKS=false` in index.html), so the planner uses the fixed rules either way.
 
+## Screenshots, teams, and coach uploads
+- Athletes can upload a screenshot of their results (Training log → Upload a screenshot). The text is read on the
+  phone with Tesseract.js; the athlete checks each result, then can send a small copy of the screenshot to an admin.
+  It waits for an admin like any other submission.
+- Coaches register a team (Team → Register your team). An admin approves it from Settings → Admin or admin.html → Teams,
+  after confirming the person really coaches it. The coach then gets a 6-character team code for athletes to join with.
+- Coaches of approved teams post official results by uploading a meet results PDF (read on the device with pdf.js)
+  or typing them in. These skip the admin: they go straight into each athlete's log, and into Rankings for athletes
+  who turned on "Let my coach post my official results to Rankings."
+- No files are stored: screenshots are shrunk and saved inside the submission, and PDFs are never uploaded.
+- After pulling this change, paste the new firestore.rules into Firebase → Firestore → Rules → Publish (step 4).
+  Teams won't work until you do.
+
 ## What each person can do (enforced by firestore.rules, not just hidden buttons)
 - Read and write only their own saved data.
 - Submit only their own times, and only as "pending." They can't approve themselves.
 - See Rankings once signed in and verified.
-- Admins approve, reject, or remove times. Admin status lives only in the Firebase console.
+- Admins approve, reject, or remove times, and approve teams. Admin status lives only in the Firebase console.
+- Coaches can write Rankings only for athletes they accepted onto their own admin-approved team, and only when the
+  athlete said yes. They can't approve their own team or add athletes who didn't ask to join.
 
 ## Costs
 Free on the Spark plan for a project this size (thousands of users). Netlify's free plan is also enough.

@@ -307,6 +307,21 @@ header.top.sub .brandh,header.top.sub>p,header.top.sub .demo-pill,header.top:not
 .tile.main b{font-size:26px;flex:1;min-width:0}
 .tile.main>span:last-child{flex-basis:100%;color:rgba(255,255,255,.9)}
 .board .clock.days{font-size:clamp(30px,10.5vw,52px);white-space:nowrap}
+/* screenshot and team result rows: event, mark, remove */
+.shotrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.shotrow:first-child{border-top:0}
+.shotrow select,.shotrow input{margin:0;min-width:0}
+.shotrow .d,.shotrow .who{grid-column:1/-1;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.shotrow .who{font-weight:700;font-size:15px;color:var(--ink)}
+.teamhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.teamhead strong{font:700 20px/1.15 "Barlow Condensed",sans-serif;overflow-wrap:anywhere;min-width:0}
+.codebox{display:flex;align-items:center;gap:10px;margin:12px 0 8px;padding:12px 14px;border-radius:14px;background:var(--soft)}
+.codebox span{font-size:13px;color:var(--muted)}
+.codebox b{flex:1;min-width:0;font:800 28px/1 "Barlow Condensed",sans-serif;letter-spacing:4px}
+.mrow{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.mrow .grow{flex:1;min-width:0;overflow-wrap:anywhere}.mrow .hint{margin:0}
+img.proof{display:block;width:100%;max-height:420px;object-fit:contain;border-radius:10px;border:1px solid var(--line);background:var(--soft);margin:6px 0 4px}
+#tpManual{margin-top:12px}#tpManual summary{cursor:pointer;font-weight:600}
 .tile:active{transform:scale(.98)}
 @media (prefers-reduced-motion:reduce){.tile:active{transform:none}}
 .demo-pill{background:none;border:1.5px solid rgba(255,255,255,.7)}
@@ -567,6 +582,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
         <button class="tile" data-go="card"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8.5" cy="11" r="2.5"/><path d="M5 16c.6-1.6 2-2.5 3.5-2.5S11.4 14.4 12 16M14 10h5M14 13h4"/></svg></span><b>Athlete card</b><span>Flip it, share it</span></button>
         <button class="tile" data-go="meet"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/><path d="M9 4v8M13 4v8" stroke-width="1.2"/></svg></span><b>Race day</b><span id="hubMeet"></span></button>
         <button class="tile" id="hubRank"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7"/></svg></span><b>Rankings</b><span>Verified times</span></button>
+        <button class="tile" data-go="times" data-scroll="shotBox"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 15V8M9 10.5L12 7.5l3 3"/></svg></span><b>Upload results</b><span>From a screenshot</span></button>
+        <button class="tile" data-go="team"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9.5" r="2.5"/><path d="M3 19c.6-3 3-4.5 6-4.5s5.4 1.5 6 4.5M15 14.6c2.6-.3 4.8 1 5.5 3.9"/></svg></span><b>Team</b><span id="hubTeam">Join or coach a team</span></button>
       </nav>
       <h2>Personal bests</h2>
       <div class="prs" id="prGrid"></div>
@@ -598,6 +615,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
         <input id="rSplits" placeholder="e.g. 23.8, 26.6" autocomplete="off" inputmode="decimal">
         <button class="go" id="addRace">Add time</button>
         <p class="hint" id="addMsg" role="status"></p>
+      </div>
+
+      <h2>Upload a screenshot</h2>
+      <div class="panel" id="shotBox">
+        <p class="hint" style="margin:0 0 6px">Screenshot your results on Athletic.net, MileSplit, or a meet’s results page. Lane 4 reads the events and official times on your phone. The picture only leaves your phone if you send it to an admin to check.</p>
+        <label class="go alt filebtn">Choose a screenshot<input type="file" id="shotIn" accept="image/*" hidden></label>
+        <p class="hint" id="shotMsg" role="status"></p>
+        <div id="shotPreview"></div>
       </div>
 
       <h2>Import from Athletic.net or MileSplit</h2>
@@ -729,6 +754,35 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
       </details>
     </section>
 
+    <!-- TEAM -->
+    <section class="view" id="v-team">
+      <h2>My team</h2>
+      <div class="panel" id="teamMine"></div>
+      <h2>Coach a team</h2>
+      <div class="panel" id="teamCoach"></div>
+      <div id="teamPost" hidden>
+        <h2>Add official results</h2>
+        <div class="panel">
+          <p class="hint" style="margin:0 0 6px">Upload a meet results PDF (like Hy-Tek or MeetPro) and Lane 4 finds your athletes’ results, or type them in. Results you post go straight into your athletes’ logs, and into Rankings for athletes who said yes. Nothing needs an admin, so only post official results.</p>
+          <div class="row">
+            <div><label for="tpMeet">Meet</label><input id="tpMeet" placeholder="Meet name"></div>
+            <div><label for="tpDate">Date</label><input type="date" id="tpDate"></div>
+          </div>
+          <label class="go alt filebtn">Upload a results PDF<input type="file" id="tpPdf" accept="application/pdf,.pdf" hidden></label>
+          <p class="hint" id="tpMsg" role="status"></p>
+          <details id="tpManual"><summary>Type a result</summary>
+            <label for="tpWho">Athlete</label><select id="tpWho"></select>
+            <div class="row">
+              <div><label for="tpEvent">Event</label><select id="tpEvent"></select></div>
+              <div><label for="tpMark">Time or mark</label><input id="tpMark" placeholder="50.91" autocomplete="off"></div>
+            </div>
+            <button class="go alt" id="tpAdd">Add to the list</button>
+          </details>
+          <div id="tpList"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- MEET DAY -->
     <section class="view" id="v-meet">
       <h2>Split calculator</h2>
@@ -810,6 +864,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   <div class="sheethead"><h3 id="adminTitle" style="margin:0">Verify times</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <p class="hint" style="margin:0 0 10px">Check each athlete’s times against their results page, then approve or reject. Only approved times appear in Rankings.</p>
   <div id="adminList"></div>
+  <div id="adminTeams"></div>
 </div></div>
 <div class="sheet" id="wkSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="wkTitle">
   <div class="sheethead"><h3 id="wkTitle" style="margin:0">Workouts</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -898,7 +953,7 @@ async function initCloud(){
     const id=await user.id();if(!id){setSync("device");return}
     if(await user.can("data.write")===false){setSync("device");return}
     const ref=db.collection("data/users/"+id).doc("lane4");
-    PUB.db=db;PUB.id=id;try{PUB.owner=await user.isOwner()}catch(_){PUB.owner=false}refreshPublic();
+    PUB.db=db;PUB.id=id;try{PUB.owner=await user.isOwner()}catch(_){PUB.owner=false}refreshPublic();teamSync();
     setSync("syncing");
     const snap=await ref.get();
     CLOUD.ref=ref;
@@ -1009,7 +1064,7 @@ function parseLine(line,forced,yearCtx){
     const mm=cleaned.match(/\b\d{1,2}:\d{2}(?:\.\d{1,2})?\b|\b\d{1,2}\.\d{1,2}\b/);if(mm)mark=mm[0];
   }
   if(!mark||!validMark(ev,mark))return null;
-  let meet=rest.replace(/\b(55|60|100|110|300|400)\s*m?\s*(h|hh|ih)\b/ig," ").replace(/(high|long|triple)\s*jump|pole\s*vault|shot\s*put|discus|javelin|hammer|hurdles?|cross\s*country|\b(lj|hj|tj|pv|sp|dt|jav|xc|mile|dash|run)\b/ig," ").replace(mark," ").replace(/(^|[^\d.:])(55|60|100|110|200|300|400|500|600|800|1000|1600|3200|5000)\s*(m|meters?)?\b/ig,"$1 ").replace(/\b5\s*k\b/ig," ").replace(/\b\d{1,3}\s*(?:-|'|’|′)\s*\d{1,2}(?:\.\d+)?/," ").replace(/\b(indoor|fat|ht|pr|pb|sr)\b/ig," ").replace(/[|,\t"”“″]+/g," ").replace(/\s+/g," ").trim();
+  let meet=rest.replace(/\b(55|60|100|110|300|400)\s*m?\s*(h|hh|ih)\b/ig," ").replace(/(high|long|triple)\s*jump|pole\s*vault|shot\s*put|discus|javelin|hammer|hurdles?|cross\s*country|\b(lj|hj|tj|pv|sp|dt|jav|xc|mile|dash|run)\b/ig," ").replace(mark," ").replace(/(^|[^\d.:])(55|60|100|110|200|300|400|500|600|800|1000|1600|3200|5000)\s*(m|meters?)?\b/ig,"$1 ").replace(/\b5\s*k\b/ig," ").replace(/\b\d{1,3}\s*(?:-|'|’|′)\s*\d{1,2}(?:\.\d+)?/," ").replace(/\b(indoor|fat|ht|pr|pb|sr)\b/ig," ").replace(/\b\d{1,2}(?:st|nd|rd|th)\b/ig," ").replace(/[|,\t"”“″]+/g," ").replace(/\s+/g," ").trim();
   return{event:ev,mark,date:date||today(),meet:meet||"Imported result"};
 }
 
@@ -1019,7 +1074,7 @@ function isPR(r){const b=pr(r.event);return b===r}
 
 /* ---------- screens: Home is a hub of big buttons; every other screen has a back button to Home.
    Each screen gets a history entry, so the phone's back gesture returns Home too. ---------- */
-const TITLES={times:"Training log",goals:"Goals",colleges:"Colleges",card:"Athlete card",meet:"Race day"};
+const TITLES={times:"Training log",goals:"Goals",colleges:"Colleges",card:"Athlete card",meet:"Race day",team:"Team"};
 let curView="home",pushedFromHome=false;
 function go(v,how){
   if(!document.getElementById("v-"+v))v="home";
@@ -1029,6 +1084,7 @@ function go(v,how){
   const hd=document.querySelector("header.top");hd.classList.toggle("sub",v!=="home");document.getElementById("secTitle").textContent=TITLES[v]||"";
   document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
   document.querySelectorAll('input[type=range]').forEach(r=>typeof rangeFill==="function"&&rangeFill(r));
+  if(v==="team")renderTeam();
   window.scrollTo(0,0);
 }
 window.addEventListener("popstate",e=>go((e.state&&e.state.v)||"home","pop"));
@@ -1044,6 +1100,7 @@ function renderHub(){if(!S)return;const now=Date.now(),set=(id,t)=>{document.get
   set("hubPlan",pl.length?`${pl.length} planned · ${dn} done`:"Plan your workouts");
   const g=Object.keys(S.goals).length;set("hubGoals",g?`${g} goal${g===1?"":"s"} set`:"Set your targets");
   const f=(S.fav||[]).length;set("hubCol",f?`${f} starred`:"Find your fit");
+  set("hubTeam",S.team?S.team.name:S.coach?"Your team":"Join or coach a team");
   set("hubMeet",S.meet&&S.meet.start>now?`${new Date(S.meet.start).toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})} · ${hhmm(S.meet.start)}`:"Plan your meet")}
 
 /* ---------- welcome ---------- */
@@ -1114,7 +1171,7 @@ function splitsHTML(r){if(!r.splits||!r.splits.length)return"";const v=r.splits.
 function isSB(r){if(isPR(r))return false;const y=r.date.slice(0,4);let b=null;S.races.filter(x=>x.event===r.event&&x.date.slice(0,4)===y).forEach(x=>{if(!b||better(r.event,val(r.event,x.mark),val(r.event,b.mark)))b=x});return b===r}
 function isNat(r){const v=val(r.event,r.mark);return natStd(r.event).some(m=>!better(r.event,val(r.event,m),v))}
 function raceHTML(r,del){
-  return `<div class="entry"><div class="grow"><div>${isPR(r)?'<span class="tag pb">PR</span>':isSB(r)?'<span class="tag sb">SB</span>':''}${isNat(r)?'<span class="tag nat">★ Nationals</span>':''}<span class="tag">${esc(r.event)}</span></div><div class="d">${esc(r.date)} · ${esc(r.meet)}</div>${splitsHTML(r)}${isPR(r)?`<button class="linkbtn" data-build="${S.races.indexOf(r)}">See build-up ›</button>`:""}</div><div class="num">${esc(show(r.event,r.mark))}</div>${del?`<button class="ghost" data-del="${S.races.indexOf(r)}" aria-label="Delete">✕</button>`:""}</div>`}
+  return `<div class="entry"><div class="grow"><div>${isPR(r)?'<span class="tag pb">PR</span>':isSB(r)?'<span class="tag sb">SB</span>':''}${isNat(r)?'<span class="tag nat">★ Nationals</span>':''}${r.coach?'<span class="tag ver">✓ Coach</span>':''}<span class="tag">${esc(r.event)}</span></div><div class="d">${esc(r.date)} · ${esc(r.meet)}</div>${splitsHTML(r)}${isPR(r)?`<button class="linkbtn" data-build="${S.races.indexOf(r)}">See build-up ›</button>`:""}</div><div class="num">${esc(show(r.event,r.mark))}</div>${del?`<button class="ghost" data-del="${S.races.indexOf(r)}" aria-label="Delete">✕</button>`:""}</div>`}
 function workoutHTML(e){return `<div class="entry"><div class="grow"><span class="tag">${esc(e.type)}</span><span class="d">${esc(e.date)} · felt ${e.feel}/5</span><div>${esc(e.note||"")}</div></div></div>`}
 function tierSpread(ev,st){const v=st.filter(Boolean).map(m=>val(ev,m));if(v.length<2)return 0;return Math.max(...v)-Math.min(...v)}
 function spreadPos(ev,st,pv){const v=st.filter(Boolean).map(m=>val(ev,m));if(v.length<2)return null;
@@ -1955,8 +2012,9 @@ async function refreshPublic(){
   if(PUB.mine&&PUB.mine.name)pubName.value=PUB.mine.name;
   st.textContent=isOn&&(!PUB.mine||!PUB.mine.public)?"Add the name you want shown, then submit.":!PUB.mine||!PUB.mine.public?"Your times are private.":PUB.mine.status==="approved"?"✓ Verified. Your PRs are showing in Rankings.":PUB.mine.status==="rejected"?`Not approved${PUB.mine.reason?": "+PUB.mine.reason:""}. Fix your times or results link and submit again.`:"⏳ Waiting for an admin to verify your times.";
   const ab=document.getElementById("openAdmin");ab.hidden=!PUB.owner;
-  if(PUB.owner){try{const q=await PUB.db.collection("subs").get();PUB.subs=q.docs.filter(x=>x.exists).map(x=>({id:x.id,...x.data()}));
-    const n=PUB.subs.filter(x=>x.public&&x.status==="pending").length;ab.textContent=`Admin: verify times${n?` (${n} waiting)`:""}`}catch(_){}}
+  if(PUB.owner){try{const [q,tq]=await Promise.all([PUB.db.collection("subs").get(),PUB.db.collection("teams").get().catch(()=>({docs:[]}))]);PUB.subs=q.docs.filter(x=>x.exists).map(x=>({id:x.id,...x.data()}));
+    PUB.teams=tq.docs.map(x=>({id:x.id,...x.data()}));
+    const n=PUB.subs.filter(x=>x.public&&x.status==="pending").length+PUB.teams.filter(t=>t.status==="pending").length;ab.textContent=`Admin: verify times and teams${n?` (${n} waiting)`:""}`}catch(_){}}
 }
 document.getElementById("pubOn").onchange=async e=>{
   if(!PUB.db)return;const on=e.target.checked;PUB.wantOn=on;document.getElementById("pubFields").hidden=!on;
@@ -2000,24 +2058,294 @@ async function openAdmin(){
   const card=x=>`<div class="panel"><strong>${esc(x.name)}</strong> <span class="tag">${x.gender==="Women"?"Girls":"Boys"}</span>
     <div class="hint" style="margin:0">${esc([x.school,x.grad?"Class of "+x.grad:"",x.state].filter(Boolean).join(" · "))}</div>
     ${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">Open their results page ›</a>`:`<p class="hint" style="margin:4px 0">No results link given.</p>`}
+    ${isProof(x.proof)?`<p class="hint" style="margin:6px 0 0">Screenshot they sent:</p><img class="proof" src="${x.proof}" alt="Results screenshot from ${esc(x.name)}">`:""}
     <table class="sctable">${Object.entries(x.events||{}).map(([ev,v])=>`<tr><td>${esc(ev)}</td><td class="m">${esc(show(ev,v.mark))}</td><td class="c">${esc(v.meet||"")} ${esc(v.date||"")}</td></tr>`).join("")}</table>
     ${x.status==="pending"?`<div class="btnrow"><button class="go" data-ok="${x.id}">Approve</button><button class="go alt" data-no="${x.id}">Reject</button></div>`
       :`<p class="hint">${x.status==="approved"?"✓ Approved":"Rejected"}</p>${x.status==="approved"?`<button class="ghost" data-rm="${x.id}">Remove from rankings</button>`:""}`}</div>`;
   el.innerHTML=(pend.length?pend.map(card).join(""):`<p class="empty">Nothing waiting for verification.</p>`)+(done.length?`<div class="lbl3">Reviewed</div>`+done.map(card).join(""):"");
   el.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{const x=PUB.subs.find(y=>y.id===b.dataset.ok);
-    try{await PUB.db.doc("board/"+x.id).set({name:x.name,school:x.school,grad:x.grad,state:x.state,gender:x.gender,events:x.events,approvedAt:Date.now()});
+    try{const ref=PUB.db.doc("board/"+x.id),old=await ref.get();
+      await ref.set({name:x.name,school:x.school,grad:x.grad,state:x.state,gender:x.gender,events:mergeEvents(old.exists?old.data().events:{},x.events),approvedAt:Date.now()});
       await PUB.db.doc("subs/"+x.id).update({status:"approved",reason:""});toast("Approved")}catch(_){toast("Couldn’t approve. Try again.")}openAdmin()});
+  /* rejecting leaves times already in Rankings alone; "Remove from rankings" takes those down */
   el.querySelectorAll("[data-no]").forEach(b=>b.onclick=async()=>{
-    try{await PUB.db.doc("subs/"+b.dataset.no).update({status:"rejected",reason:"Times didn’t match the results page"});await PUB.db.doc("board/"+b.dataset.no).delete().catch(()=>{});toast("Rejected")}catch(_){toast("Couldn’t reject. Try again.")}openAdmin()});
+    try{await PUB.db.doc("subs/"+b.dataset.no).update({status:"rejected",reason:"Times didn’t match the results page"});toast("Rejected")}catch(_){toast("Couldn’t reject. Try again.")}openAdmin()});
   el.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc("board/"+b.dataset.rm).delete();await PUB.db.doc("subs/"+b.dataset.rm).update({status:"rejected",reason:"Removed by an admin"});toast("Removed")}catch(_){toast("Couldn’t remove. Try again.")}openAdmin()});
+  renderAdminTeams();
 }
+/* teams: approve one only after confirming the person coaches it, since their results skip verification */
+function renderAdminTeams(){
+  const el=document.getElementById("adminTeams"),T=PUB.teams||[],pend=T.filter(t=>t.status==="pending"),ok=T.filter(t=>t.status==="approved");
+  const card=t=>`<div class="panel"><strong>${esc(t.name)}</strong> <span class="tag">${esc(t.id)}</span>
+    <div class="hint" style="margin:0">${esc([t.school,t.state].filter(Boolean).join(" · "))}</div>
+    <p style="margin:6px 0 0">${esc(t.coachName||"")}${t.role?", "+esc(t.role):""}</p>
+    ${t.proof?`<p class="hint" style="margin:4px 0 0;overflow-wrap:anywhere">To confirm: ${linkOrText(t.proof)}</p>`:""}
+    ${t.status==="pending"?`<div class="btnrow"><button class="go" data-tok="${t.id}">Approve</button><button class="go alt" data-tno="${t.id}">Reject</button></div>`:`<button class="ghost" data-tno="${t.id}" style="margin-top:10px">Remove approval</button>`}</div>`;
+  el.innerHTML=`<h3 style="margin:20px 0 4px">Teams</h3><p class="hint" style="margin:0 0 10px">Approve a team only after you confirm the person coaches it. Coaches of approved teams post official results straight into Rankings for athletes on their roster.</p>`+
+    (pend.length?pend.map(card).join(""):`<p class="empty">No teams waiting.</p>`)+(ok.length?`<div class="lbl3">Approved teams</div>`+ok.map(card).join(""):"");
+  el.querySelectorAll("[data-tok]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc("teams/"+b.dataset.tok).update({status:"approved",reason:""});toast("Team approved")}catch(_){toast("Couldn’t approve. Try again.")}openAdmin()});
+  el.querySelectorAll("[data-tno]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc("teams/"+b.dataset.tno).update({status:"rejected",reason:"An admin couldn’t confirm you coach this team"});toast("Team not approved")}catch(_){toast("Couldn’t update. Try again.")}openAdmin()})}
 document.getElementById("openAdmin").onclick=openAdmin;
 document.getElementById("settingsBtn").addEventListener("click",()=>refreshPublic());
+/* keep the better mark for each event: used when new verified times join ones already in Rankings */
+function mergeEvents(a,b){const o={...(a||{})};Object.entries(b||{}).forEach(([ev,v])=>{const x=o[ev];if(!EVENTS[ev]||!x||better(ev,val(ev,v.mark),val(ev,x.mark)))o[ev]=v});return o}
+const withRaces=(evs,races)=>races.reduce((o,r)=>mergeEvents(o,{[r.event]:{mark:r.mark,date:r.date,meet:r.meet}}),evs||{});
+function shortName(n){const w=String(n||"").trim().split(/\s+/).filter(Boolean);return !w.length?"":w.length>1?`${w[0]} ${w[w.length-1][0].toUpperCase()}.`:w[0]}
+const isProof=s=>typeof s==="string"&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s);
+const linkOrText=s=>/^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener noreferrer">${esc(s)}</a>`:esc(s);
+
+/* ---------- results from a screenshot: text recognition (Tesseract.js) runs on the phone, free, and sends nothing ---------- */
+const LIB={ocr:"https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js",pdf:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",pdfWorker:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"};
+const libLoads={};
+function loadLib(src){return libLoads[src]||(libLoads[src]=new Promise((ok,no)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=()=>{delete libLoads[src];s.remove();no(new Error("load"))};document.head.appendChild(s)}))}
+function loadImg(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);ok(i)};i.onerror=()=>{URL.revokeObjectURL(u);no(new Error("img"))};i.src=u})}
+function drawTo(img,scale,gray){const c=document.createElement("canvas");c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);const x=c.getContext("2d");if(gray)x.filter="grayscale(1) contrast(1.4)";x.drawImage(img,0,0,c.width,c.height);return c}
+/* a small copy of the screenshot for the admin to check, well under Firestore's 1 MB document limit */
+function proofOf(img){const c=drawTo(img,Math.min(1,1100/Math.max(img.width,img.height)),false);let q=.65,u=c.toDataURL("image/jpeg",q);while(u.length>600000&&q>.3){q-=.1;u=c.toDataURL("image/jpeg",q)}return u}
+/* text recognition mixes up colons and dots: 1.59.40 → 1:59.40 */
+function ocrFix(t){return t.replace(/[|]/g," ").replace(/\b(\d{1,2})[.,;](\d{2})[.,](\d{1,2})\b/g,"$1:$2.$3").replace(/\b(\d{1,2});(\d{2})\b/g,"$1:$2").replace(/\b(\d{1,3}-\d{1,2})\s*[,.]\s*(\d{1,2})\b/g,"$1.$2")
+  .replace(/\b(\d{1,3})-(\d{2})(\d{2})\b/g,(m,f,i,h)=>+i<12?`${f}-${i}.${h}`:m)}
+const raceKey=r=>r.event+"|"+normMark(r.event,r.mark)+"|"+r.date;
+let shot={rows:[],proof:null};
+document.getElementById("shotIn").onchange=async e=>{
+  const f=e.target.files[0];e.target.value="";if(!f||!S)return;
+  const msg=document.getElementById("shotMsg");shot={rows:[],proof:null};renderShot();
+  let img;try{img=await loadImg(f)}catch(_){msg.textContent="Couldn’t open that picture. Try a PNG or JPEG screenshot.";return}
+  msg.textContent="Reading your screenshot…";
+  try{await loadLib(LIB.ocr)}catch(_){msg.textContent="Couldn’t load the screenshot reader. Check your connection and try again.";return}
+  let text="";
+  try{const r=await Tesseract.recognize(drawTo(img,img.width<1400?Math.min(2.5,1400/img.width):1,true),"eng",
+      {logger:m=>{if(m.status==="recognizing text")msg.textContent=`Reading your screenshot… ${Math.round(m.progress*100)}%`}});
+    text=r.data.text||""}
+  catch(_){msg.textContent="Couldn’t read that screenshot. Try again, or paste your results below.";return}
+  const seen=new Set(S.races.map(raceKey));
+  shot={rows:parseBatch(ocrFix(text)).races.filter(r=>{const k=raceKey(r);if(seen.has(k))return false;seen.add(k);return true}),proof:proofOf(img)};
+  msg.textContent=shot.rows.length?"":"Couldn’t find an event and an official time in that screenshot. Make sure the event names and times are in the picture.";
+  renderShot()};
+function renderShot(){
+  const box=document.getElementById("shotPreview"),R=shot.rows;
+  if(!R.length){box.innerHTML="";return}
+  box.innerHTML=`<p class="hint" style="margin-top:10px">Found ${R.length} result${R.length>1?"s":""}. Fix anything the reader got wrong, or remove it.</p>
+    <div class="panel" style="margin:8px 0 0;background:var(--bg)">${R.map((r,i)=>`<div class="shotrow"><select data-i="${i}" data-k="event" aria-label="Event">${evOptions(r.event)}</select><input data-i="${i}" data-k="mark" value="${esc(r.mark)}" aria-label="Time or mark" autocomplete="off"><button class="ghost" data-x="${i}" aria-label="Remove">✕</button><div class="d">${esc(r.date)} · ${esc(r.meet)}</div></div>`).join("")}</div>
+    ${PUB.db?`<label class="check toggle" style="margin-top:12px"><span>Send to an admin to verify for Rankings</span><input type="checkbox" class="switch" id="shotSend" role="switch" checked></label>`:`<p class="hint">Sign in to send these to an admin to verify for Rankings.</p>`}
+    <button class="go" id="shotAdd">Add ${R.length} result${R.length>1?"s":""}</button>`;
+  box.querySelectorAll("[data-k]").forEach(el=>el.oninput=el.onchange=()=>{shot.rows[+el.dataset.i][el.dataset.k]=el.value.trim()});
+  box.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{shot.rows.splice(+b.dataset.x,1);renderShot()});
+  document.getElementById("shotAdd").onclick=addShot}
+async function addShot(){
+  const msg=document.getElementById("shotMsg"),bad=shot.rows.find(r=>!validMark(r.event,r.mark));
+  if(bad){msg.textContent=`Check the ${bad.event} mark: ${EVENTS[bad.event].field?"use feet-inches, like 20-7":"use a time like 50.91 or 1:59.40"}.`;return}
+  const rows=shot.rows.map(r=>({event:r.event,mark:normMark(r.event,r.mark),date:r.date,meet:r.meet})),send=document.getElementById("shotSend");
+  S.races.push(...rows);save();renderAll();
+  let note=`Added ${rows.length} result${rows.length>1?"s":""}. Your PRs are updated.`;
+  if(send&&send.checked)note+=" "+await sendShot(rows);
+  shot={rows:[],proof:null};renderShot();msg.textContent=note}
+async function sendShot(rows){
+  const p=S.profile||{},name=(PUB.mine&&PUB.mine.name)||shortName(p.name);
+  if(!name)return"To send them to an admin, add your name on your Athlete card, then upload the screenshot again.";
+  const keep=PUB.mine&&PUB.mine.public&&PUB.mine.status==="pending"?PUB.mine.events:{},events=withRaces(keep,rows);
+  try{await PUB.db.doc("subs/"+PUB.id).set({public:true,status:"pending",name,school:p.school||"",grad:p.grad||"",state:p.state||"",gender:S.gender||"Men",link:p.link||"",events,proof:shot.proof,via:"screenshot",submittedAt:Date.now()});
+    await PUB.db.doc("optout/"+PUB.id).delete().catch(()=>{});refreshPublic();
+    return"Sent to an admin with your screenshot. They show in Rankings once it’s checked."}
+  catch(_){return"Couldn’t send them to an admin right now. Upload the screenshot again later."}}
+
+/* ---------- teams: a coach registers a team, an admin approves it, athletes join with the team code.
+   Coaches of approved teams post official results: straight into their athletes' logs, and into Rankings for
+   athletes who said yes. firestore.rules enforces each step, not just these screens. ---------- */
+const TEAM={mine:null,err:false,coach:null,members:[],post:[]};
+function newCode(){const ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",a=new Uint32Array(6);crypto.getRandomValues(a);return[...a].map(n=>ch[n%ch.length]).join("")}
+/* results the coach posted wait on the athlete's team record until the athlete's app copies them into their log */
+async function teamSync(){
+  TEAM.err=false;if(!PUB.db||!S||!S.team){TEAM.mine=null;return}
+  const ref=PUB.db.doc(`teams/${S.team.id}/members/${PUB.id}`);
+  let d;try{d=await ref.get()}catch(_){TEAM.err=true;return}
+  TEAM.mine=d.exists?d.data():null;if(!TEAM.mine)return;
+  const seen=new Set(S.races.map(raceKey)),add=TEAM.mine.added||[];if(!add.length)return;
+  const fresh=add.filter(r=>r&&EVENTS[r.event]&&validMark(r.event,r.mark)&&!seen.has(raceKey(r))).map(r=>({event:r.event,mark:normMark(r.event,r.mark),date:r.date||today(),meet:r.meet||"Team result",coach:true}));
+  if(fresh.length){S.races.push(...fresh);save();renderAll();toast(`Your coach added ${fresh.length} result${fresh.length>1?"s":""}`)}
+  try{await ref.update({added:[]});TEAM.mine.added=[]}catch(_){}}
+async function renderTeam(){
+  if(!S)return;const mine=document.getElementById("teamMine"),coach=document.getElementById("teamCoach");
+  document.getElementById("teamPost").hidden=true;
+  if(!PUB.db){mine.innerHTML=`<p class="empty">Teams need a Lane 4 account. Sign in from Settings, then come back here.</p>`;coach.innerHTML=`<p class="hint" style="margin:0">Coaches sign in too, then register their team here.</p>`;return}
+  mine.innerHTML=coach.innerHTML=`<p class="hint" style="margin:0">Loading…</p>`;
+  await teamSync();renderMine();await loadCoach();renderCoach();renderHub()}
+function renderMine(){
+  const el=document.getElementById("teamMine"),p=S.profile||{},m=TEAM.mine;
+  if(TEAM.err){el.innerHTML=`<p class="empty">Couldn’t load your team right now. Check your connection.</p>`;return}
+  let note="";if(S.team&&!m){note=`<p class="hint" style="margin:0 0 8px">You’re no longer on ${esc(S.team.name)}. Your coach may have declined your request. Ask them, then join again.</p>`;S.team=null;save()}
+  if(!S.team){
+    el.innerHTML=note+`<p class="hint" style="margin:0 0 6px">Your coach gives you a team code. Once they accept you, results they post show up in your Training log with a ✓ Coach tag.</p>
+      <label for="tjCode">Team code</label><input id="tjCode" placeholder="ABC234" autocapitalize="characters" autocomplete="off" maxlength="6" spellcheck="false">
+      <label for="tjFull">Your first and last name (only your coach sees this)</label><input id="tjFull" value="${esc(p.name||"")}" autocomplete="name">
+      <label for="tjName">Name shown in Rankings</label><input id="tjName" value="${esc(shortName(p.name))}" placeholder="First name and last initial" autocomplete="off">
+      <label class="check toggle" style="margin-top:12px"><span>Let my coach post my official results to Rankings</span><input type="checkbox" class="switch" id="tjShare" role="switch" checked></label>
+      <button class="go" id="tjGo">Ask to join</button><p class="hint" id="tjMsg" role="status"></p>`;
+    document.getElementById("tjGo").onclick=joinTeam;return}
+  const on=m.status==="accepted";
+  el.innerHTML=`<div class="teamhead"><strong>${esc(S.team.name)}</strong><span class="tag${on?" ver":""}">${on?"✓ On the team":"⏳ Waiting for your coach"}</span></div>
+    <p class="hint">${on?"Results your coach posts show up in your Training log with a ✓ Coach tag.":"Your coach needs to accept your request. Check back here."}</p>
+    <label class="check toggle"><span>Let my coach post my official results to Rankings</span><input type="checkbox" class="switch" id="tmShare" role="switch"${m.share?" checked":""}></label>
+    <button class="ghost" id="tmLeave" style="margin-top:12px;width:100%;padding:8px">Leave team</button>`;
+  const ref=PUB.db.doc(`teams/${S.team.id}/members/${PUB.id}`);
+  document.getElementById("tmShare").onchange=async e=>{try{await ref.update({share:e.target.checked});m.share=e.target.checked;toast(e.target.checked?"Your coach can post to Rankings":"Your coach’s results stay in your log only")}catch(_){e.target.checked=!e.target.checked;toast("Couldn’t update that right now")}};
+  let armed=false;document.getElementById("tmLeave").onclick=async e=>{
+    if(!armed){armed=true;e.target.textContent="Tap again to leave the team";setTimeout(()=>{armed=false;e.target.textContent="Leave team"},4000);return}
+    try{await ref.delete();S.team=null;TEAM.mine=null;save();toast("You left the team");renderMine();renderHub()}catch(_){toast("Couldn’t leave right now. Try again.")}}}
+async function joinTeam(){
+  const v=id=>document.getElementById(id).value.trim(),msg=document.getElementById("tjMsg"),p=S.profile||{};
+  const code=v("tjCode").toUpperCase().replace(/[^A-Z0-9]/g,""),full=v("tjFull").replace(/\s+/g," "),name=v("tjName");
+  if(code.length!==6){msg.textContent="Team codes are 6 letters and numbers. Get yours from your coach.";return}
+  if(full.split(" ").length<2){msg.textContent="Add your first and last name so your coach can find you in meet results.";return}
+  if(name.length<2){msg.textContent="Add the name you want shown in Rankings.";return}
+  msg.textContent="Checking the code…";
+  let t;try{t=await PUB.db.doc("teams/"+code).get()}catch(_){msg.textContent="Couldn’t check that code. Try again.";return}
+  if(!t.exists||t.data().status!=="approved"){msg.textContent="No team with that code. Check it with your coach.";return}
+  try{await PUB.db.doc(`teams/${code}/members/${PUB.id}`).set({name,full,grad:p.grad||"",gender:S.gender||"Men",share:document.getElementById("tjShare").checked,status:"pending",added:[],joinedAt:Date.now()})}
+  catch(_){msg.textContent="Couldn’t send your request. Try again.";return}
+  S.team={id:code,name:t.data().name};save();toast("Request sent to your coach");renderTeam()}
+async function loadCoach(){
+  TEAM.coach=null;TEAM.members=[];if(!S.coach)return;
+  try{const d=await PUB.db.doc("teams/"+S.coach.id).get();
+    if(!d.exists){S.coach=null;save();return}
+    TEAM.coach={id:d.id,...d.data()};
+    if(TEAM.coach.status==="approved")TEAM.members=(await PUB.db.collection(`teams/${d.id}/members`).get()).docs.map(x=>({id:x.id,...x.data()}))}
+  catch(_){TEAM.coach={id:S.coach.id,status:"error"}}}
+function renderCoach(){
+  const el=document.getElementById("teamCoach"),t=TEAM.coach,p=S.profile||{};
+  if(!t){
+    el.innerHTML=`<details><summary>Register your team</summary>
+      <p class="hint" style="margin:8px 0 6px">For coaches. An admin checks that you coach the team, then you get a team code to share with your athletes. Results you post skip the admin, so we confirm every coach first.</p>
+      <label for="trName">Team name</label><input id="trName" placeholder="Riverside High School Track &amp; Field">
+      <div class="row"><div><label for="trSchool">School</label><input id="trSchool" value="${esc(p.school||"")}"></div><div><label for="trState">State</label><input id="trState" placeholder="CT" maxlength="2" value="${esc(p.state||"")}"></div></div>
+      <div class="row"><div><label for="trCoach">Your name</label><input id="trCoach" autocomplete="name"></div><div><label for="trRole">Your role</label><select id="trRole"><option>Head coach</option><option>Assistant coach</option></select></div></div>
+      <label for="trProof">How can an admin confirm you coach this team?</label><input id="trProof" placeholder="Link to your school’s coaching staff page">
+      <button class="go" id="trGo">Register my team</button><p class="hint" id="trMsg" role="status"></p></details>`;
+    document.getElementById("trGo").onclick=registerTeam;return}
+  if(t.status==="error"){el.innerHTML=`<p class="empty">Couldn’t load your team right now. Check your connection.</p>`;return}
+  const drop=label=>`<button class="ghost" id="tcDrop" style="margin-top:12px;width:100%;padding:8px">${label}</button>`;
+  if(t.status!=="approved"){
+    el.innerHTML=`<div class="teamhead"><strong>${esc(t.name)}</strong><span class="tag">${t.status==="pending"?"⏳ Waiting for an admin":"Not approved"}</span></div>
+      <p class="hint">${t.status==="pending"?"An admin is checking that you coach this team. Your team code shows up here once it’s approved.":`Not approved${t.reason?": "+esc(t.reason):""}. You can remove it and register again.`}</p>`+drop(t.status==="pending"?"Cancel my registration":"Remove and register again");
+  }else{
+    const ask=TEAM.members.filter(m=>m.status!=="accepted"),on=TEAM.members.filter(m=>m.status==="accepted");
+    const row=(m,btns)=>`<div class="mrow"><div class="grow"><strong>${esc(m.full||m.name)}</strong><p class="hint">${esc([m.grad?"Class of "+m.grad:"",m.gender==="Women"?"Girls":"Boys",m.status==="accepted"?(m.share?"Posts to Rankings":"Log only"):""].filter(Boolean).join(" · "))}</p></div>${btns}</div>`;
+    el.innerHTML=`<div class="teamhead"><strong>${esc(t.name)}</strong><span class="tag ver">✓ Approved</span></div>
+      <div class="codebox"><span>Team code</span><b>${esc(t.id)}</b><button class="ghost" id="tcCopy">Copy</button></div>
+      <p class="hint" style="margin:0">Give this code to your athletes. They join from Team in Lane 4.</p>
+      ${ask.length?`<div class="lbl3">Asking to join (${ask.length})</div>`+ask.map(m=>row(m,`<button class="ghost" data-acc="${m.id}">Accept</button><button class="ghost" data-dec="${m.id}" aria-label="Decline ${esc(m.full||m.name)}">✕</button>`)).join(""):""}
+      <div class="lbl3">Roster (${on.length})</div>${on.length?on.map(m=>row(m,`<button class="ghost" data-dec="${m.id}" aria-label="Remove ${esc(m.full||m.name)}">Remove</button>`)).join(""):`<p class="hint">No athletes yet.</p>`}`+drop("Delete this team");
+    document.getElementById("tcCopy").onclick=()=>copyText(t.id,"Team code copied");
+    el.querySelectorAll("[data-acc]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc(`teams/${t.id}/members/${b.dataset.acc}`).update({status:"accepted"});toast("Accepted")}catch(_){toast("Couldn’t accept right now")}await loadCoach();renderCoach()});
+    el.querySelectorAll("[data-dec]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc(`teams/${t.id}/members/${b.dataset.dec}`).delete();toast("Removed")}catch(_){toast("Couldn’t remove right now")}await loadCoach();renderCoach()});
+    renderPost()}
+  let armed=false;document.getElementById("tcDrop").onclick=async e=>{
+    if(!armed){armed=true;const l=e.target.textContent;e.target.textContent="Tap again to confirm";setTimeout(()=>{armed=false;e.target.textContent=l},4000);return}
+    try{await PUB.db.doc("teams/"+t.id).delete();S.coach=null;save();toast("Team removed");renderTeam()}catch(_){toast("Couldn’t remove it right now")}}}
+async function registerTeam(){
+  const v=id=>document.getElementById(id).value.trim(),msg=document.getElementById("trMsg");
+  const d={name:v("trName"),school:v("trSchool"),state:v("trState").toUpperCase(),coachName:v("trCoach"),role:v("trRole"),proof:v("trProof")};
+  if(d.name.length<3||!d.school){msg.textContent="Add your team name and school.";return}
+  if(d.coachName.split(/\s+/).length<2){msg.textContent="Add your first and last name.";return}
+  if(d.proof.length<5){msg.textContent="Add a link or a note so an admin can confirm you coach this team.";return}
+  msg.textContent="Sending…";
+  for(let i=0;i<4;i++){const code=newCode();
+    try{if((await PUB.db.doc("teams/"+code).get()).exists)continue;
+      await PUB.db.doc("teams/"+code).set({...d,coach:PUB.id,status:"pending",createdAt:Date.now()});
+      S.coach={id:code};save();toast("Sent to an admin to approve");renderTeam();return}
+    catch(_){break}}
+  msg.textContent="Couldn’t register right now. Try again."}
+
+/* ---------- coach: post official results, from a meet results PDF (read on the device with pdf.js) or typed in ---------- */
+function renderPost(){
+  const on=TEAM.members.filter(m=>m.status==="accepted");document.getElementById("teamPost").hidden=false;
+  const who=document.getElementById("tpWho"),keep=who.value;
+  who.innerHTML=on.length?on.map(m=>`<option value="${m.id}"${m.id===keep?" selected":""}>${esc(m.full||m.name)}</option>`).join(""):`<option value="">No athletes on your roster yet</option>`;
+  const evSel=document.getElementById("tpEvent");if(!evSel.options.length)evSel.innerHTML=evOptions("400m");
+  const el=document.getElementById("tpList"),P=TEAM.post,nm=id=>{const m=TEAM.members.find(x=>x.id===id);return m?(m.full||m.name):"Not on your roster"};
+  if(!P.length){el.innerHTML="";return}
+  el.innerHTML=`<div class="lbl3">Ready to post (${P.length})</div><div class="panel" style="margin:6px 0 0;background:var(--bg)">${P.map((r,i)=>`<div class="shotrow"><div class="who">${esc(nm(r.uid))}</div><select data-i="${i}" data-k="event" aria-label="Event">${evOptions(r.event)}</select><input data-i="${i}" data-k="mark" value="${esc(r.mark)}" aria-label="Time or mark" autocomplete="off"><button class="ghost" data-x="${i}" aria-label="Remove">✕</button></div>`).join("")}</div>
+    <button class="go" id="tpGo">Post ${P.length} result${P.length>1?"s":""}</button>`;
+  el.querySelectorAll("[data-k]").forEach(x=>x.oninput=x.onchange=()=>{P[+x.dataset.i][x.dataset.k]=x.value.trim()});
+  el.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{P.splice(+b.dataset.x,1);renderPost()});
+  document.getElementById("tpGo").onclick=postTeam}
+document.getElementById("tpAdd").onclick=()=>{
+  const uid=document.getElementById("tpWho").value,ev=document.getElementById("tpEvent").value,mk=document.getElementById("tpMark"),msg=document.getElementById("tpMsg");
+  if(!uid){msg.textContent="Accept an athlete onto your roster first.";return}
+  if(!validMark(ev,mk.value.trim())){msg.textContent=EVENTS[ev].field?"Enter the mark as feet-inches, like 20-7.":"Enter a time like 50.91 or 1:59.40.";return}
+  TEAM.post.push({uid,event:ev,mark:normMark(ev,mk.value.trim())});mk.value="";msg.textContent="";renderPost()};
+document.getElementById("tpPdf").onchange=async e=>{
+  const f=e.target.files[0];e.target.value="";if(!f||!TEAM.coach)return;
+  const msg=document.getElementById("tpMsg"),roster=TEAM.members.filter(m=>m.status==="accepted");
+  if(!roster.length){msg.textContent="Accept athletes onto your roster first. Lane 4 looks for their names in the PDF.";return}
+  msg.textContent="Reading the PDF…";
+  let lines;try{await loadLib(LIB.pdf);pdfjsLib.GlobalWorkerOptions.workerSrc=LIB.pdfWorker;lines=await pdfLines(f)}
+  catch(_){msg.textContent="Couldn’t read that PDF. If it’s a scan or a photo, type the results instead.";return}
+  const res=parseResults(lines,roster),m=document.getElementById("tpMeet"),d=document.getElementById("tpDate");
+  if(!m.value&&res.meet)m.value=res.meet;if(!d.value&&res.date)d.value=res.date;
+  const have=new Set(TEAM.post.map(r=>r.uid+"|"+r.event+"|"+r.mark)),add=res.rows.filter(r=>!have.has(r.uid+"|"+r.event+"|"+r.mark));
+  TEAM.post.push(...add);
+  msg.textContent=add.length?`Found ${add.length} result${add.length>1?"s":""} for your athletes. Check the meet, date, and marks, then post.`:"Didn’t find your athletes in that PDF. Lane 4 matches the first and last name each athlete joined with.";
+  renderPost()};
+/* PDF text comes in pieces with positions: rebuild the lines top to bottom, left to right */
+async function pdfLines(file){
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise,out=[];
+  for(let n=1;n<=Math.min(pdf.numPages,80);n++){
+    const tc=await (await pdf.getPage(n)).getTextContent();let cur=null;
+    tc.items.filter(it=>it.str&&it.str.trim()).map(it=>({s:it.str,x:it.transform[4],y:it.transform[5]})).sort((a,b)=>b.y-a.y||a.x-b.x)
+      .forEach(it=>{if(!cur||Math.abs(cur.y-it.y)>2){cur={y:it.y,p:[]};out.push(cur)}cur.p.push(it)})}
+  return out.map(l=>l.p.sort((a,b)=>a.x-b.x).map(x=>x.s).join(" ").replace(/\s+/g," ").trim()).filter(Boolean)}
+const normName=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+/* an athlete is on a line when both their first and last name are, in either order ("Smith, John" or "John Smith") */
+function whoIn(line,roster){const L=" "+normName(line)+" ";return roster.find(m=>{const w=normName(m.full||m.name).split(" ").filter(x=>x.length>1);return w.length>1&&L.includes(" "+w[0]+" ")&&L.includes(" "+w[w.length-1]+" ")})}
+/* results rows often show the seed mark before the final one, so take the last mark on the line */
+function lastMark(ev,line){
+  if(EVENTS[ev].field){const all=[...line.matchAll(/(?<![\d.])(\d{1,3})-(\d{1,2}(?:\.\d{1,2})?)(?!\d)/g)].filter(m=>+m[2]<12);const x=all[all.length-1];return x?x[1]+"-"+x[2]:null}
+  const all=[...line.replace(/[+-]\d+(?:\.\d+)?/g," ").matchAll(/(?<![\d.:])(\d{1,2}:\d{2}(?:\.\d{1,2})?|\d{1,2}\.\d{1,2})(?![\d:])/g)].map(m=>m[1]).filter(m=>validMark(ev,m));
+  return all.length?all[all.length-1]:null}
+function findDate(l){
+  const a=l.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})\b/);if(a)return`${a[3].length===2?"20"+a[3]:a[3]}-${a[1].padStart(2,"0")}-${a[2].padStart(2,"0")}`;
+  const b=l.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(20\d{2})\b/i);
+  if(b)return`${b[3]}-${String(["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].indexOf(b[1].toLowerCase())+1).padStart(2,"0")}-${b[2].padStart(2,"0")}`;
+  const c=l.match(/\b20\d{2}-\d{2}-\d{2}\b/);return c?c[0]:""}
+function parseResults(lines,roster){
+  let ev=null,date="",meet="";const best={};
+  lines.slice(0,10).forEach(l=>{if(!date)date=findDate(l)});
+  for(const l of lines.slice(0,8)){if(/hy-?tek|meet manager|licensed|page \d|^results$/i.test(l))continue;
+    const t=l.replace(/\b\d{1,2}\/\d{1,2}\/\d{2,4}\b|\b\d{1,2}:\d{2}\s*[ap]m\b/ig," ").replace(/[\s\-–—,]+$/,"").replace(/^[\s\-–—,]+/,"").replace(/\s+/g," ").trim();
+    if(/[a-z]{4}/i.test(t)&&!matchEvent(t)){meet=t;break}}
+  for(const l of lines){
+    const who=whoIn(l,roster);
+    if(!who){if(/relay|\b4\s*x\s*\d/i.test(l))ev=null;else{const e=matchEvent(l);if(e&&!/\d{1,2}[:.]\d{2}/.test(l))ev=e}continue}
+    if(!ev)continue;const mark=lastMark(ev,l);if(!mark)continue;
+    const r={uid:who.id,event:ev,mark:normMark(ev,mark)},k=r.uid+"|"+ev,o=best[k];
+    if(!o||better(ev,val(ev,r.mark),val(ev,o.mark)))best[k]=r}
+  return{rows:Object.values(best),meet,date}}
+async function postTeam(){
+  const meet=document.getElementById("tpMeet").value.trim(),date=document.getElementById("tpDate").value,msg=document.getElementById("tpMsg"),t=TEAM.coach;
+  if(!meet||!date){msg.textContent="Add the meet name and date first.";return}
+  const bad=TEAM.post.find(r=>!validMark(r.event,r.mark));
+  if(bad){msg.textContent=`Check the ${bad.event} mark: ${EVENTS[bad.event].field?"use feet-inches, like 20-7":"use a time like 50.91 or 1:59.40"}.`;return}
+  const btn=document.getElementById("tpGo");btn.disabled=true;msg.textContent="Posting…";
+  const by={};TEAM.post.forEach(r=>(by[r.uid]=by[r.uid]||[]).push({event:r.event,mark:normMark(r.event,r.mark),date,meet}));
+  let n=0,ranked=0;const left=[];
+  for(const[uid,races]of Object.entries(by)){
+    const m=TEAM.members.find(x=>x.id===uid&&x.status==="accepted");
+    if(!m){left.push(...races.map(r=>({uid,event:r.event,mark:r.mark})));continue}
+    const added=[...(m.added||[]),...races].slice(-200);
+    try{await PUB.db.doc(`teams/${t.id}/members/${uid}`).update({added});m.added=added;n+=races.length}
+    catch(_){left.push(...races.map(r=>({uid,event:r.event,mark:r.mark})));continue}
+    if(!m.share)continue;
+    try{const ref=PUB.db.doc("board/"+uid),old=await ref.get();
+      await ref.set({name:m.name,school:t.school||"",grad:m.grad||"",state:t.state||"",gender:m.gender||"Men",
+        events:withRaces(old.exists?old.data().events:{},races),team:t.id,approvedAt:Date.now()});ranked++}catch(_){}}
+  TEAM.post=left;renderPost();
+  msg.textContent=`Posted ${n} result${n===1?"":"s"}${ranked?`, and updated Rankings for ${ranked} athlete${ranked===1?"":"s"}`:""}.${left.length?` ${left.length} couldn’t be posted. Try them again.`:""}`}
 
 function renderAll(){if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits()}
 
 if(!S){welcome.hidden=false;S=fresh();renderAll();S=null}else{if(!S.gender)S.gender="Men";if(!S.fav)S.fav=[];renderAll()}
-const h=location.hash.slice(1);if(!/^strava/.test(h))go(["times","goals","colleges","card","meet"].includes(h)?h:"home","replace");
+const h=location.hash.slice(1);if(!/^strava/.test(h))go(["times","goals","colleges","card","meet","team"].includes(h)?h:"home","replace");
 /* back from Strava's sign-in page: the Worker sends #strava=<session id> or #strava-error=<why> */
 (function stravaReturn(){const ok=location.hash.match(/^#strava=([\w-]{20,})$/),bad=location.hash.match(/^#strava-error=(\w+)$/);
   if(ok||bad)history.replaceState(null,"",location.pathname+location.search);

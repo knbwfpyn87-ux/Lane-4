@@ -178,7 +178,10 @@ function start({ initializeApp, getAuth, onAuthStateChanged, createUserWithEmail
     if (!armed) { armed = true; b.textContent = "Tap again to delete your account"; b.classList.add("danger"); setTimeout(() => { armed = false; b.textContent = "Delete my account"; b.classList.remove("danger"); }, 4000); return; }
     const u = auth.currentUser; if (!u) return;
     try {
-      for (const p of [`data/users/${u.uid}/lane4`, `subs/${u.uid}`, `optout/${u.uid}`]) { try { await deleteDoc(doc(fs, p)); } catch {} }
+      const paths = [`data/users/${u.uid}/lane4`, `subs/${u.uid}`, `optout/${u.uid}`];
+      // Team records: the athlete's spot on a team, and a team they coach. S is the app's saved data.
+      try { if (S && S.team) paths.push(`teams/${S.team.id}/members/${u.uid}`); if (S && S.coach) paths.push(`teams/${S.coach.id}`); } catch {}
+      for (const p of paths) { try { await deleteDoc(doc(fs, p)); } catch {} }
       try { await deleteUser(u); }
       catch (e) {
         if (e && e.code === "auth/requires-recent-login" && via(u) === "Google") { await reauthenticateWithPopup(u, google); await deleteUser(u); }
