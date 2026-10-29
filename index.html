@@ -190,6 +190,9 @@ button.pr[aria-expanded="true"]{border-color:var(--track);box-shadow:0 0 0 2px v
 .welcome .w2{background:transparent;color:#fff;border:2px solid #fff}
 .welcome[hidden]{display:none}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.wkf{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.wkf select:first-child{grid-column:1/-1}
+.mkrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px}.mkrow label{font-size:13px}
+.mkpart{border:1.5px solid var(--line);border-radius:12px;padding:4px 10px 10px;margin:12px 0}
 .chips button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:20px;padding:6px 12px;font:600 14px "Barlow",sans-serif;cursor:pointer}
 .chips button[aria-pressed="true"]{background:var(--track);border-color:var(--track);color:#fff}
 .chips.small{margin:0}.chips.small button{padding:3px 10px;font-size:13px}
@@ -1034,7 +1037,7 @@ async function initCloud(){
     const id=await user.id();if(!id){setSync("device");return}
     if(await user.can("data.write")===false){setSync("device");return}
     const ref=db.collection("data/users/"+id).doc("lane4");
-    PUB.db=db;PUB.id=id;try{PUB.owner=await user.isOwner()}catch(_){PUB.owner=false}refreshPublic();teamSync();
+    PUB.db=db;PUB.id=id;try{PUB.owner=await user.isOwner()}catch(_){PUB.owner=false}refreshPublic();teamSync();loadPubWk();
     setSync("syncing");
     const snap=await ref.get();
     CLOUD.ref=ref;
@@ -1446,6 +1449,100 @@ const WK=[
  {id:"core",name:"Core and mobility",type:"Weights",g:ALLG,parts:[{n:3,d:null,rest:30,what:"× 30s plank"},{n:3,d:null,rest:30,what:"× 10 dead bugs"},{n:1,d:null,rest:0,what:"10 min hip and ankle mobility"}],cue:"Slow and controlled."},
  {id:"recovery",name:"Recovery day",type:"Rest",g:ALLG,parts:[{n:1,d:null,rest:0,what:"20 min walk or very easy jog, then stretching"}],cue:"Recovery is part of training."}
 ];
+/* The premade library: each template has a written version for each part of the season it fits.
+   v lists [reps or minutes, effort %, rest in seconds] per season part; P builds the parts from them. */
+const SPR=["sprint","long","hurdles"],JMP=["jump","vault"],RUNG=["sprint","long","hurdles","mid","distance"];
+const R=(n,d,pct,rest,what)=>({n,d,pct,rest,...(what?{what}:{})}),RP=(n,d,pace,rest,what)=>({n,d,pace,rest,...(what?{what}:{})}),X=(n,what,rest)=>({n,d:null,rest:rest||0,what});
+const WT=[
+ ["acc20","Block starts to 20m","Speed",["sprint","hurdles"],{pre:[6,90,120],early:[8,95,150],mid:[6,97,180],champ:[4,98,240]},(n,p,r)=>[R(n,20,p,r,"from blocks")],"Low and long for the first steps. Full rest."],
+ ["acc40","Accelerations to 40m","Speed",[...SPR,"jump"],{off:[6,85,90],pre:[6,90,120],early:[6,95,150],mid:[5,97,180],champ:[4,98,240]},(n,p,r)=>[R(n,40,p,r,"from a 3-point start")],"Push the ground back. Rise slowly."],
+ ["fly20","Flying 20s","Speed",["sprint","jump","vault"],{pre:[4,95,150],early:[5,97,180],mid:[4,98,240],champ:[3,99,300]},(n,p,r)=>[R(n,20,p,r,"after a 30m build-in")],"Fast and relaxed. Loose shoulders."],
+ ["sp60","Speed 60s","Speed",SPR,{pre:[5,92,150],early:[6,95,180],mid:[5,97,240],champ:[4,98,300]},(n,p,r)=>[R(n,60,p,r)],"Every rep should be fast. Stop if you slow down."],
+ ["inout","In-and-outs","Speed",["sprint","long"],{pre:[4,90,180],early:[5,93,180],mid:[4,95,240],champ:[3,95,300]},(n,p,r)=>[R(n,80,p,r,"as 20 build, 20 fast, 20 float, 20 fast")],"Float means relaxed, not slow."],
+ ["se120","Speed endurance 120s","Workout",SPR,{pre:[4,88,240],early:[5,90,300],mid:[4,93,360],champ:[3,95,420]},(n,p,r)=>[R(n,120,p,r)],"Hold your form to the line."],
+ ["se150b","Speed endurance 150s","Workout",SPR,{pre:[3,88,300],early:[4,90,360],mid:[3,93,420],champ:[2,95,480]},(n,p,r)=>[R(n,150,p,r)],"Fast but smooth. Full rest."],
+ ["se200","200s at race effort","Workout",["sprint","long"],{early:[3,90,480],mid:[3,93,600],champ:[2,95,600]},(n,p,r)=>[R(n,200,p,r)],"Run the curve hard, relax down the straight."],
+ ["s300200","300 then 200","Workout",["long"],{early:[1,90,600],mid:[2,92,600],champ:[1,95,600]},(n,p,r)=>[R(n,300,p,r),R(1,200,95,0,"to finish")],"The 200 is about holding form when tired."],
+ ["s350","350s","Workout",["long"],{pre:[2,85,600],early:[2,88,600],mid:[2,92,720],champ:[1,95,0]},(n,p,r)=>[R(n,350,p,r)],"Practise the last 100 of your 400."],
+ ["s600","600s","Workout",["long","mid"],{pre:[2,80,600],early:[2,85,600],mid:[2,88,720]},(n,p,r)=>[R(n,600,p,r)],"Even pace. Don’t sprint the first 200."],
+ ["ladder","Sprint ladder","Workout",SPR,{pre:[1,80,180],early:[1,85,240],mid:[1,88,300]},(n,p,r)=>[R(1,100,p,r),R(1,200,p,r),R(1,300,p,r),R(1,200,p,r),R(1,100,p,0)],"Same effort up and down the ladder."],
+ ["t300","Tempo 300s","Tempo",SPR,{off:[6,65,120],pre:[6,70,90],early:[5,70,90],mid:[4,70,90]},(n,p,r)=>[R(n,300,p,r)],"Easy rhythm. Breathe."],
+ ["t150","Tempo 150s","Tempo",[...SPR,"jump"],{off:[10,65,60],pre:[10,70,45],early:[8,70,45],mid:[6,70,45],champ:[4,70,60]},(n,p,r)=>[R(n,150,p,r,"walk back")],"Relaxed. This is recovery, not a race."],
+ ["t400","Tempo 400s","Tempo",["long","mid"],{off:[5,65,120],pre:[6,70,90],early:[5,72,90]},(n,p,r)=>[R(n,400,p,r)],"Steady and even."],
+ ["sled","Sled or hill pushes","Speed",["sprint","hurdles","jump","throw"],{off:[6,0,90],pre:[8,0,120],early:[6,0,150]},(n,p,r)=>[X(n,"× 20m sled pushes or steep uphill runs",r)],"Lean in and drive the knees."],
+ ["stairs","Stadium stairs","Hills",[...SPR,"jump","mid"],{off:[8,0,60],pre:[10,0,60]},(n,p,r)=>[X(n,"× one flight of stairs, walk down",r)],"Quick feet. Every step, not every other."],
+ ["hill60","Long hill sprints","Hills",["sprint","long","mid"],{off:[6,0,120],pre:[8,0,120],early:[6,0,150]},(n,p,r)=>[X(n,"× 60m uphill, walk down",r)],"Stay tall. Arms drive the legs."],
+ ["hill200","Hill 200s","Hills",["long","mid","distance"],{off:[5,0,120],pre:[6,0,120],early:[5,0,150]},(n,p,r)=>[X(n,"× 200m uphill, jog down",r)],"Strong, not all-out."],
+ ["h5step","Five-step hurdle runs","Drills",["hurdles"],{off:[6,0,90],pre:[8,0,90],early:[6,0,120]},(n,p,r)=>[X(n,"× runs over 5 low hurdles, 5 steps apart",r)],"Rhythm first. Keep the hips tall."],
+ ["hwalk","Hurdle walkovers","Drills",["hurdles","long"],{off:[4,0,60],pre:[4,0,60],early:[3,0,60],mid:[3,0,60],champ:[2,0,60]},(n,p,r)=>[X(n,"× walkovers of 6 hurdles, lead and trail leg",r)],"Slow and perfect. Hips square."],
+ ["h2","Starts over 2 hurdles","Speed",["hurdles"],{pre:[6,0,150],early:[6,0,180],mid:[5,0,240],champ:[4,0,300]},(n,p,r)=>[X(n,"× block starts over 2 hurdles",r)],"Same steps to hurdle 1 every time."],
+ ["h5full","Full flights to hurdle 5","Workout",["hurdles"],{early:[4,0,240],mid:[4,0,300],champ:[3,0,360]},(n,p,r)=>[X(n,"× block starts over 5 hurdles at race height",r)],"Attack each hurdle. Run off the back."],
+ ["h300","Long-hurdle rhythm","Workout",["long","hurdles"],{pre:[3,0,300],early:[4,0,300],mid:[3,0,360],champ:[2,0,420]},(n,p,r)=>[X(n,"× runs over hurdles 1–5 of the 300 or 400 hurdles",r)],"Hold your step pattern. Practise both lead legs."],
+ ["hshort","Short-spaced hurdles","Speed",["hurdles"],{pre:[5,0,120],early:[6,0,150],mid:[5,0,150],champ:[4,0,180]},(n,p,r)=>[X(n,"× runs over 8 hurdles at shortened spacing",r)],"Quick trail leg. Fast rhythm."],
+ ["m300","300s at 800 pace","Workout",["mid","long"],{pre:[4,0,180],early:[5,0,180],mid:[4,0,240],champ:[3,0,300]},(n,p,r)=>[RP(n,300,800,r)],"Smooth. Same split every time."],
+ ["m400","Mile-pace 400s","Workout",["mid","distance"],{pre:[5,0,120],early:[6,0,90],mid:[6,0,75],champ:[4,0,90]},(n,p,r)=>[RP(n,400,1609,r)],"Relaxed on the back straight."],
+ ["m600","600s at mile pace","Workout",["mid"],{pre:[3,0,180],early:[4,0,180],mid:[3,0,240]},(n,p,r)=>[RP(n,600,1609,r)],"Patient start, strong last 200."],
+ ["m800","800s at 3200 pace","Workout",["mid","distance"],{off:[4,0,120],pre:[5,0,120],early:[5,0,90],mid:[4,0,90]},(n,p,r)=>[RP(n,800,3200,r)],"Even laps."],
+ ["m150","Fast 150s","Speed",["mid"],{pre:[4,90,180],early:[5,92,180],mid:[4,93,240],champ:[3,95,300]},(n,p,r)=>[R(n,150,p,r)],"Relaxed speed for your kick."],
+ ["m500","500s at 800 pace","Workout",["mid"],{early:[3,0,360],mid:[3,0,420],champ:[2,0,480]},(n,p,r)=>[RP(n,500,800,r)],"Race-like. Hold form at the end."],
+ ["m1k","1000s at 5K pace","Workout",["mid","distance"],{pre:[4,0,120],early:[4,0,120],mid:[3,0,150]},(n,p,r)=>[RP(n,1000,5000,r)],"Controlled. Finish feeling strong."],
+ ["mcut","Cut-down set","Workout",["mid","distance"],{pre:[1,0,180],early:[1,0,150],mid:[1,0,120]},(n,p,r)=>[RP(1,1200,3200,r),RP(1,800,1609,r),RP(1,400,800,0)],"Each rep a bit faster than the last."],
+ ["mlad","Mile-pace ladder","Workout",["mid","distance"],{pre:[1,0,120],early:[1,0,120],mid:[1,0,90]},(n,p,r)=>[RP(1,400,1609,r),RP(1,600,1609,r),RP(1,800,1609,r),RP(1,600,1609,r),RP(1,400,1609,0)],"Even pace on every rep."],
+ ["mfloat","200s with float","Workout",["mid","distance"],{pre:[8,0,0],early:[10,0,0],mid:[8,0,0]},(n,p,r)=>[RP(n,200,1609,0,"with a 200 jog between")],"The jog keeps moving. No standing."],
+ ["recov","Recovery run","Run",["mid","distance"],{off:[25],pre:[30],early:[30],mid:[25],champ:[20]},n=>[X(1,`${n} min very easy`)],"Slower than you think."],
+ ["base","Base miles","Run",["mid","distance"],{off:[35],pre:[45]},n=>[X(1,`${n} min easy`)],"Easy and steady."],
+ ["plong","Progressive long run","Run",["distance"],{off:[50],pre:[65],early:[60],mid:[55]},n=>[X(1,`${n} min, the last 10 min steady`)],"Start easy. Finish strong, not hard."],
+ ["thrmi","Threshold miles","Tempo",["distance","mid"],{off:[2,0,90],pre:[3,0,90],early:[3,0,60],mid:[3,0,60]},(n,p,r)=>[X(n,"× 1 mile at threshold (comfortably hard)",r)],"You could say a sentence, not a story."],
+ ["cruise","Cruise intervals","Tempo",["distance","mid"],{pre:[4,0,60],early:[4,0,60],mid:[3,0,60]},(n,p,r)=>[X(n,"× 6 min at threshold",r)],"Steady. Not a race."],
+ ["d1k","1000s at 5K pace","Workout",["distance"],{pre:[5,0,120],early:[5,0,90],mid:[4,0,90],champ:[3,0,120]},(n,p,r)=>[RP(n,1000,5000,r)],"Lock in. Even splits."],
+ ["dmile","Mile repeats","Workout",["distance"],{pre:[3,0,180],early:[3,0,150],mid:[2,0,150]},(n,p,r)=>[RP(n,1609,5000,r)],"Patient. The last one should be your best."],
+ ["d400","400s at 3200 pace","Workout",["distance","mid"],{pre:[10,0,60],early:[10,0,60],mid:[8,0,60],champ:[6,0,75]},(n,p,r)=>[RP(n,400,3200,r)],"Quick rhythm. Short rest on purpose."],
+ ["d1200","1200s at 3200 pace","Workout",["distance"],{early:[3,0,180],mid:[3,0,150],champ:[2,0,180]},(n,p,r)=>[RP(n,1200,3200,r)],"Relaxed, then race the last lap."],
+ ["fart21","Fartlek 2-on 1-off","Workout",["mid","distance"],{off:[5,0,60],pre:[7,0,60],early:[6,0,60],mid:[5,0,60]},(n,p,r)=>[X(n,"× 2 min strong, then 1 min easy jog",r)],"Strong, not all-out."],
+ ["dhill","Long hill repeats","Hills",["distance","mid"],{off:[5,0,120],pre:[6,0,120],early:[6,0,120],mid:[4,0,120]},(n,p,r)=>[X(n,"× 90 seconds uphill at 5K effort, jog down",r)],"Short steps. Steady breathing."],
+ ["xctempo","Grass tempo","Tempo",["distance"],{pre:[20],early:[20],mid:[15]},n=>[X(1,`${n} min at tempo on grass or trails, after a warm-up`)],"Rhythm over pace on soft ground."],
+ ["dprog","Progression run","Run",["distance","mid"],{off:[30],pre:[40],early:[40],mid:[35]},n=>[X(1,`${n} min, a little faster every 10 min`)],"The first part should feel too easy."],
+ ["dstr","Easy run plus strides","Run",["distance","mid"],{off:[4],pre:[6],early:[6],mid:[6],champ:[4]},n=>[X(1,"25 min easy"),R(n,100,85,60)],"Strides are smooth and fast, never strained."],
+ ["jbound","Bounding for jumpers","Plyos",["jump","sprint"],{off:[3,0,120],pre:[4,0,120],early:[4,0,120],mid:[3,0,150],champ:[2,0,180]},(n,p,r)=>[X(n,"× 6 alternate-leg bounds",r),X(n,"× 5 single-leg hops each leg",r)],"Long and springy. Land under your hips."],
+ ["jpop","Pop-ups","Drills",["jump"],{off:[3,0,90],pre:[4,0,90],early:[4,0,90],mid:[3,0,90]},(n,p,r)=>[X(n,"× 6 short-approach pop-ups into the pit",r)],"Drive the free knee up. Stay tall."],
+ ["jfull","Full-approach jumps","Workout",["jump"],{early:[6,0,240],mid:[6,0,240],champ:[4,0,300]},(n,p,r)=>[X(n,"full-approach jumps",r)],"Trust your marks. Same run every time."],
+ ["jtj","Triple jump phase drills","Drills",["jump"],{pre:[4,0,90],early:[4,0,90],mid:[3,0,90],champ:[2,0,120]},(n,p,r)=>[X(n,"× 5 hop-hop-step-step runs on grass",r)],"Flat and fast, not high."],
+ ["jcurve","High jump curve runs","Drills",["jump"],{off:[6,0,60],pre:[8,0,60],early:[6,0,90],mid:[5,0,90],champ:[4,0,90]},n=>[X(n,"curve runs along your J approach")],"Lean into the curve from the ankles."],
+ ["jscis","Short-approach high jumps","Workout",["jump"],{pre:[8,0,120],early:[8,0,150],mid:[6,0,150]},(n,p,r)=>[X(n,"high jumps from a 5-step approach",r)],"Fast last steps. Up, not into the bar."],
+ ["jdepth","Depth jumps","Plyos",["jump","sprint","hurdles"],{pre:[3,0,120],early:[3,0,150],mid:[2,0,180]},(n,p,r)=>[X(n,"× 5 drop jumps from a low box",r)],"Off the ground fast. Stop if landings get loud."],
+ ["vplant","Plant drills","Drills",["vault"],{off:[4,0,60],pre:[5,0,60],early:[4,0,60],mid:[3,0,60],champ:[3,0,60]},(n,p,r)=>[X(n,"× 5 walking plant drills with the pole",r)],"Hands up early. Tall plant."],
+ ["vshort","Short-run vaults","Workout",["vault"],{pre:[8,0,120],early:[10,0,120],mid:[8,0,150],champ:[6,0,150]},(n,p,r)=>[X(n,"vaults from a 6-step approach",r)],"Technique first. Height comes later."],
+ ["vfull","Full-approach vaults","Workout",["vault"],{early:[6,0,240],mid:[6,0,240],champ:[4,0,300]},(n,p,r)=>[X(n,"full-approach vaults",r)],"Hit your mid mark. Commit to the plant."],
+ ["vgym","Rope and gym work","Weights",["vault"],{off:[4,0,90],pre:[4,0,90],early:[3,0,90],mid:[2,0,90]},(n,p,r)=>[X(n,"× rope climb",r),X(n,"× 6 hanging leg raises",r)],"Control the way down."],
+ ["vrun","Pole runs","Speed",["vault"],{off:[6,0,90],pre:[8,0,90],early:[6,0,120],mid:[5,0,120],champ:[4,0,150]},(n,p,r)=>[X(n,"× 40m runs carrying the pole",r)],"Tall and fast. Pole tip steady."],
+ ["tstand","Stand throws","Workout",["throw"],{off:[15,0,45],pre:[20,0,45],early:[15,0,60],mid:[12,0,60],champ:[10,0,60]},(n,p,r)=>[X(n,"stand throws",r)],"Legs, hips, then arm."],
+ ["tfull","Full throws","Workout",["throw"],{early:[12,0,90],mid:[15,0,90],champ:[10,0,120]},(n,p,r)=>[X(n,"full throws",r)],"Same rhythm on every throw."],
+ ["tlight","Light-implement throws","Workout",["throw"],{pre:[10,0,60],early:[12,0,60],mid:[10,0,60],champ:[8,0,90]},(n,p,r)=>[X(n,"throws with a lighter implement",r)],"Fast through the finish."],
+ ["theavy","Heavy-implement throws","Workout",["throw"],{off:[10,0,90],pre:[12,0,90],early:[8,0,90]},(n,p,r)=>[X(n,"throws with a slightly heavier implement",r)],"Stay in position. Don’t muscle it."],
+ ["tmb","Rotational med-ball throws","Plyos",["throw"],{off:[4,0,60],pre:[5,0,60],early:[4,0,60],mid:[3,0,60]},(n,p,r)=>[X(n,"× 6 rotational wall throws each side",r)],"Turn the hips first."],
+ ["tdrill","Throws drill circuit","Drills",["throw"],{off:[3,0,60],pre:[3,0,60],early:[3,0,60],mid:[2,0,60],champ:[2,0,60]},(n,p,r)=>[X(n,"× rounds of power-position, half-turn and wheel drills",r)],"Slow is smooth. Smooth is fast."],
+ ["tsprint","Short sprints for throwers","Speed",["throw"],{off:[6,90,90],pre:[6,90,90],early:[5,92,120],mid:[4,95,120]},(n,p,r)=>[R(n,30,p,r)],"Explode out. Full rest."],
+ ["lstr","Strength lift","Weights",ALLG,{off:[4,0,180],pre:[4,0,180],early:[3,0,180]},(n,p,r)=>[X(n,"× 5 back squats",r),X(n,"× 5 Romanian deadlifts",r),X(n,"× 6 bench or push-ups",r)],"Heavy but clean. Lift with a coach or a spotter."],
+ ["lpow","Power lift","Weights",ALLG,{pre:[4,0,180],early:[4,0,180],mid:[3,0,180],champ:[2,0,180]},(n,p,r)=>[X(n,"× 3 hang cleans or jump squats",r),X(n,"× 3 box jumps",r)],"Fast reps. Stop before you slow down."],
+ ["lmain","Maintenance lift","Weights",ALLG,{mid:[2,0,120],champ:[2,0,120]},(n,p,r)=>[X(n,"× 5 squats",r),X(n,"× 5 Romanian deadlifts",r)],"Light and quick. Leave feeling fresh."],
+ ["lgen","General strength circuit","Weights",ALLG,{off:[3,0,60],pre:[3,0,60]},(n,p,r)=>[X(n,"× 10 lunges each leg",r),X(n,"× 10 push-ups",r),X(n,"× 10 step-ups each leg",r),X(n,"× 30s side plank each side",r)],"Bodyweight is fine. Move well."],
+ ["core2","Core circuit","Weights",ALLG,{off:[3,0,30],pre:[3,0,30],early:[2,0,30],mid:[2,0,30],champ:[1,0,30]},(n,p,r)=>[X(n,"× 30s plank",r),X(n,"× 12 bird dogs",r),X(n,"× 10 leg lowers",r)],"Slow and controlled."],
+ ["hipmob","Hip mobility flow","Mobility",ALLG,{off:[15],pre:[12],mid:[10],champ:[10]},n=>[X(1,`${n} min of hip circles, 90/90s and lunges with a reach`)],"Easy range. No forcing."],
+ ["yoga","Yoga for runners","Mobility",ALLG,{off:[25],pre:[20],mid:[15]},n=>[X(1,`${n} min easy yoga flow`)],"Breathe slowly. Stretch, don’t strain."],
+ ["ankle","Feet and ankles","Mobility",ALLG,{off:[3,0,30],pre:[3,0,30],early:[2,0,30],mid:[2,0,30]},(n,p,r)=>[X(n,"× 15 calf raises",r),X(n,"× 20m walking on toes, then heels",r)],"Strong feet, fewer injuries."],
+ ["abskip","A-skips and B-skips","Drills",[...RUNG,"jump"],{off:[3,0,30],pre:[3,0,30],early:[2,0,30],mid:[2,0,30],champ:[2,0,30]},(n,p,r)=>[X(n,"× 20m A-skips",r),X(n,"× 20m B-skips",r),X(n,"× 20m straight-leg bounds",r)],"Tall posture. Quick ground contacts."],
+ ["wicket","Wicket runs","Speed",[...SPR,"jump"],{pre:[6,0,120],early:[6,0,150],mid:[5,0,150],champ:[4,0,180]},(n,p,r)=>[X(n,"× runs over 10 mini-hurdles",r)],"Step over, not up. Stay tall."],
+ ["xtrain","Bike or pool workout","Cross-train",ALLG,{off:[30],pre:[30],early:[20],mid:[20]},n=>[X(1,`${n} min of easy biking, swimming or pool running`)],"Gets your heart going without the pounding."],
+ ["xtint","Bike intervals","Cross-train",RUNG,{off:[8,0,60],pre:[10,0,60]},(n,p,r)=>[X(n,"× 1 min hard on a bike",r)],"Hard, but you could keep going."],
+ ["racesim","Race rehearsal","Race prep",ALLG,{early:[1],mid:[1],champ:[1]},()=>[X(1,"full meet warm-up, then one race-effort rep of your event")],"Same warm-up, same routine as race day."],
+ ["primer","Pre-meet primer","Race prep",[...SPR,"jump","vault","throw"],{mid:[3,90,120],champ:[3,90,150]},(n,p,r)=>[X(1,"15 min warm-up and drills"),R(n,60,p,r,"from a start")],"The day before a meet. Short and snappy."],
+ ["shake","Pre-meet shakeout","Race prep",["mid","distance"],{mid:[4],champ:[4]},n=>[X(1,"20 min easy"),R(n,100,85,60)],"Loosen up. Nothing hard."],
+ ["taper","Taper sharpener","Race prep",RUNG,{champ:[3,95,300]},(n,p,r)=>[R(n,150,p,r)],"Few reps, full rest. Save it for the race."],
+ ["relay","Relay handoffs","Speed",["sprint","long"],{pre:[6,85,90],early:[8,90,120],mid:[6,95,150],champ:[4,95,180]},(n,p,r)=>[X(n,"× handoffs at full speed in the zone",r)],"Call the hand on the mark. Don’t slow down."],
+ ["wup","Dynamic warm-up","Drills",ALLG,{off:[1],pre:[1],early:[1],mid:[1],champ:[1]},()=>[X(1,"10 min jog, leg swings, skips, then 3 × 60m build-ups")],"Do this before any hard day."]
+];
+const WTYPES=["Speed","Workout","Tempo","Run","Hills","Drills","Plyos","Weights","Mobility","Cross-train","Race prep","Rest"];
+WT.forEach(([id,name,type,g,v,P,cue])=>Object.keys(v).forEach(ph=>WK.push({id:`${id}-${ph}`,name,type,g,ph,parts:P(...v[ph]),cue})));
 /* targets: your nearest running PR scaled to the rep distance (Riegel's formula), then to the effort */
 const RUN_M={"55m":55,"60m":60,"100m":100,"200m":200,"300m":300,"400m":400,"500m":500,"600m":600,"800m":800,"1000m":1000,"1600m":1600,"Mile":1609,"3200m":3200,"5K XC":5000};
 function raceTime(d){let best=null;Object.keys(RUN_M).forEach(ev=>{const r=pr(ev);if(!r)return;const t=cmpVal(r);if(!(t>0))return;
@@ -1453,7 +1550,7 @@ function raceTime(d){let best=null;Object.keys(RUN_M).forEach(ev=>{const r=pr(ev
 function repTarget(p){if(!p.d||p.d<100)return null;if(p.pace){const t=raceTime(p.pace);return t?t*p.d/p.pace:null}return p.pct?(raceTime(p.d)||NaN)/(p.pct/100)||null:null}
 function fmtSec(s){return s<60?s.toFixed(1):`${Math.floor(s/60)}:${(s%60).toFixed(1).padStart(4,"0")}`}
 function restTxt(s){return s>=60?(s%60?`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")} min`:`${s/60} min`):`${s}s`}
-const PACE_NAME={800:"800",1609:"mile",3200:"3200"};
+const PACE_NAME={400:"400",800:"800",1609:"mile",3200:"3200",5000:"5K"};
 function partText(p){const effort=p.pace?` at ${PACE_NAME[p.pace]} pace`:p.pct?` at ${p.pct}%`:"";
   if(p.d)return `${p.n} × ${p.d}m${effort}${p.what?" "+p.what:""}`;
   if(p.what.startsWith("×"))return `${p.n} sets ${p.what}`;return p.n>1?`${p.n} × ${p.what}`:p.what}
@@ -1521,7 +1618,7 @@ function isoDay(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(
 function renderPlanner(){if(!S)return;if(!S.wplan)S.wplan=[];renderFit();const days=weekDays(),td=today(),L=trainingLoad();
   document.getElementById("planLoad").textContent=L.n7||L.avg?`Last 7 days: ${L.n7} workout${L.n7===1?"":"s"}${L.mi?`, ${L.mi.toFixed(1)} mi`:""}${L.feel!=null?`, felt ${L.feel.toFixed(1)}/5 lately`:""}.`:"Add workouts to your week. Targets come from your PRs.";
   document.getElementById("planDays").innerHTML=days.map(d=>{const iso=isoDay(d),items=S.wplan.map((p,i)=>({...p,i})).filter(p=>p.date===iso);
-    return `<div class="pday${iso===td?" today":""}"><div class="dl">${d.toLocaleDateString([],{weekday:"short"})}<small>${d.getDate()}</small></div><div class="items">${items.length?items.map(p=>{const w=WK.find(x=>x.id===p.id);
+    return `<div class="pday${iso===td?" today":""}"><div class="dl">${d.toLocaleDateString([],{weekday:"short"})}<small>${d.getDate()}</small></div><div class="items">${items.length?items.map(p=>{const w=findWk(p.id);
       return w?`<button class="pitem${p.done?" done":""}" data-pi="${p.i}"><span class="nm">${esc(w.name)}</span>${p.adj&&p.adj.by==="ai"?'<span class="tag ai">AI</span>':""}${p.done?'<span class="ck" aria-label="done">✓</span>':""}</button>`:""}).join(""):`<span class="prest">—</span>`}</div></div>`}).join("");
   document.querySelectorAll("#planDays [data-pi]").forEach(b=>b.onclick=()=>openWk({planned:+b.dataset.pi}));
   const empty=days.filter(d=>isoDay(d)>=td&&!S.wplan.some(p=>p.date===isoDay(d))).length;
@@ -1534,16 +1631,100 @@ const WEEKS={sprint:["accel","t200","fly","t100","plyos","lift","recovery"],long
 document.getElementById("planFill").onclick=()=>{const plan=WEEKS[myGroup()]||WEEKS.sprint;let n=0;
   weekDays().forEach((d,i)=>{const iso=isoDay(d);if(iso>=today()&&!S.wplan.some(p=>p.date===iso)){S.wplan.push({id:plan[i],date:iso,adj:null,done:false});n++}});
   save();renderAll();toast(n?`Added ${n} workout${n===1?"":"s"}. Tap one to adjust or remove it.`:"Your week is already full")};
-let wkFilter="mine";
-function openWk(o){openSheet("wkSheet");if(o&&(o.id||o.planned!=null))wkDetail(o);else wkList()}
-function wkList(){document.getElementById("wkTitle").textContent="Workouts";const g=myGroup(),body=document.getElementById("wkBody");
-  const F=[["mine","For you"],["all","All"],["Speed","Speed"],["Tempo","Tempo"],["Workout","Workouts"],["Run","Runs"],["Plyos","Plyos"],["Weights","Weights"]];
-  const list=WK.filter(w=>wkFilter==="mine"?w.g.includes(g):wkFilter==="all"||w.type===wkFilter);
-  body.innerHTML=`<div class="chips" role="group" aria-label="Filter">${F.map(([k,l])=>`<button data-wf="${k}" aria-pressed="${k===wkFilter}">${l}</button>`).join("")}</div>
-    <div class="panel" style="padding:4px 12px">${list.length?list.map(w=>`<div class="crow"><button class="cmain" data-wk="${w.id}"><span class="cname">${esc(w.name)}</span><span class="cmeta">${w.type} · ${esc(wkSummary(w))}</span></button></div>`).join(""):`<p class="empty" style="padding:10px 0">No workouts here yet.</p>`}</div>`;
-  body.querySelectorAll("[data-wf]").forEach(b=>b.onclick=()=>{wkFilter=b.dataset.wf;wkList()});
-  body.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>wkDetail({id:b.dataset.wk}))}
-function wkDetail(o){const P=o.planned!=null?S.wplan[o.planned]:null,w=WK.find(x=>x.id===(P?P.id:o.id));if(!w){wkList();return}
+let wkFilter="mine",wkPh=null,wkType="",wkSrc="",wkQ="";
+const WGROUP={sprint:"Sprints",long:"400 and long sprints",hurdles:"Hurdles",mid:"800 and mile",distance:"Distance",jump:"Jumps",vault:"Pole vault",throw:"Throws"};
+/* Shared workouts: anyone can read them, people signed in can share their own. Kept on the device for offline use. */
+let PUBWK=(()=>{try{return JSON.parse(localStorage.getItem("lane4-pubwk"))||[]}catch(_){return[]}})();
+async function loadPubWk(){if(!PUB.db)return;try{const q=await PUB.db.collection("pubwk").get();
+  PUBWK=q.docs.map(d=>cleanWk({...d.data(),id:"p-"+d.id,pubId:d.id})).filter(Boolean);try{localStorage.setItem("lane4-pubwk",JSON.stringify(PUBWK))}catch(_){}
+  if(!document.getElementById("wkSheet").hidden&&document.getElementById("wkList"))wkRows()}catch(_){}}
+/* Only keep fields Lane 4 understands, with sane sizes, so a shared workout can't break the app. */
+function cleanWk(w){if(!w||typeof w.name!=="string"||!Array.isArray(w.parts)||!w.parts.length)return null;const num=(v,lo,hi)=>{v=Math.round(+v);return v>=lo&&v<=hi?v:null};
+  const parts=w.parts.slice(0,8).map(p=>{const o={n:num(p.n,1,50)||1,d:num(p.d,10,10000),rest:num(p.rest,0,1800)||0};
+    if(PACE_NAME[p.pace])o.pace=+p.pace;else if(num(p.pct,40,100))o.pct=num(p.pct,40,100);
+    const t=String(p.what||"").slice(0,80).trim();if(t)o.what=t;if(!o.d&&!o.what)o.what="reps";return o});
+  return{id:w.id,pubId:w.pubId,by:typeof w.by==="string"?w.by:"",name:w.name.slice(0,60),type:WTYPES.includes(w.type)?w.type:"Workout",
+    g:(Array.isArray(w.g)?w.g:[]).filter(x=>WGROUP[x]).length?w.g.filter(x=>WGROUP[x]):ALLG,ph:PHASES[w.ph]?w.ph:undefined,parts,cue:String(w.cue||"").slice(0,200)}}
+function allWk(){const mine=(S.myWk||[]),seen=new Set(mine.map(w=>w.pubId).filter(Boolean));return[...WK,...mine,...PUBWK.filter(w=>!seen.has(w.pubId))]}
+function findWk(id){return allWk().find(x=>x.id===id)}
+function wkSrcOf(w){return w.id.startsWith("u-")?"mine":w.id.startsWith("p-")?"shared":"lane4"}
+function openWk(o){openSheet("wkSheet");if(o&&o.make)wkMake(o.make===true?null:o.make);else if(o&&(o.id||o.planned!=null))wkDetail(o);else wkList()}
+function wkList(){document.getElementById("wkTitle").textContent="Workouts";const body=document.getElementById("wkBody");if(wkPh===null)wkPh=fit().phase;
+  const opt=(v,l,cur)=>`<option value="${v}"${v===cur?" selected":""}>${esc(l)}</option>`;
+  body.innerHTML=`<input id="wkQ" type="search" placeholder="Search workouts" aria-label="Search workouts" value="${esc(wkQ)}" autocomplete="off">
+    <div class="wkf"><select id="wkG" aria-label="Event group">${opt("mine","For you",wkFilter)}${opt("all","All events",wkFilter)}${Object.entries(WGROUP).map(([k,l])=>opt(k,l,wkFilter)).join("")}</select>
+    <select id="wkPh" aria-label="Part of the season">${opt("","Any season",wkPh)}${Object.entries(PHASES).map(([k,l])=>opt(k,l,wkPh)).join("")}</select>
+    <select id="wkT" aria-label="Kind">${opt("","All kinds",wkType)}${WTYPES.map(t=>opt(t,t,wkType)).join("")}</select></div>
+    <div class="chips" role="group" aria-label="From">${[["","All"],["lane4","Lane 4"],["mine","Mine"],["shared","Shared"]].map(([k,l])=>`<button data-ws="${k}" aria-pressed="${k===wkSrc}">${l}</button>`).join("")}</div>
+    <button class="go alt" id="wkNew" style="margin:0 0 10px">+ Make your own workout</button>
+    <div class="panel" style="padding:4px 12px" id="wkList"></div>`;
+  const $=id=>document.getElementById(id);
+  $("wkQ").oninput=e=>{wkQ=e.target.value;wkRows()};
+  $("wkG").onchange=e=>{wkFilter=e.target.value;wkRows()};$("wkPh").onchange=e=>{wkPh=e.target.value;wkRows()};$("wkT").onchange=e=>{wkType=e.target.value;wkRows()};
+  body.querySelectorAll("[data-ws]").forEach(b=>b.onclick=()=>{wkSrc=b.dataset.ws;body.querySelectorAll("[data-ws]").forEach(x=>x.setAttribute("aria-pressed",x===b));wkRows()});
+  $("wkNew").onclick=()=>wkMake(null);wkRows();loadPubWk()}
+function wkRows(){const g=wkFilter==="mine"?myGroup():wkFilter,words=wkQ.toLowerCase().split(/\s+/).filter(Boolean);
+  const list=allWk().filter(w=>(g==="all"||w.g.includes(g))&&(!wkPh||!w.ph||w.ph===wkPh)&&(!wkType||w.type===wkType)&&(!wkSrc||wkSrcOf(w)===wkSrc)
+    &&words.every(q=>`${w.name} ${w.type} ${wkSummary(w)} ${w.ph?PHASES[w.ph]:""} ${w.g.map(x=>WGROUP[x]).join(" ")}`.toLowerCase().includes(q)));
+  const N=150,el=document.getElementById("wkList");
+  el.innerHTML=list.length?list.slice(0,N).map(w=>{const s=wkSrcOf(w);return `<div class="crow"><button class="cmain" data-wk="${esc(w.id)}"><span class="cname">${esc(w.name)}${s==="mine"?` <span class="tag">${w.pubId?"Mine · shared":"Mine"}</span>`:s==="shared"?` <span class="tag">Shared</span>`:""}</span><span class="cmeta">${w.type}${w.ph?" · "+PHASES[w.ph]:""} · ${esc(wkSummary(w))}</span></button></div>`}).join("")
+    +(list.length>N?`<p class="hint" style="padding:8px 0">Showing ${N} of ${list.length}. Search to narrow it down.</p>`:`<p class="hint" style="padding:8px 0">${list.length} workout${list.length===1?"":"s"}</p>`)
+    :`<p class="empty" style="padding:10px 0">No workouts match. Try another season or kind.</p>`;
+  el.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>wkDetail({id:b.dataset.wk}))}
+/* Make your own: up to 8 parts, each with reps, a distance, and an effort (% or a race pace). */
+function wkMake(src){const edit=src&&src.id?src:null,body=document.getElementById("wkBody"),w=src||{name:"",type:"Workout",g:[myGroup()],ph:fit().phase||undefined,parts:[{n:4,d:200,rest:120}],cue:""};
+  document.getElementById("wkTitle").textContent=edit?"Edit workout":"Make a workout";
+  const opt=(v,l,cur)=>`<option value="${v}"${String(v)===String(cur)?" selected":""}>${esc(l)}</option>`;
+  const partRow=(p,i)=>`<div class="mkpart" data-i="${i}"><div class="mkrow">
+      <div><label>Reps</label><input type="number" class="mN" min="1" max="50" value="${p.n||1}" inputmode="numeric"></div>
+      <div><label>Meters</label><input type="number" class="mD" min="0" max="10000" value="${p.d||""}" placeholder="none" inputmode="numeric"></div>
+      <div><label>Rest (sec)</label><input type="number" class="mR" min="0" max="1800" value="${p.rest||0}" inputmode="numeric"></div></div>
+    <div class="mkrow"><div><label>Effort</label><select class="mE">${opt("","None",p.pace?"pace":p.pct?"pct":"")}${opt("pct","% of best",p.pace?"pace":p.pct?"pct":"")}${opt("pace","Race pace",p.pace?"pace":p.pct?"pct":"")}</select></div>
+      <div class="mPctW"${p.pct?"":" hidden"}><label>Percent</label><input type="number" class="mP" min="40" max="100" value="${p.pct||90}" inputmode="numeric"></div>
+      <div class="mPaceW"${p.pace?"":" hidden"}><label>Pace</label><select class="mPace">${Object.entries(PACE_NAME).map(([k,l])=>opt(k,l==="mile"?"Mile":l+(/^\d+$/.test(l)?"m":""),p.pace||800)).join("")}</select></div></div>
+    <label>Notes for this part</label><input class="mW" maxlength="80" value="${esc(p.what||"")}" placeholder="e.g. from blocks, on grass">
+    ${i?`<button class="linkbtn mDel" type="button">Remove this part</button>`:""}</div>`;
+  body.innerHTML=`<label for="mkName">Name</label><input id="mkName" maxlength="60" value="${esc(w.name)}" placeholder="e.g. Coach’s Friday 300s">
+    <div class="mkrow"><div><label for="mkType">Kind</label><select id="mkType">${WTYPES.map(t=>opt(t,t,w.type)).join("")}</select></div>
+      <div><label for="mkPh">Season</label><select id="mkPh">${opt("","Any time",w.ph||"")}${Object.entries(PHASES).map(([k,l])=>opt(k,l,w.ph||"")).join("")}</select></div></div>
+    <label>Who it’s for</label><div class="chips" id="mkG">${Object.entries(WGROUP).map(([k,l])=>`<button type="button" data-g="${k}" aria-pressed="${w.g.includes(k)}">${l}</button>`).join("")}</div>
+    <div id="mkParts">${w.parts.map(partRow).join("")}</div>
+    <button class="ghost" id="mkAdd" type="button" style="width:100%;padding:8px">+ Add a part</button>
+    <label for="mkCue">Tip</label><input id="mkCue" maxlength="200" value="${esc(w.cue)}" placeholder="One short coaching cue">
+    <label class="check toggle" style="margin-top:14px"><span>Share with everyone on Lane 4</span><input type="checkbox" class="switch" id="mkPub" role="switch"${w.pubId?" checked":""}></label>
+    <p class="hint" style="margin:4px 0 0">Shared workouts show the workout only, never your name. You need to be signed in to share.</p>
+    <p class="hint" id="mkMsg" role="alert"></p>
+    <button class="go" id="mkSave">${edit?"Save changes":"Save workout"}</button>
+    ${edit?`<button class="ghost" id="mkDelete" style="margin-top:10px;width:100%;padding:8px">Delete this workout</button>`:""}
+    <button class="linkbtn" id="wkBack" style="margin-top:10px">‹ All workouts</button>`;
+  const $=id=>document.getElementById(id);
+  const wire=()=>body.querySelectorAll(".mkpart").forEach(r=>{const e=r.querySelector(".mE");e.onchange=()=>{r.querySelector(".mPctW").hidden=e.value!=="pct";r.querySelector(".mPaceW").hidden=e.value!=="pace"};
+    const d=r.querySelector(".mDel");if(d)d.onclick=()=>{r.remove()}});
+  const read=()=>[...body.querySelectorAll(".mkpart")].map(r=>{const q=c=>r.querySelector(c).value,e=q(".mE"),p={n:+q(".mN")||1,d:+q(".mD")||null,rest:+q(".mR")||0};
+    if(e==="pct")p.pct=+q(".mP");if(e==="pace")p.pace=+q(".mPace");const t=q(".mW").trim();if(t)p.what=t;return p});
+  wire();
+  body.querySelectorAll("#mkG [data-g]").forEach(b=>b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")!=="true"));
+  $("mkAdd").onclick=()=>{const n=body.querySelectorAll(".mkpart").length;if(n>=8){toast("8 parts at most");return}$("mkParts").insertAdjacentHTML("beforeend",partRow({n:1,rest:60},n));wire()};
+  $("wkBack").onclick=()=>wkList();
+  $("mkSave").onclick=async()=>{const msg=$("mkMsg"),name=$("mkName").value.trim();msg.textContent="";
+    if(!name){msg.textContent="Give your workout a name.";return}
+    const g=[...body.querySelectorAll("#mkG [aria-pressed=true]")].map(b=>b.dataset.g);
+    const c=cleanWk({name,type:$("mkType").value,g:g.length?g:ALLG,ph:$("mkPh").value,parts:read(),cue:$("mkCue").value.trim()});
+    if(!c){msg.textContent="Add at least one part.";return}
+    c.id=edit?edit.id:"u-"+Date.now().toString(36);c.pubId=edit&&edit.pubId;
+    const share=$("mkPub").checked,doc=c.pubId||(PUB.id?PUB.id.slice(0,8)+"-"+c.id.slice(2):null);
+    if(share||c.pubId){if(!PUB.db||!PUB.id){msg.textContent="Sign in to share workouts. Turn sharing off to save it just for you.";return}
+      const btn=$("mkSave");btn.disabled=true;btn.textContent="Saving…";
+      try{if(share){const {id,pubId,by,...data}=c;Object.keys(data).forEach(k=>data[k]===undefined&&delete data[k]);data.parts=data.parts.map(p=>JSON.parse(JSON.stringify(p)));
+          await PUB.db.doc("pubwk/"+doc).set({...data,by:PUB.id,at:Date.now()});c.pubId=doc}
+        else{await PUB.db.doc("pubwk/"+c.pubId).delete();delete c.pubId}}
+      catch(_){btn.disabled=false;btn.textContent=edit?"Save changes":"Save workout";msg.textContent="Couldn’t reach Lane 4. Check your connection, or turn sharing off for now.";return}}
+    if(!c.pubId)delete c.pubId;
+    S.myWk=(S.myWk||[]).filter(x=>x.id!==c.id);S.myWk.unshift(c);save();PUBWK=PUBWK.filter(x=>x.pubId!==c.pubId||!c.pubId);
+    toast(share?"Saved and shared":"Saved");wkDetail({id:c.id})};
+  if($("mkDelete"))twoTap($("mkDelete"),"Tap again to delete",async()=>{if(edit.pubId&&PUB.db)try{await PUB.db.doc("pubwk/"+edit.pubId).delete()}catch(_){}
+    S.myWk=(S.myWk||[]).filter(x=>x.id!==edit.id);PUBWK=PUBWK.filter(x=>x.pubId!==edit.pubId);save();toast("Deleted");wkList()})}
+function wkDetail(o){const P=o.planned!=null?S.wplan[o.planned]:null,w=findWk(P?P.id:o.id);if(!w){wkList();return}
   const adj=P?P.adj:o.adj||null,shown=applyAdj(w,adj),body=document.getElementById("wkBody"),days=weekDays(),td=today();
   document.getElementById("wkTitle").textContent=w.name;
   body.innerHTML=`<span class="tag">${w.type}</span>${P?` <span class="tag">${new Date(P.date+"T12:00:00").toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"})}</span>`:""}
@@ -1555,9 +1736,13 @@ function wkDetail(o){const P=o.planned!=null?S.wplan[o.planned]:null,w=WK.find(x
       :`<label for="wkFeel">How it felt: <span id="wkFeelV">3</span>/5</label><input type="range" id="wkFeel" min="1" max="5" value="3"><button class="go" id="wkDone">Mark done</button>`)
       +`<button class="ghost" id="wkRemove" style="margin-top:12px;width:100%;padding:8px">Remove from my week</button>`
       :`<label for="wkDay">Day</label><select id="wkDay">${days.map(d=>{const iso=isoDay(d);return `<option value="${iso}"${iso===td?" selected":""}>${d.toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"})}</option>`}).join("")}</select><button class="go" id="wkAddBtn">Add to my week</button>`}
+    ${w.id.startsWith("u-")?`<button class="ghost" id="wkEdit" style="margin-top:12px;width:100%;padding:8px">Edit my workout</button>`:`<button class="ghost" id="wkCopy" style="margin-top:12px;width:100%;padding:8px">Copy and change it</button>`}${w.id.startsWith("p-")&&PUB.owner?`<button class="ghost" id="wkMod" style="margin-top:8px;width:100%;padding:8px">Remove from shared (admin)</button>`:""}
     <button class="linkbtn" id="wkBack" style="margin-top:10px">‹ All workouts</button>`;
   const $=id=>document.getElementById(id);
   $("wkBack").onclick=()=>wkList();
+  if($("wkEdit"))$("wkEdit").onclick=()=>wkMake(w);
+  if($("wkCopy"))$("wkCopy").onclick=()=>wkMake({...JSON.parse(JSON.stringify(w)),id:undefined,pubId:undefined,name:(w.name+" (my version)").slice(0,60)});
+  if($("wkMod"))twoTap($("wkMod"),"Tap again to remove for everyone",async()=>{try{await PUB.db.doc("pubwk/"+w.pubId).delete();PUBWK=PUBWK.filter(x=>x.id!==w.id);toast("Removed");wkList()}catch(_){toast("Couldn’t remove it")}});
   if($("wkAdj"))$("wkAdj").onclick=async()=>{const b=$("wkAdj");b.disabled=true;b.textContent="Adjusting…";
     const a=(await aiAdjust(w))||ruleAdjust(w);if(P){P.adj=a;save();renderPlanner();wkDetail(o)}else wkDetail({id:w.id,adj:a})};
   if($("wkAddBtn"))$("wkAddBtn").onclick=()=>{S.wplan.push({id:w.id,date:$("wkDay").value,adj:adj||null,done:false});

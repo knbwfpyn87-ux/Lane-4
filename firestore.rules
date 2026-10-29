@@ -59,6 +59,18 @@ service cloud.firestore {
       allow read: if isMe(uid);
       allow write: if false;
     }
+    // Shared workouts: anyone can read them. Signed-in athletes can share their own (small, checked fields only)
+    // and change or delete only their own. Admins can remove any.
+    match /pubwk/{id} {
+      allow read: if true;
+      allow create, update: if signedIn() && request.resource.data.by == request.auth.uid
+        && (resource == null || resource.data.by == request.auth.uid)
+        && request.resource.data.keys().hasOnly(["name", "type", "g", "ph", "parts", "cue", "by", "at"])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 60
+        && request.resource.data.parts is list && request.resource.data.parts.size() <= 8
+        && (!("cue" in request.resource.data) || (request.resource.data.cue is string && request.resource.data.cue.size() <= 200));
+      allow delete: if (signedIn() && resource.data.by == request.auth.uid) || isAdmin();
+    }
     // Feature switches: anyone can read them, only admins can change them.
     match /config/{doc} {
       allow read: if true;
