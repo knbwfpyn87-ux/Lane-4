@@ -797,11 +797,14 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
       <h2>My colleges</h2>
       <div class="segIn" style="margin-bottom:12px" role="group" aria-label="Standards"><button data-gen="Men">Men’s</button><button data-gen="Women">Women’s</button></div>
       <div class="panel" id="goalList"></div>
-      <p class="source" style="text-align:center">Standards from Preferred Recruit (trackandfieldstandards.com).</p>
+      <p class="source" style="text-align:center">All college standards in Lane 4 come from Preferred Recruit (trackandfieldstandards.com).</p>
+      <a class="go alt" href="https://trackandfieldstandards.com/" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Go to Preferred Recruit for more information/times</a>
     </section>
 
     <!-- COLLEGES -->
     <section class="view" id="v-colleges">
+      <p class="source" style="margin:0 0 8px">All college standards in Lane 4 come from Preferred Recruit (trackandfieldstandards.com).</p>
+      <a class="go alt" href="https://trackandfieldstandards.com/" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Go to Preferred Recruit for more information/times</a>
       <div id="cTools">
         <div class="searchbar"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input id="cSearch" type="search" placeholder="School, state, or conference" autocomplete="off" aria-label="Search colleges"></div>
         <div class="chips" id="cChips" role="group" aria-label="Filter"><button data-d="All">All</button><button data-d="D1">D1</button><button data-d="D2">D2</button><button data-d="D3">D3</button><button data-d="NAIA">NAIA</button><button data-d="Mine">★ Mine</button></div>
@@ -1365,7 +1368,7 @@ function renderStanding(){
   /* one row per conference + event + level, so 11 identical NESCAC rows don't crowd the list */
   const seen=new Set(),top=[];for(const c of close){const k=c.sc.ci+"|"+c.ev+"|"+c.i;if(seen.has(k))continue;seen.add(k);
     c.count=pool.filter(x=>x.ci===c.sc.ci).length;top.push(c);if(top.length===3)break}
-  el.innerHTML=`<h3>Your best events</h3><p class="hint" style="margin:-4px 0 6px">Scored against college standards so every event is judged fairly: 50 = walk-on line, 100 = target line.</p>${strong.length?strong.map((x,i)=>`<div class="srow"><span class="rank">${i+1}</span><div class="grow"><strong>${x.ev}</strong> <span class="num">${esc(show(x.ev,pr(x.ev).mark))}</span><div class="hint" style="margin:0">${levelWords(x.med)} · reaches a level at ${x.hit} of ${x.n} colleges</div></div><span class="score" title="Lane 4 score: 50 = Walk-on line, 100 = Target line">${x.score}</span><div></div></div>`).join(""):`<p class="hint">Your events don’t have college standards yet.</p>`}
+  el.innerHTML=`<h3>Your best events</h3><p class="hint" style="margin:-4px 0 6px">Scored against college standards from Preferred Recruit so every event is judged fairly: 50 = walk-on line, 100 = target line.</p>${strong.length?strong.map((x,i)=>`<div class="srow"><span class="rank">${i+1}</span><div class="grow"><strong>${x.ev}</strong> <span class="num">${esc(show(x.ev,pr(x.ev).mark))}</span><div class="hint" style="margin:0">${levelWords(x.med)} · reaches a level at ${x.hit} of ${x.n} colleges</div></div><span class="score" title="Lane 4 score: 50 = Walk-on line, 100 = Target line">${x.score}</span><div></div></div>`).join(""):`<p class="hint">Your events don’t have college standards yet.</p>`}
   <h3 style="margin-top:16px">Closest college marks${favs.length?" (your colleges)":""}</h3>${top.length?top.map(c=>`<button class="srow sbtn" data-id="${esc(c.sc.id)}"><div class="grow"><strong>${esc(c.count>1?CONF[c.sc.ci].n+" schools":c.sc.name)}</strong><div class="hint" style="margin:0">${c.count>1?`${c.count} schools incl. ${esc(c.sc.name)} · `:""}${CONF[c.sc.ci].d} · ${c.ev} ${LEVELS[c.i]} ${esc(show(c.ev,c.m))} · ${gapText(c.ev,c.diff)}</div></div><span aria-hidden="true">›</span></button>`).join(""):`<p class="hint">You’ve reached every level at ${favs.length?"your starred colleges":"these colleges"}.</p>`}
   ${favs.length?"":`<p class="hint" style="margin-top:8px">Star colleges in Colleges to focus this on your list.</p>`}`;
   el.querySelectorAll(".sbtn").forEach(b=>b.onclick=()=>{cOpen=b.dataset.id;go("colleges");renderColleges()});
