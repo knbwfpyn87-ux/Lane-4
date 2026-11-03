@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="robots" content="noindex">
 <title>Lane 4 Admin</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
@@ -113,7 +114,9 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, Googl
 import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
-const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// Links typed by athletes only ever open as web pages: anything but http(s), like javascript:, becomes "".
+const safeUrl = s => { s = String(s || "").trim(); return /^https?:\/\/[^\s"'<>]+$/i.test(s) ? s : ""; };
 const toast = m => { const t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2000); };
 const FIELD = /jump|vault|put|discus|javelin|hammer/i;
 const show = (ev, m) => { if (!FIELD.test(ev)) return m; const p = String(m).split("-"); return `${p[0]}′ ${p[1] || 0}″`; };
@@ -177,8 +180,8 @@ function card(x, actions) {
     <p class="hint">${esc([x.school, x.grad ? "Class of " + x.grad : "", x.state].filter(Boolean).join(" · "))}</p>
     ${x.team ? `<p class="hint">Posted by the coach of team ${esc(x.team)}</p>` : ""}
     ${isProof(x.proof) ? `<p class="hint">Screenshot they sent:</p><img class="proof" src="${x.proof}" alt="Results screenshot from ${esc(x.name)}">`
-      : x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : x.team ? "" : '<p class="hint">No results link given. Ask them to add one before approving.</p>'}
-    ${isProof(x.proof) && x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : ""}
+      : safeUrl(x.link) ? `<a href="${esc(safeUrl(x.link))}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : x.team ? "" : '<p class="hint">No results link given. Ask them to add one before approving.</p>'}
+    ${isProof(x.proof) && safeUrl(x.link) ? `<a href="${esc(safeUrl(x.link))}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>` : ""}
     <table>${events.map(([ev, v]) => `<tr><td>${esc(ev)}<div class="hint" style="margin:0">${esc(v.meet || "")} ${esc(v.date || "")}</div></td><td class="m">${esc(show(ev, v.mark))}</td></tr>`).join("")}</table>
     ${actions}</div>`;
 }
@@ -190,19 +193,19 @@ function render() {
   $("stats").innerHTML = [[pending.length, "Waiting"], [tWait.length, "Teams waiting"], [board.length, "On rankings"], [optout.size, "Hidden"]]
     .map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
   let html = "";
-  if (tab === "pending") html = pending.length ? pending.map(x => card(x, `<div class="row"><button class="btn" data-ok="${x.id}">Approve</button><button class="btn alt" data-no="${x.id}">Reject</button></div>
-      <label for="r-${x.id}">Reason if rejecting (the athlete sees this)</label><input id="r-${x.id}" placeholder="Times didn’t match the results page">`)).join("") : '<div class="panel"><p class="hint" style="margin:0">Nothing waiting. Nice.</p></div>';
-  if (tab === "approved") html = approved.map(x => card(x, `<button class="btn alt" data-rm="${x.id}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No approved athletes yet.</p></div>';
-  if (tab === "rejected") html = rejected.map(x => card(x, `<p class="hint">Reason: ${esc(x.reason || "none given")}</p><button class="btn alt" data-ok="${x.id}">Approve after all</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No rejected submissions.</p></div>';
-  if (tab === "board") html = board.map(x => card(x, `<button class="btn alt" data-rm="${x.id}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">Rankings are empty.</p></div>';
+  if (tab === "pending") html = pending.length ? pending.map(x => card(x, `<div class="row"><button class="btn" data-ok="${esc(x.id)}">Approve</button><button class="btn alt" data-no="${esc(x.id)}">Reject</button></div>
+      <label for="r-${esc(x.id)}">Reason if rejecting (the athlete sees this)</label><input id="r-${esc(x.id)}" placeholder="Times didn’t match the results page">`)).join("") : '<div class="panel"><p class="hint" style="margin:0">Nothing waiting. Nice.</p></div>';
+  if (tab === "approved") html = approved.map(x => card(x, `<button class="btn alt" data-rm="${esc(x.id)}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No approved athletes yet.</p></div>';
+  if (tab === "rejected") html = rejected.map(x => card(x, `<p class="hint">Reason: ${esc(x.reason || "none given")}</p><button class="btn alt" data-ok="${esc(x.id)}">Approve after all</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">No rejected submissions.</p></div>';
+  if (tab === "board") html = board.map(x => card(x, `<button class="btn alt" data-rm="${esc(x.id)}">Remove from rankings</button>`)).join("") || '<div class="panel"><p class="hint" style="margin:0">Rankings are empty.</p></div>';
   if (tab === "teams") {
     const tcard = t => `<div class="panel"><strong>${esc(t.name)}</strong><span class="tag">${esc(t.id)}</span>
       ${t.status === "approved" ? '<span class="tag ok">Approved</span>' : t.status === "rejected" ? '<span class="tag no">Not approved</span>' : ""}
       <p class="hint">${esc([t.school, t.state].filter(Boolean).join(" · "))}</p>
       <p style="margin:4px 0">${esc(t.coachName || "")}${t.role ? ", " + esc(t.role) : ""}</p>
       ${t.proof ? `<p class="hint" style="overflow-wrap:anywhere">To confirm: ${linkOrText(t.proof)}</p>` : ""}
-      ${t.status === "pending" ? `<div class="row"><button class="btn" data-tok="${t.id}">Approve team</button><button class="btn alt" data-tno="${t.id}">Reject</button></div>`
-        : t.status === "approved" ? `<button class="btn alt" data-tno="${t.id}">Remove approval</button>` : `<button class="btn alt" data-tok="${t.id}">Approve after all</button>`}</div>`;
+      ${t.status === "pending" ? `<div class="row"><button class="btn" data-tok="${esc(t.id)}">Approve team</button><button class="btn alt" data-tno="${esc(t.id)}">Reject</button></div>`
+        : t.status === "approved" ? `<button class="btn alt" data-tno="${esc(t.id)}">Remove approval</button>` : `<button class="btn alt" data-tok="${esc(t.id)}">Approve after all</button>`}</div>`;
     html = `<div class="panel"><p class="hint" style="margin:0">Approve a team only after you confirm the person coaches it. Coaches of approved teams post official results straight into Rankings for athletes on their roster who said yes.</p></div>`
       + ([...tWait, ...teams.filter(t => t.status !== "pending")].map(tcard).join("") || '<div class="panel"><p class="hint" style="margin:0">No teams yet.</p></div>');
   }

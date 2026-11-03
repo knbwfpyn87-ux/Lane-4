@@ -34,6 +34,12 @@ function appOrigin(env) { return new URL(env.APP_URL).origin; }
 function cors(env) { return { "Access-Control-Allow-Origin": appOrigin(env), "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Max-Age": "86400", "Vary": "Origin" }; }
 function json(env, data, status = 200) { return new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json", ...cors(env) } }); }
 function backToApp(env, hash) { return Response.redirect(env.APP_URL + "#" + hash, 302); }
+/* Request bodies are small JSON; anything over 32 KB is refused before it's parsed. */
+const MAX_BODY = 32 * 1024;
+async function body(req) { const t = await req.text().catch(() => ""); if (t.length > MAX_BODY) return {}; try { return JSON.parse(t) || {}; } catch { return {}; } }
+/* Caps on stored rows, so nobody can fill the free D1 database by calling the Worker over and over. */
+const MAX_REMINDERS = 20000, MAX_PENDING_LOGINS = 500;
+async function rows(env, table) { return (await env.DB.prepare(`SELECT COUNT(*) AS n FROM ${table}`).first()).n; }
 function bearer(req) { const m = (req.headers.get("Authorization") || "").match(/^Bearer\s+([\w-]{20,})$/); return m ? m[1] : null; }
 
 /* ---------- web push (RFC 8291 payload encryption, RFC 8292 VAPID) ---------- */
@@ -79,8 +85,10 @@ async function sendPush(env, r) {
 function okEndpoint(u) { try { const x = new URL(u); return x.protocol === "https:" && PUSH_HOSTS.some(h => h.test(x.hostname)); } catch { return false; } }
 
 async function schedule(req, env) {
-  const { subscription: s, steps } = await req.json().catch(() => ({}));
-  if (!s || !okEndpoint(s.endpoint) || !s.keys || !s.keys.p256dh || !s.keys.auth || !Array.isArray(steps)) return json(env, { error: "bad request" }, 400);
+  const { subscription: s, steps } = await body(req);
+  if (!s || !okEndpoint(s.endpoint) || !s.keys || typeof s.keys.p256dh !== "string" || typeof s.keys.auth !== "string"
+    || s.keys.p256dh.length > 200 || s.keys.auth.length > 100 || String(s.endpoint).length > 1000 || !Array.isArray(steps)) return json(env, { error: "bad request" }, 400);
+  if (await rows(env, "reminders") > MAX_REMINDERS) return json(env, { error: "busy" }, 503);
   const now = Date.now();
   const due = steps.filter(x => x && Number.isFinite(x.at) && x.at > now && x.at < now + MAX_AHEAD).slice(0, MAX_STEPS);
   const stmts = [env.DB.prepare("DELETE FROM reminders WHERE endpoint = ?").bind(s.endpoint)];
@@ -90,7 +98,7 @@ async function schedule(req, env) {
   return json(env, { scheduled: due.length });
 }
 async function cancel(req, env) {
-  const { endpoint } = await req.json().catch(() => ({}));
+  const { endpoint } = await body(req);
   if (!okEndpoint(endpoint)) return json(env, { error: "bad request" }, 400);
   await env.DB.prepare("DELETE FROM reminders WHERE endpoint = ?").bind(endpoint).run();
   return json(env, { ok: true });
@@ -111,6 +119,7 @@ async function sendDue(env) {
 
 /* ---------- Strava ---------- */
 async function stravaStart(req, env) {
+  if (await rows(env, "oauth_state") > MAX_PENDING_LOGINS) return backToApp(env, "strava-error=busy");
   const state = randomId(24);
   await env.DB.prepare("INSERT INTO oauth_state (state, created) VALUES (?, ?)").bind(state, Date.now()).run();
   const u = new URL("https://www.strava.com/oauth/authorize");
@@ -184,7 +193,7 @@ const clean = (v, n) => String(v || "").replace(/[^\w ’'.()-]/g, "").slice(0, 
 async function sha(s) { return b64u(await crypto.subtle.digest("SHA-256", enc.encode(s))); }
 async function aiAdjust(req, env) {
   if (!env.AI) return json(env, { error: "AI not set up" }, 503);
-  const body = await req.json().catch(() => ({})), w = body.workout || {}, a = body.athlete || {};
+  const b = await body(req), w = b.workout || {}, a = b.athlete || {};
   if (!Array.isArray(w.parts) || w.parts.length < 1 || w.parts.length > 6) return json(env, { error: "bad request" }, 400);
   const n = (v, hi) => Number.isFinite(+v) && v !== null ? Math.max(0, Math.min(hi, Math.round(+v))) : null;
   /* rebuild the request from allowed fields only */

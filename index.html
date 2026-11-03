@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
 <title>Lane 4 — Track & Field Recruiting</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -246,7 +247,7 @@ a.go{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
 a{color:var(--track)}
 .srow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;font:inherit;color:var(--ink)}
 #standing h3+.srow{border-top:0}
-.sbtn{cursor:pointer}.sbtn span{font-size:22px;color:var(--muted)}
+.sbtn{cursor:pointer}.rgo{cursor:pointer}.rank.ro{background:none;border:2px solid var(--line);color:var(--muted)}.sbtn span{font-size:22px;color:var(--muted)}
 .srow .num{font-weight:700;margin-left:4px}
 .rank{flex:none;width:28px;height:28px;border-radius:50%;background:var(--track);color:#fff;font:700 15px "Barlow Condensed",sans-serif;display:flex;align-items:center;justify-content:center}
 .syncline{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 4px}
@@ -886,6 +887,9 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
       </div>
       <div class="panel" id="cList" style="padding:4px 12px"></div>
       <div id="cDetail" hidden></div>
+      <h2 style="margin-top:22px">Recruiting checklist</h2>
+      <div class="panel" id="trReady"></div>
+      <div id="cDetail" hidden></div>
       <div class="panel">
         <p class="source"><strong>Where these numbers come from:</strong> Preferred Recruit’s <a href="https://trackandfieldstandards.com" target="_blank" rel="noopener">trackandfieldstandards.com</a>, 2026–27. For most schools, the levels come from the 2026 conference championship: Target is about 8th place, Recruit about 15th, and Walk-on about 25th, converted to high school events (1600 from the 1500, 3200 from the 5000, 300 hurdles from the 400 hurdles). Power conferences like the ACC have no walk-on level, and many D3 conferences list only Target and Walk-on. Schools marked ★ publish their own chart. This demo covers 12 conferences (148 schools) across D1, D2 and D3; coaches have the final say.</p>
       </div>
@@ -917,7 +921,7 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
         <label for="pSchool">High school</label><input id="pSchool">
         <label for="pEmail">Email</label><input id="pEmail" type="email" autocomplete="email">
         <label for="pPhone">Phone (optional)</label><input id="pPhone" type="tel" autocomplete="tel">
-        <label for="pLink">Results link (Athletic.net or MileSplit)</label><input id="pLink" type="url" placeholder="https://">
+        <label for="pLink">Results link (Athletic.net or MileSplit)</label><input id="pLink" maxlength="300" type="url" placeholder="https://">
         <div class="lbl2">Academics (optional)</div>
         <div class="row">
           <div><label for="pGpa">GPA</label><input id="pGpa" inputmode="decimal" placeholder="3.8"></div>
@@ -998,6 +1002,8 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
     <!-- SPORT HOME (every sport but track) -->
     <section class="view" id="v-sport">
       <div class="sphero" id="spHero"></div>
+      <button class="panel nextmeet" id="spNext" hidden></button>
+      <div class="panel recap" id="spRecap" hidden></div>
       <div class="panel ckbox" data-ck></div>
       <nav class="hub" aria-label="Sections">
         <button class="tile main" data-go="sres" data-focus="srMark"><span class="ti" id="hubSResI"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9.5 2h5M12 2v3"/></svg></span><b id="hubSResT">Results &amp; PBs</b><span id="hubSRes"></span></button>
@@ -1014,9 +1020,11 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
 
     <!-- SPORT RESULTS & PBs -->
     <section class="view" id="v-sres">
+      <div class="panel" id="srPosBox" hidden><label for="srPos" id="srPosL" style="margin-top:0">Position</label><select id="srPos"></select><p class="hint" style="margin:6px 0 0">Shows on your athlete card and in coach emails.</p></div>
       <h2>Add a result</h2>
       <div class="panel">
         <div class="row"><div><label for="srEvent">Event</label><select id="srEvent"></select></div><div><label for="srDate">Date</label><input id="srDate" type="date"></div></div>
+        <div class="chips small" id="srWL" role="group" aria-label="Win or loss" hidden style="margin:10px 0 0"></div>
         <div class="row"><div><label for="srMark" id="srMarkL">Time</label><input id="srMark" autocomplete="off"></div><div id="srStatBox"><label for="srStat" id="srStatL">Stat</label><input id="srStat" inputmode="decimal" autocomplete="off"></div></div>
         <label for="srNote">Meet, game, or note (optional)</label><input id="srNote" maxlength="80" autocomplete="off">
         <button class="go" id="srAdd">Save result</button>
@@ -1054,6 +1062,8 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
       </div>
       <div class="panel" id="scList" style="padding:4px 12px"></div>
       <div id="scDetail" hidden></div>
+      <h2 style="margin-top:22px">Recruiting checklist</h2>
+      <div class="panel" id="spReady"></div>
       <h2 style="margin-top:22px">Recruiting tracker</h2>
       <div class="panel"><p class="hint" style="margin:0 0 8px">Keep track of coaches you’ve reached out to. Only you can see this.</p>
         <div class="row"><div><label for="rcSchool">School</label><input id="rcSchool" maxlength="60" list="rcSchools" autocomplete="off"><datalist id="rcSchools"></datalist></div><div><label for="rcStatus">Status</label><select id="rcStatus"><option>Emailed</option><option>Replied</option><option>Call or visit</option><option>Offer</option><option>Not a fit</option></select></div></div>
@@ -1079,6 +1089,8 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
 
     <!-- SPORT TRAINING LOG -->
     <section class="view" id="v-slog">
+      <h2>Training program</h2>
+      <div class="panel" id="slPlan"></div>
       <h2>Log a workout</h2>
       <div class="panel">
         <div class="row"><div><label for="slType">Type</label><select id="slType"></select></div><div><label for="slDate">Date</label><input id="slDate" type="date"></div></div>
@@ -1113,6 +1125,7 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
         <summary>Back up or move my data</summary>
         <p class="hint" style="margin:0 0 8px">Your data stays on this device. To keep a copy or move it to another phone, copy your backup code and save it somewhere like your Notes app.</p>
         <button class="go alt" id="copyBackup" style="margin-top:4px">Copy backup code</button>
+        <button class="go alt" id="dlCsv">Download results and training (spreadsheet)</button>
         <label for="restoreBox">Restore from a backup code</label>
         <textarea id="restoreBox" placeholder="Paste your backup code here" style="min-height:70px"></textarea>
         <button class="go" id="doRestore">Restore my data</button>
@@ -1124,7 +1137,7 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
     <p class="hint" style="margin:0 0 8px">Share your PRs in Rankings. An admin checks every time against your Athletic.net or MileSplit page before it shows up. Workouts, contact info, and goals always stay private.</p>
     <label class="check toggle"><span>Show my verified PRs in Rankings</span><input type="checkbox" class="switch" id="pubOn" role="switch"></label>
     <div id="pubFields" hidden>
-      <label for="pubName">Name shown</label><input id="pubName" placeholder="First name and last initial, like Xavier R." autocomplete="off">
+      <label for="pubName">Name shown</label><input id="pubName" maxlength="60" placeholder="First name and last initial, like Xavier R." autocomplete="off">
       <p class="hint" style="margin:6px 0 0">Your school and class year come from your card. Add your results link on your Athlete card so the admin can verify.</p>
       <button class="go" id="pubSubmit">Submit my PRs for verification</button>
     </div>
@@ -1172,16 +1185,14 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
 <div class="sheet" id="notesSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
   <div class="sheethead"><h3 id="notesTitle" style="margin:0">What’s new in Lane 4</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="panel notes"><ul>
-    <li><strong>300+ workouts.</strong> Premade workouts for every event group, each written for off-season, pre-season, early, mid and championship season.</li>
-    <li><strong>Make your own workouts.</strong> Set reps, meters, rest and effort (a percent or a race pace), and Lane 4 shows a target time for each rep.</li>
-    <li><strong>Shared workouts.</strong> Share your workouts with everyone on Lane 4, or copy someone else’s and change it. Your name is never shown.</li>
-    <li><strong>Workout search.</strong> Search and filter by event, season and kind.</li>
-    <li><strong>Indoor and outdoor.</strong> Mark races indoor, and Lane 4 estimates the outdoor time.</li>
-    <li><strong>PR celebrations and charts.</strong> A new PR gets a celebration, and tapping a PR shows this season’s chart.</li>
-    <li><strong>Next meet and weekly recap</strong> on Home, plus new finishes for your athlete card.</li>
-    <li><strong>1,121 colleges</strong> in 106 conferences, now with NAIA.</li>
-    <li><strong>Works without Wi-Fi.</strong> Lane 4 opens and saves on your phone with no connection.</li>
-    <li><strong>Easier to get around.</strong> Long screens have jump links at the top, and a fresh look.</li>
+    <li><strong>13 more sports.</strong> Swimming, rowing, cycling, speed skating, triathlon, gymnastics, weightlifting, wrestling, basketball, soccer, volleyball, tennis and fencing, each with its own look. Tap the sport icon at the top to switch.</li>
+    <li><strong>Training programs.</strong> Fill your week with an off-season, preseason or in-season plan. In season, it builds around your game days.</li>
+    <li><strong>Win, loss and position.</strong> Log a game in two taps, and add your position or weight class to your card.</li>
+    <li><strong>Email a coach in any sport.</strong> A draft with your bests, record, grades and links, ready for you to finish.</li>
+    <li><strong>Recruiting checklist.</strong> See what coaches look for that your profile is missing, and when college coaches can start contacting you.</li>
+    <li><strong>Next game and last week</strong> on every sport’s Home.</li>
+    <li><strong>Download a spreadsheet</strong> of your results and training from Settings, for your coach or your records.</li>
+    <li><strong>Still free.</strong> No ads, no paywall.</li>
   </ul></div>
   <h3>Coming soon</h3>
   <div class="panel coming" id="notesSoon"></div>
@@ -1226,7 +1237,7 @@ function migrate(d){
   d.wellness=Array.isArray(d.wellness)?d.wellness.filter(w=>w&&w.date).slice(0,120):[];
   d.sports=d.sports&&typeof d.sports==="object"?d.sports:{};
   Object.keys(d.sports).forEach(k=>{const v=d.sports[k];if(!v||typeof v!=="object"){delete d.sports[k];return}
-    v.event=typeof v.event==="string"?v.event:"";["results","fav","log","games"].forEach(f=>{if(!Array.isArray(v[f]))v[f]=[]});
+    v.event=typeof v.event==="string"?v.event:"";["results","fav","log","games","plan"].forEach(f=>{if(!Array.isArray(v[f]))v[f]=[]});
     if(!Array.isArray(v.recruit))v.recruit=[];
     v.results=v.results.filter(r=>r&&r.event&&r.mark);v.games=v.games.filter(m=>m&&m.start);
     ["goals","bag"].forEach(f=>{if(!v[f]||typeof v[f]!=="object")v[f]={}})});
@@ -1363,7 +1374,9 @@ function val(ev,t){return EVENTS[ev].field?toIn(t):toSec(t)}
 function better(ev,a,b){return EVENTS[ev].field?a>b:a<b}
 function fmtJump(t){const i=toIn(t);if(isNaN(i))return t;const ft=Math.floor(i/12),inch=+(i-ft*12).toFixed(2);return ft+"′ "+inch+"″"}
 function show(ev,t){if(!t)return"—";return EVENTS[ev].field?fmtJump(t):t}
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+/* Links typed by people (results pages) only ever open as web pages: anything but http(s), like javascript:, becomes "" */
+function safeUrl(s){s=String(s||"").trim();return /^https?:\/\/[^\s"'<>]+$/i.test(s)?s:""}
 function validMark(ev,m){const v=val(ev,m);return !isNaN(v)&&v>0}
 
 function matchEvent(line){
@@ -1963,7 +1976,7 @@ function wkMake(src){const edit=src&&src.id?src:null,body=document.getElementByI
     const c=cleanWk({name,type:$("mkType").value,g:g.length?g:ALLG,ph:$("mkPh").value,parts:read(),cue:$("mkCue").value.trim()});
     if(!c){msg.textContent="Add at least one part.";return}
     c.id=edit?edit.id:"u-"+Date.now().toString(36);c.pubId=edit&&edit.pubId;
-    const share=$("mkPub").checked,doc=c.pubId||(PUB.id?PUB.id.slice(0,8)+"-"+c.id.slice(2):null);
+    const share=$("mkPub").checked,doc=c.pubId||(PUB.id?newCode()+newCode()+"-"+c.id.slice(2):null);
     if(share||c.pubId){if(!PUB.db||!PUB.id){msg.textContent="Sign in to share workouts. Turn sharing off to save it just for you.";return}
       const btn=$("mkSave");btn.disabled=true;btn.textContent="Saving…";
       try{if(share){const {id,pubId,by,...data}=c;Object.keys(data).forEach(k=>data[k]===undefined&&delete data[k]);data.parts=data.parts.map(p=>JSON.parse(JSON.stringify(p)));
@@ -2417,7 +2430,7 @@ function renderCard(){renderTradingCard();const p=P(),lines=prLines(),el=documen
   ${goals.length?`<div class="lbl">Goals</div><p style="margin:0">${goals.map(([e,m])=>`${esc(e)} ${esc(m)}`).join(" · ")}</p>`:""}
   ${p.acc&&p.acc.length?`<div class="lbl">Accomplishments</div><ul>${p.acc.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>`:""}
   ${academics(p)?`<div class="lbl">Academics</div><p style="margin:0">${esc(academics(p))}</p>`:""}
-  ${(p.link||p.email||p.phone)?`<div class="lbl">Contact</div><p style="margin:0;overflow-wrap:anywhere">${[p.email,p.phone].filter(Boolean).map(esc).join(" · ")}${p.link?`<br><a href="${esc(p.link)}" target="_blank" rel="noopener">Full results</a>`:""}</p>`:""}</div>`;
+  ${(p.link||p.email||p.phone)?`<div class="lbl">Contact</div><p style="margin:0;overflow-wrap:anywhere">${[p.email,p.phone].filter(Boolean).map(esc).join(" · ")}${safeUrl(p.link)?`<br><a href="${esc(safeUrl(p.link))}" target="_blank" rel="noopener noreferrer">Full results</a>`:""}</p>`:""}</div>`;
 }
 async function copyText(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg)}catch(e){const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();toast(ok?msg:"Couldn’t copy. Press and hold the text to copy it.")}}
 document.getElementById("copyCard").onclick=()=>copyText(cardText(),"Card copied");
@@ -2626,7 +2639,7 @@ document.getElementById("pubSubmit").onclick=async()=>{
   const events={};shownEvents().forEach(ev=>{const p=pr(ev);if(p)events[ev]={mark:p.mark,date:p.date,meet:p.meet}});
   if(!Object.keys(events).length){toast("Add some PRs first");return}
   const p=S.profile||{};
-  try{await PUB.db.doc("subs/"+PUB.id).set({public:true,status:"pending",name,school:p.school||"",grad:p.grad||"",state:p.state||"",gender:S.gender||"Men",link:p.link||"",events,submittedAt:Date.now()});
+  try{await PUB.db.doc("subs/"+PUB.id).set({public:true,status:"pending",name,school:p.school||"",grad:p.grad||"",state:p.state||"",gender:S.gender||"Men",link:safeUrl(p.link),events,submittedAt:Date.now()});
     await PUB.db.doc("optout/"+PUB.id).delete().catch(()=>{});toast("Sent for verification")}
   catch(e){toast(e&&e.code==="invalid_argument"?"This account can’t share times in the demo.":"Couldn’t send right now. Try again.")}
   refreshPublic()};
@@ -2656,11 +2669,11 @@ async function openAdmin(){
   const done=PUB.subs.filter(x=>x.public&&x.status!=="pending");
   const card=x=>`<div class="panel"><strong>${esc(x.name)}</strong> <span class="tag">${x.gender==="Women"?"Girls":"Boys"}</span>
     <div class="hint" style="margin:0">${esc([x.school,x.grad?"Class of "+x.grad:"",x.state].filter(Boolean).join(" · "))}</div>
-    ${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">Open their results page ›</a>`:`<p class="hint" style="margin:4px 0">No results link given.</p>`}
+    ${safeUrl(x.link)?`<a href="${esc(safeUrl(x.link))}" target="_blank" rel="noopener noreferrer">Open their results page ›</a>`:x.link?`<p class="hint" style="margin:4px 0">Their results link isn’t a web address: ${esc(x.link)}</p>`:`<p class="hint" style="margin:4px 0">No results link given.</p>`}
     ${isProof(x.proof)?`<p class="hint" style="margin:6px 0 0">Screenshot they sent:</p><img class="proof" src="${x.proof}" alt="Results screenshot from ${esc(x.name)}">`:""}
     <table class="sctable">${Object.entries(x.events||{}).map(([ev,v])=>`<tr><td>${esc(ev)}</td><td class="m">${esc(show(ev,v.mark))}</td><td class="c">${esc(v.meet||"")} ${esc(v.date||"")}</td></tr>`).join("")}</table>
-    ${x.status==="pending"?`<div class="btnrow"><button class="go" data-ok="${x.id}">Approve</button><button class="go alt" data-no="${x.id}">Reject</button></div>`
-      :`<p class="hint">${x.status==="approved"?"✓ Approved":"Rejected"}</p>${x.status==="approved"?`<button class="ghost" data-rm="${x.id}">Remove from rankings</button>`:""}`}</div>`;
+    ${x.status==="pending"?`<div class="btnrow"><button class="go" data-ok="${esc(x.id)}">Approve</button><button class="go alt" data-no="${esc(x.id)}">Reject</button></div>`
+      :`<p class="hint">${x.status==="approved"?"✓ Approved":"Rejected"}</p>${x.status==="approved"?`<button class="ghost" data-rm="${esc(x.id)}">Remove from rankings</button>`:""}`}</div>`;
   el.innerHTML=(pend.length?pend.map(card).join(""):`<p class="empty">Nothing waiting for verification.</p>`)+(done.length?`<div class="lbl3">Reviewed</div>`+done.map(card).join(""):"");
   el.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{const x=PUB.subs.find(y=>y.id===b.dataset.ok);
     try{const ref=PUB.db.doc("board/"+x.id),old=await ref.get();
@@ -2679,7 +2692,7 @@ function renderAdminTeams(){
     <div class="hint" style="margin:0">${esc([t.school,t.state].filter(Boolean).join(" · "))}</div>
     <p style="margin:6px 0 0">${esc(t.coachName||"")}${t.role?", "+esc(t.role):""}</p>
     ${t.proof?`<p class="hint" style="margin:4px 0 0;overflow-wrap:anywhere">To confirm: ${linkOrText(t.proof)}</p>`:""}
-    ${t.status==="pending"?`<div class="btnrow"><button class="go" data-tok="${t.id}">Approve</button><button class="go alt" data-tno="${t.id}">Reject</button></div>`:`<button class="ghost" data-tno="${t.id}" style="margin-top:10px">Remove approval</button>`}</div>`;
+    ${t.status==="pending"?`<div class="btnrow"><button class="go" data-tok="${esc(t.id)}">Approve</button><button class="go alt" data-tno="${esc(t.id)}">Reject</button></div>`:`<button class="ghost" data-tno="${esc(t.id)}" style="margin-top:10px">Remove approval</button>`}</div>`;
   el.innerHTML=`<h3 style="margin:20px 0 4px">Teams</h3><p class="hint" style="margin:0 0 10px">Approve a team only after you confirm the person coaches it. Coaches of approved teams post official results straight into Rankings for athletes on their roster.</p>`+
     (pend.length?pend.map(card).join(""):`<p class="empty">No teams waiting.</p>`)+(ok.length?`<div class="lbl3">Approved teams</div>`+ok.map(card).join(""):"");
   el.querySelectorAll("[data-tok]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc("teams/"+b.dataset.tok).update({status:"approved",reason:""});toast("Team approved")}catch(_){toast("Couldn’t approve. Try again.")}openAdmin()});
@@ -2743,7 +2756,7 @@ async function sendShot(rows){
   const p=S.profile||{},name=(PUB.mine&&PUB.mine.name)||shortName(p.name);
   if(!name)return"To send them to an admin, add your name on your Athlete card, then upload the screenshot again.";
   const keep=PUB.mine&&PUB.mine.public&&PUB.mine.status==="pending"?PUB.mine.events:{},events=withRaces(keep,rows);
-  try{await PUB.db.doc("subs/"+PUB.id).set({public:true,status:"pending",name,school:p.school||"",grad:p.grad||"",state:p.state||"",gender:S.gender||"Men",link:p.link||"",events,proof:shot.proof,via:"screenshot",submittedAt:Date.now()});
+  try{await PUB.db.doc("subs/"+PUB.id).set({public:true,status:"pending",name,school:p.school||"",grad:p.grad||"",state:p.state||"",gender:S.gender||"Men",link:safeUrl(p.link),events,proof:shot.proof,via:"screenshot",submittedAt:Date.now()});
     await PUB.db.doc("optout/"+PUB.id).delete().catch(()=>{});refreshPublic();
     return"Sent to an admin with your screenshot. They show in Rankings once it’s checked."}
   catch(_){return"Couldn’t send them to an admin right now. Upload the screenshot again later."}}
@@ -2780,8 +2793,8 @@ function renderMine(){
   if(!S.team){
     el.innerHTML=note+`<p class="hint" style="margin:0 0 6px">Your coach gives you a team code. Once they accept you, results they post show up in your Training log with a ✓ Coach tag.</p>
       <label for="tjCode">Team code</label><input id="tjCode" placeholder="ABC234" autocapitalize="characters" autocomplete="off" maxlength="6" spellcheck="false">
-      <label for="tjFull">Your first and last name (only your coach sees this)</label><input id="tjFull" value="${esc(p.name||"")}" autocomplete="name">
-      <label for="tjName">Name shown in Rankings</label><input id="tjName" value="${esc(shortName(p.name))}" placeholder="First name and last initial" autocomplete="off">
+      <label for="tjFull">Your first and last name (only your coach sees this)</label><input id="tjFull" maxlength="80" value="${esc(p.name||"")}" autocomplete="name">
+      <label for="tjName">Name shown in Rankings</label><input id="tjName" maxlength="60" value="${esc(shortName(p.name))}" placeholder="First name and last initial" autocomplete="off">
       <label class="check toggle" style="margin-top:12px"><span>Let my coach post my official results to Rankings</span><input type="checkbox" class="switch" id="tjShare" role="switch" checked></label>
       <button class="go" id="tjGo">Ask to join</button><p class="hint" id="tjMsg" role="status"></p>`;
     document.getElementById("tjGo").onclick=joinTeam;return}
@@ -2819,10 +2832,10 @@ function renderCoach(){
   if(!t){
     el.innerHTML=`<details><summary>Register your team</summary>
       <p class="hint" style="margin:8px 0 6px">For coaches. An admin checks that you coach the team, then you get a team code to share with your athletes. Results you post skip the admin, so we confirm every coach first.</p>
-      <label for="trName">Team name</label><input id="trName" placeholder="Riverside High School Track &amp; Field">
-      <div class="row"><div><label for="trSchool">School</label><input id="trSchool" value="${esc(p.school||"")}"></div><div><label for="trState">State</label><input id="trState" placeholder="CT" maxlength="2" value="${esc(p.state||"")}"></div></div>
-      <div class="row"><div><label for="trCoach">Your name</label><input id="trCoach" autocomplete="name"></div><div><label for="trRole">Your role</label><select id="trRole"><option>Head coach</option><option>Assistant coach</option></select></div></div>
-      <label for="trProof">How can an admin confirm you coach this team?</label><input id="trProof" placeholder="Link to your school’s coaching staff page">
+      <label for="trName">Team name</label><input id="trName" maxlength="100" placeholder="Riverside High School Track &amp; Field">
+      <div class="row"><div><label for="trSchool">School</label><input id="trSchool" maxlength="100" value="${esc(p.school||"")}"></div><div><label for="trState">State</label><input id="trState" placeholder="CT" maxlength="2" value="${esc(p.state||"")}"></div></div>
+      <div class="row"><div><label for="trCoach">Your name</label><input id="trCoach" maxlength="80" autocomplete="name"></div><div><label for="trRole">Your role</label><select id="trRole" maxlength="60"><option>Head coach</option><option>Assistant coach</option></select></div></div>
+      <label for="trProof">How can an admin confirm you coach this team?</label><input id="trProof" maxlength="300" placeholder="Link to your school’s coaching staff page">
       <button class="go" id="trGo">Register my team</button><p class="hint" id="trMsg" role="status"></p></details>`;
     document.getElementById("trGo").onclick=registerTeam;return}
   if(t.status==="error"){el.innerHTML=`<p class="empty">Couldn’t load your team right now. Check your connection.</p>`;return}
@@ -2836,8 +2849,8 @@ function renderCoach(){
     el.innerHTML=`<div class="teamhead"><strong>${esc(t.name)}</strong><span class="tag ver">✓ Approved</span></div>
       <div class="codebox"><span>Team code</span><b>${esc(t.id)}</b><button class="ghost" id="tcCopy">Copy</button></div>
       <p class="hint" style="margin:0">Give this code to your athletes. They join from Team in Lane 4.</p>
-      ${ask.length?`<div class="lbl3">Asking to join (${ask.length})</div>`+ask.map(m=>row(m,`<button class="ghost" data-acc="${m.id}">Accept</button><button class="ghost" data-dec="${m.id}" aria-label="Decline ${esc(m.full||m.name)}">✕</button>`)).join(""):""}
-      <div class="lbl3">Roster (${on.length})</div>${on.length?on.map(m=>row(m,`<button class="ghost" data-dec="${m.id}" aria-label="Remove ${esc(m.full||m.name)}">Remove</button>`)).join(""):`<p class="hint">No athletes yet.</p>`}`+drop("Delete this team");
+      ${ask.length?`<div class="lbl3">Asking to join (${ask.length})</div>`+ask.map(m=>row(m,`<button class="ghost" data-acc="${esc(m.id)}">Accept</button><button class="ghost" data-dec="${esc(m.id)}" aria-label="Decline ${esc(m.full||m.name)}">✕</button>`)).join(""):""}
+      <div class="lbl3">Roster (${on.length})</div>${on.length?on.map(m=>row(m,`<button class="ghost" data-dec="${esc(m.id)}" aria-label="Remove ${esc(m.full||m.name)}">Remove</button>`)).join(""):`<p class="hint">No athletes yet.</p>`}`+drop("Delete this team");
     document.getElementById("tcCopy").onclick=()=>copyText(t.id,"Team code copied");
     el.querySelectorAll("[data-acc]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc(`teams/${t.id}/members/${b.dataset.acc}`).update({status:"accepted"});toast("Accepted")}catch(_){toast("Couldn’t accept right now")}await loadCoach();renderCoach()});
     el.querySelectorAll("[data-dec]").forEach(b=>b.onclick=async()=>{try{await PUB.db.doc(`teams/${t.id}/members/${b.dataset.dec}`).delete();toast("Removed")}catch(_){toast("Couldn’t remove right now")}await loadCoach();renderCoach()});
@@ -3177,7 +3190,7 @@ document.getElementById("sportBtn").onclick=openSportPick;
 /* home hub */
 function renderSportHub(){const x=curSport(),st=spState(),g=S.gender==="Women"?"Women":"Men",ev=st.event&&x.ev.includes(st.event)?st.event:(spEvents()[0]||x.ev[0]),b=spBestR(x,ev);
   let nx="—";{const L=SPORT_STD[x.id]||SPORT_NAT[x.id],rw=L&&L[g]&&L[g][ev];if(rw&&b){const k=spNext(rw,b.v,!spLower(x));nx=k<0?"All ✓":L.cols[k]}}
-  document.getElementById("spHero").innerHTML=`<div class="top"><span class="em" aria-hidden="true">${x.ico}</span><div><h3>${esc(x.name)}</h3><p>${esc(ev)} · ${esc(x.kind==="game"?x.stat:x.unit)}</p></div></div><div class="st">${x.kind==="game"
+  document.getElementById("spHero").innerHTML=`<div class="top"><span class="em" aria-hidden="true">${x.ico}</span><div><h3>${esc(x.name)}</h3><p>${esc(spPos()||ev)} · ${esc(x.kind==="game"?x.stat:x.unit)}</p></div></div><div class="st">${x.kind==="game"
     ?`<div><b>${spRecord(st)}</b><span>Record</span></div><div><b>${spAvg(x,st)}</b><span>Per ${{Games:"game",Matches:"match",Bouts:"bout"}[SPORT_UI[x.id].one]}</span></div><div><b>${st.results.length}</b><span>${esc(SPORT_UI[x.id].one)}</span></div>`
     :`<div><b>${b?esc(spFmt(x,b.v)):"—"}</b><span>${x.id==="weights"?"PR":"Best"}</span></div><div><b>${st.results.length}</b><span>${x.kind==="num"?"Meets":"Results"}</span></div><div><b>${esc(nx)}</b><span>Next level</span></div>`}</div>`;
   const set=(id,t)=>document.getElementById(id).textContent=t,last=st.results[0],up=st.games.filter(m=>m.start>Date.now()).sort((a,b)=>a.start-b.start)[0];
@@ -3258,8 +3271,8 @@ function renderSCol(){const x=curSport(),st=spState(),list=document.getElementBy
   if(scOpen){const sc=SCHOOLS.find(s=>s.id===scOpen);list.hidden=document.getElementById("scTools").hidden=true;det.hidden=false;const c=CONF[sc.ci],fav=st.fav.includes(sc.id);
     const g=S.gender==="Women"?"Women":"Men",idx=SPORT_DIV[x.id]&&SPORT_DIV[x.id][c.d];
     const rows=hasStd&&idx?spEvents().concat(x.ev).filter((e,i,a)=>a.indexOf(e)===i).filter(e=>spStd(x,g,e)).slice(0,8).map(e=>{const row=spStd(x,g,e),b=spBestR(x,e);return`<h3 style="margin:14px 0 4px">${esc(e)}${b?` <span class="hint">· your best ${esc(spFmt(x,b.v))}</span>`:""}</h3>`+stdList(idx.map(i=>SPORT_STD[x.id].cols[i]),idx.map(i=>row[i]),b?b.v:null,x)}).join(""):`<p class="hint">No ${esc(x.name.toLowerCase())} standards to compare yet.</p>`;
-    det.innerHTML=`<button class="ghost" id="scBack">‹ All colleges</button><div class="panel" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h2 style="margin:0">${esc(sc.name)}</h2><p class="hint" style="margin:2px 0 0">${c.d} · ${esc(c.n)} · ${esc(sc.state)}</p></div><button class="fav ${fav?"on":""}" data-scfav="${esc(sc.id)}" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>${rows}</div>`;
-    document.getElementById("scBack").onclick=()=>{scOpen=null;renderSCol()};return}
+    det.innerHTML=`<button class="ghost" id="scBack">‹ All colleges</button><div class="panel" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h2 style="margin:0">${esc(sc.name)}</h2><p class="hint" style="margin:2px 0 0">${c.d} · ${esc(c.n)} · ${esc(sc.state)}</p></div><button class="fav ${fav?"on":""}" data-scfav="${esc(sc.id)}" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>${rows}</div>${spMailHTML(sc)}`;
+    document.getElementById("scBack").onclick=()=>{scOpen=null;spMailFor=null;renderSCol()};bindSpMail(sc);return}
   list.hidden=document.getElementById("scTools").hidden=false;det.hidden=true;
   const items=findSchools({q:scSearch.value.trim().toLowerCase(),div:scDiv,conf:scConf,state:scState,fav:st.fav}).sort((a,b)=>a.name.localeCompare(b.name));
   document.getElementById("scCount").textContent=`${items.length} college${items.length===1?"":"s"}`;
@@ -3278,7 +3291,7 @@ document.getElementById("scGen").onchange=e=>{S.gender=e.target.value;save();ren
 function sportCardSrc(){const x=curSport(),st=spState(),L=spPrLines(),g=S.gender==="Women"?"Women":"Men";
   const ev=st.event&&L.some(l=>l.ev===st.event)?st.event:L[0]?L[0].ev:null,b=ev?spBestR(x,ev):null;
   let nx="—";{const Lv=SPORT_STD[x.id]||SPORT_NAT[x.id],rw=Lv&&Lv[g]&&ev&&Lv[g][ev];if(rw&&b){const k=spNext(rw,b.v,!spLower(x));nx=k<0?"ALL ✓":Lv.cols[k]}}
-  return{ev,best:b?spFmt(x,b.v):"—",bestLbl:x.kind==="game"?"BEST<br>"+x.stat.toUpperCase():"PERSONAL<br>BEST",grp:x.name.toUpperCase(),ver:false,seal:false,
+  return{ev,best:b?spFmt(x,b.v):"—",bestLbl:x.kind==="game"?"BEST<br>"+x.stat.toUpperCase():"PERSONAL<br>BEST",grp:x.name.toUpperCase()+(spPos()?" · "+spPos().toUpperCase():""),ver:false,seal:false,
     rows:L.map(l=>({e:l.ev,mark:l.mark,meet:l.meet,ver:false})),head:["EVENT",x.kind==="game"?"BEST":"PB","WHERE",""],
     stats:[[st.results.length,"RESULTS"],[st.fav.length||"—","COLLEGES"],[nx,"NEXT LEVEL"]],foot:`${x.ico} Lane 4 · ${x.name}`}}
 
@@ -3290,7 +3303,7 @@ let ftClips=[];
 async function renderFootage(){const el=document.getElementById("ftGrid");if(!el)return;let all=[];try{all=await ftTx("readonly",s=>s.getAll())}catch(_){el.innerHTML='<p class="hint">Footage can’t be saved in this browser.</p>';return}
   FT.urls.forEach(u=>URL.revokeObjectURL(u));FT.urls=[];ftClips=all.filter(c=>c.sport===curSport().id).sort((a,b)=>b.at-a.at);
   el.innerHTML=ftClips.length?ftClips.map(c=>{const u=URL.createObjectURL(c.blob);FT.urls.push(u);
-    return`<figure>${c.type.startsWith("video")?`<video src="${u}" controls playsinline preload="metadata"></video>`:`<img src="${u}" alt="${esc(c.name)}">`}<figcaption><span>${esc(new Date(c.at).toLocaleDateString())}</span><span><button class="linkbtn" data-ftshare="${c.id}">Share</button> <button class="linkbtn" data-ftdel="${c.id}" aria-label="Delete footage">Delete</button></span></figcaption></figure>`}).join(""):`<p class="hint" style="margin:0">No highlights yet.</p>`}
+    return`<figure>${c.type.startsWith("video")?`<video src="${u}" controls playsinline preload="metadata"></video>`:`<img src="${u}" alt="${esc(c.name)}">`}<figcaption><span>${esc(new Date(c.at).toLocaleDateString())}</span><span><button class="linkbtn" data-ftshare="${c.id}">Share</button> <button class="linkbtn" data-ftdel="${c.id}" aria-label="Delete footage">Delete</button></span></figcaption></figure>`}).join(""):`<p class="hint" style="margin:0">No highlights yet.</p>`;if(S)renderReady(curSport().id==="track"?"trReady":"spReady")}
 document.getElementById("ftIn").onchange=async e=>{const files=[...e.target.files];e.target.value="";let n=0;
   for(const f of files){if(!/^(video|image)\//.test(f.type))continue;if(f.size>500*1024*1024){toast("That file is over 500 MB.");continue}
     try{await ftTx("readwrite",s=>s.put({id:Date.now()+"-"+Math.random().toString(36).slice(2,8),sport:curSport().id,name:f.name.slice(0,80),type:f.type,blob:f,at:Date.now()}));n++}catch(_){toast("Not enough room on this device.")}}
@@ -3370,7 +3383,145 @@ document.getElementById("rcAdd").onclick=()=>{const sc=document.getElementById("
   const st=spState();st.recruit=(st.recruit||[]).filter(r=>r.school!==sc);st.recruit.unshift({school:sc.slice(0,60),status:document.getElementById("rcStatus").value,note:document.getElementById("rcNote").value.trim().slice(0,100),date:today()});
   document.getElementById("rcSchool").value=document.getElementById("rcNote").value="";save();renderRecruit();toast("Saved")};
 document.getElementById("rcList").onclick=e=>{const b=e.target.closest("[data-rcdel]");if(!b)return;spState().recruit.splice(+b.dataset.rcdel,1);save();renderRecruit()};
-function renderSportAll(){fillOpenSport();renderCheckins();applySport();renderFootage();if(!S||curSport().id==="track")return;renderSportHub();renderSRes();renderSGoal();renderSCol();renderSGame();renderSLog();renderSLoad();renderRecruit()}
+
+/* ---------- More for every sport: next game, last week, training programs, positions, one-tap win or loss, coach email,
+   recruiting checklist and a spreadsheet download. All fixed rules and premade text written here; nothing here uses AI. ---------- */
+function addDays(iso,n){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+n);return isoDay(d)}
+function weekStart(off){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7+off*7);return isoDay(d)}
+
+/* positions (wrestling: NFHS weight classes) */
+const SPORT_POS={bball:["Point guard","Shooting guard","Small forward","Power forward","Center"],
+  soccer:["Goalkeeper","Center back","Outside back","Defensive midfielder","Central midfielder","Attacking midfielder","Winger","Forward"],
+  vball:["Setter","Outside hitter","Opposite","Middle blocker","Libero","Defensive specialist"],
+  tennis:["Singles player","Doubles player","Singles and doubles player"]};
+const WT_BOYS=[106,113,120,126,132,138,144,150,157,165,175,190,215,285],WT_GIRLS=[100,105,110,115,120,125,130,135,140,145,155,170,190,235];
+function posList(x){return x.id==="wrestle"?(S&&S.gender==="Women"?WT_GIRLS:WT_BOYS).map(w=>w+" lb"):SPORT_POS[x.id]||null}
+function posLabel(x){return x.id==="wrestle"?"Weight class":x.id==="tennis"?"You play":"Position"}
+function spPos(){const L=posList(curSport()),p=S&&spState().pos;return L&&L.includes(p)?p:""}
+function renderPos(){const x=curSport(),L=posList(x),box=document.getElementById("srPosBox");box.hidden=!L;if(!L)return;
+  document.getElementById("srPosL").textContent=posLabel(x);const sel=document.getElementById("srPos");
+  sel.innerHTML=`<option value="">Choose…</option>`+L.map(p=>`<option>${esc(p)}</option>`).join("");sel.value=spPos()}
+document.getElementById("srPos").onchange=e=>{spState().pos=e.target.value;save();renderAll();toast("Saved")};
+
+/* one tap for win, loss or tie (ties only in soccer); the score stays yours to type */
+function renderWL(){const x=curSport(),el=document.getElementById("srWL");if(x.kind!=="game"){el.hidden=true;return}
+  const cur=((/^\s*([WLT])\b/i.exec(document.getElementById("srMark").value)||[])[1]||"").toUpperCase();
+  el.hidden=false;el.innerHTML=["W","L"].concat(x.id==="soccer"?["T"]:[]).map(o=>`<button type="button" data-wl="${o}" aria-pressed="${cur===o}">${{W:"Win",L:"Loss",T:"Tie"}[o]}</button>`).join("")}
+document.getElementById("srWL").onclick=e=>{const b=e.target.closest("[data-wl]");if(!b)return;const mk=document.getElementById("srMark");
+  mk.value=b.dataset.wl+" "+mk.value.replace(/^\s*[WLT]\b\s*/i,"");renderWL();mk.focus()};
+document.getElementById("srMark").addEventListener("input",renderWL);
+
+/* next game or meet on the sport's Home */
+function renderSpNext(){const el=document.getElementById("spNext"),x=curSport(),now=Date.now(),m=[...spState().games].sort((a,b)=>a.start-b.start).find(g=>g.start>now);
+  if(!m){el.hidden=true;return}
+  const s=Math.floor((m.start-now)/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),mi=Math.floor(s%3600/60);
+  el.hidden=false;el.setAttribute("aria-label",`Next: ${m.what||x.day}, ${new Date(m.start).toLocaleString()}. Open your ${x.day.toLowerCase()} plan.`);
+  el.innerHTML=`<span class="k">Next up</span><strong>${esc(m.what||x.day)} · ${new Date(m.start).toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})} · ${hhmm(m.start)}</strong><span class="cd">${d?`${d}d ${h}h`:h?`${h}h ${mi}m`:`${mi}m`}</span><span class="hint" style="margin:0">Open your ${esc(x.day.toLowerCase())} plan ›</span>`}
+document.getElementById("spNext").onclick=()=>go("sgame");
+setInterval(()=>{if(S&&curView==="sport")renderSpNext()},30000);
+
+/* last week (Monday to Sunday), shown all week until dismissed, only when something happened */
+function renderSpRecap(){const el=document.getElementById("spRecap"),x=curSport(),st=spState(),wk=weekStart(0),from=weekStart(-1),to=addDays(wk,-1);
+  const inW=r=>r.date>=from&&r.date<=to,res=st.results.filter(inW),lg=st.log.filter(inW);
+  if(st.recapSeen===wk||(!res.length&&!lg.length)){el.hidden=true;return}
+  const pbs=res.filter(r=>{const b=spBestR(x,r.event);return b&&b.r===r}).length,mins=lg.reduce((a,e)=>a+(e.mins||0),0);
+  const third=x.kind==="game"?[spRecord({results:res}),"record"]:[pbs,pbs===1?"PB":"PBs"];
+  el.hidden=false;el.innerHTML=`<div class="rh"><h3 style="margin:0">Last week</h3><button class="ghost" id="spRecapX" aria-label="Dismiss last week’s recap">✕</button></div>
+    <div class="rstats"><div><b>${lg.length}</b><span>workout${lg.length===1?"":"s"}</span></div><div><b>${res.length}</b><span>${esc(x.kind==="game"?SPORT_UI[x.id].one.toLowerCase():res.length===1?"result":"results")}</span></div><div><b>${esc(String(third[0]))}</b><span>${third[1]}</span></div></div>
+    <p class="hint" style="margin:4px 0 0">${mins?mins+" minutes of training. ":""}${pbs?`New best${pbs>1?"s":""} last week. Nice work.`:lg.length>=3?"A solid week of training.":"A fresh week starts now."}</p>`;
+  document.getElementById("spRecapX").onclick=()=>{st.recapSeen=wk;save();el.hidden=true}}
+
+/* training programs: a premade week for the part of the season, built from the sport's own premade workouts
+   (0 main session, 1 harder session, 2 strength or skill, 3 recovery). In season it works around the games on the schedule. */
+const PROG={off:{name:"Off-season",hint:"More strength and recovery, less hard practice.",days:[2,3,1,"R",2,0,"R"]},
+  pre:{name:"Preseason",hint:"Build fitness and skills before games start.",days:[0,1,2,0,1,3,"R"]},
+  in:{name:"In-season",hint:"Stay sharp and fresh: light the day before and after each game on your schedule.",days:[0,1,2,0,1,"R","R"]}};
+function progDays(ph){const st=spState(),mon=weekStart(0),gd=new Set(st.games.map(g=>isoDay(new Date(g.start))));
+  return[...Array(7)].map((_,k)=>{const d=addDays(mon,k);if(ph!=="in")return{d,i:PROG[ph].days[k]};
+    if(gd.has(d))return{d,i:"G"};if(gd.has(addDays(d,1))||gd.has(addDays(d,-1)))return{d,i:3};return{d,i:PROG.in.days[k]}})}
+function progItem(x,i){if(i==="G")return{n:x.day,t:"Game or meet",m:0,w:""};const w=(SPORT_WK[x.id]||[])[i];return w?{n:w[0],t:w[1],m:w[2],w:w[3]}:null}
+function renderSPlan(){const x=curSport(),st=spState(),el=document.getElementById("slPlan"),ph=PROG[st.phase]?st.phase:"pre",mon=weekStart(0),td=isoDay(new Date());
+  const P=st.plan||(st.plan=[]),wk=P.filter(p=>p.date>=mon&&p.date<=addDays(mon,6));
+  el.innerHTML=`<div class="chips small" role="group" aria-label="Part of the season">${Object.entries(PROG).map(([k,v])=>`<button data-ph="${k}" aria-pressed="${k===ph}">${v.name}</button>`).join("")}</div>
+    <p class="hint" style="margin:8px 0">${PROG[ph].hint} Premade by Lane 4. Your coach’s plan always comes first.</p>`
+    +(wk.length?[...Array(7)].map((_,k)=>{const d=addDays(mon,k),dt=new Date(d+"T12:00:00"),items=wk.filter(p=>p.date===d);
+      return`<div class="pday${d===td?" today":""}"><div class="dl">${dt.toLocaleDateString([],{weekday:"short"})}<small>${dt.getDate()}</small></div><div class="items">${items.length?items.map(p=>{const it=progItem(x,p.i);
+        return it?`<button class="pitem${p.done?" done":""}" data-pl="${P.indexOf(p)}" aria-pressed="${!!p.done}"><span class="nm">${esc(it.n)}</span>${it.m?`<span class="hint" style="margin:0">${it.m} min</span>`:""}${p.done?'<span class="ck">✓</span>':""}</button>`:""}).join(""):'<div class="prest">Rest</div>'}</div></div>`}).join("")
+      +`<p class="hint" style="margin:8px 0 0">Tap a session when it’s done and it goes into your log.</p><button class="linkbtn" id="plClear">Clear the rest of this week</button>`
+    :`<button class="go alt" id="plFill">Fill this week: ${PROG[ph].name.toLowerCase()}</button>`)}
+document.getElementById("slPlan").onclick=e=>{const st=spState(),x=curSport(),td=isoDay(new Date());
+  const ph=e.target.closest("[data-ph]");if(ph){st.phase=ph.dataset.ph;save();renderSPlan();return}
+  if(e.target.id==="plFill"){let n=0;st.plan=(st.plan||[]).filter(p=>p.date>=addDays(td,-60));
+    progDays(PROG[st.phase]?st.phase:"pre").forEach(p=>{if(p.i!=="R"&&p.d>=td&&!st.plan.some(q=>q.date===p.d)){st.plan.push({date:p.d,i:p.i,done:false});n++}});
+    save();renderSPlan();toast(n?`Added ${n} session${n===1?"":"s"}`:"Nothing left to add this week");return}
+  if(e.target.id==="plClear"){const mon=weekStart(0);st.plan=st.plan.filter(p=>p.done||p.date<td||p.date>addDays(mon,6));save();renderSPlan();return}
+  const b=e.target.closest("[data-pl]");if(!b)return;const p=st.plan[+b.dataset.pl],it=p&&progItem(x,p.i);if(!it)return;const src="plan-"+p.date+"-"+p.i;
+  if(p.done){p.done=false;st.log=st.log.filter(l=>l.src!==src)}
+  else{p.done=true;if(p.i!=="G"){st.log.unshift({date:p.date>td?td:p.date,type:it.t,mins:it.m||undefined,feel:3,note:`${it.n}: ${it.w}`,src});st.log.sort((a,b)=>b.date.localeCompare(a.date))}}
+  save();renderAll();toast(!p.done?"Marked not done":p.i==="G"?`Done. Add your result in ${SPORT_UI[x.id].res}.`:"Logged")};
+
+/* coach email for any sport: subject as name | class | position | school, the way recruiting guides suggest */
+let spMailFor=null;
+function spCoachEmail(sc){const p=P(),x=curSport(),st=spState(),L=spPrLines(),name=p.name||BL,pos=spPos(),u=SPORT_UI[x.id];
+  const role=pos?(x.id==="wrestle"?pos+" wrestler":pos.toLowerCase()):x.name.toLowerCase()+" athlete";
+  const rec=x.kind==="game"?spRecord(st):"—",avg=x.kind==="game"?spAvg(x,st):"—";
+  const up=[...st.games].filter(g=>g.start>Date.now()).sort((a,b)=>a.start-b.start).slice(0,3);
+  const subject=`${name} | Class of ${p.grad||BL} | ${pos||x.name} | ${p.school||BL}`;
+  const body=`Coach ${BL},
+
+My name is ${name}, and I’m a Class of ${p.grad||BL} ${role} at ${p.school||BL}${p.state?" in "+p.state:""}. I’m interested in ${sc.name} because ${BL}.
+${rec!=="—"||avg!=="—"?`\nThis season: ${[rec!=="—"?rec+" record":"",avg!=="—"?avg+" "+x.stat.toLowerCase()+" per "+{Games:"game",Matches:"match",Bouts:"bout"}[u.one]:""].filter(Boolean).join(", ")}.\n`:""}
+My ${x.kind==="game"?"bests":"best marks"}:
+${L.length?L.map(l=>`- ${l.ev}: ${l.mark}${l.meet?` (${l.meet}, ${fmtDate(l.date)})`:` (${fmtDate(l.date)})`}`).join("\n"):"- "+BL}
+
+Highlight video: ${BL}
+${p.acc&&p.acc.length?`\nSome highlights:\n${p.acc.map(a=>"- "+a).join("\n")}\n`:""}
+${academics(p)?`Academically, ${p.gpa?`I have a ${p.gpa} GPA${p.test?` (${p.test})`:""}`:`I scored ${p.test}`}${p.major?`, and I plan to study ${p.major}`:""}.`:`Academically, ${BL} (GPA, test scores, what I want to study).`}
+${safeUrl(p.link)?`\nMy full results: ${safeUrl(p.link)}\n`:""}${up.length?`\nWhere you can see me compete next:\n${up.map(g=>`- ${new Date(g.start).toLocaleDateString([],{month:"short",day:"numeric"})}: ${g.what||x.day}${g.where?", "+g.where:""}`).join("\n")}\n`:""}
+Could we set up a call, or is there a camp where you’ll be seeing recruits? Thank you for your time.
+
+${name}
+${[p.email,p.phone].filter(Boolean).join(" · ")||BL}`;
+  return{subject,body}}
+function spMailHTML(sc){const open=spMailFor===sc.id,e=open?spCoachEmail(sc):null;
+  return`<div class="panel mailbox"><h3>Email this coach</h3><p class="hint" style="margin:0 0 6px">Your bests and info are filled in. Every ${BL} is yours to write, so the email sounds like you.</p>
+    <button class="go alt" id="spMailOpen">${open?"Hide draft":"Start a draft"}</button>
+    ${open?`<label for="spMailSub">Subject</label><input id="spMailSub" value="${esc(e.subject)}"><label for="spMailBody">Message</label><textarea id="spMailBody">${esc(e.body)}</textarea>
+    <div class="btnrow"><button class="go" id="spMailCopy">Copy email</button><a class="go alt" id="spMailTo" href="#" target="_blank" rel="noopener">Open in Mail</a></div>
+    <p class="hint">Find coaches’ emails on the school’s athletics site, under staff directory. Send it to your position coach and the recruiting coordinator, and add the school to your recruiting tracker below.</p>`:""}</div>`}
+function bindSpMail(sc){document.getElementById("spMailOpen").onclick=()=>{spMailFor=spMailFor===sc.id?null:sc.id;renderSCol();if(spMailFor)document.getElementById("spMailSub").scrollIntoView({block:"center"})};
+  const sub=document.getElementById("spMailSub");if(!sub)return;const body=document.getElementById("spMailBody"),to=document.getElementById("spMailTo");
+  const upd=()=>{to.href=`mailto:?subject=${encodeURIComponent(sub.value)}&body=${encodeURIComponent(body.value)}`};upd();sub.oninput=body.oninput=upd;
+  document.getElementById("spMailCopy").onclick=()=>{const left=(sub.value+body.value).split(BL).length-1;copyText(`Subject: ${sub.value}\n\n${body.value}`,left?`Copied. ${left} blank${left>1?"s":""} still to fill in`:"Email copied")}}
+
+/* recruiting checklist: what coaches ask for, from recruiting guides, checked against what's in Lane 4.
+   NCAA contact dates: D1 (most sports) and D2 coaches can start calling and messaging June 15 after sophomore year. */
+function renderReady(id){const el=document.getElementById(id);if(!el||!S)return;const p=P(),tr=curSport().id==="track",st=tr?null:spState();
+  const n=tr?S.races.length:st.results.length,fav=tr?S.fav.length:st.fav.length;
+  const items=[[!!(p.name&&p.grad),"Name and grad year on your card","card"],[!!p.school,"Your high school","card"],[!!(p.gpa||p.test),"GPA or a test score","card"],
+    [!!p.email,"An email coaches can reach you at","card"],[!!safeUrl(p.link),"A link to your official results","card"],[ftClips.length>0,"A highlight video","card"],
+    [n>=3,"At least 3 results this season",tr?"times":"sres"],[fav>=5,"5 or more colleges starred",tr?"colleges":"scol"]];
+  if(!tr)items.push([(st.recruit||[]).length>0,"Reached out to a coach","scol"]);
+  const done=items.filter(i=>i[0]).length,y=parseInt(p.grad,10),open=y>2000&&y<2100?new Date(y-2,5,15):null;
+  el.innerHTML=`<div class="goalhead"><h3 style="margin:0">Ready for coaches</h3><span class="num">${done}/${items.length}</span></div>
+    <div class="bar" role="progressbar" aria-valuenow="${done}" aria-valuemin="0" aria-valuemax="${items.length}" aria-label="Recruiting checklist"><i style="width:${done/items.length*100}%"></i></div>
+    ${items.map(([ok,t,v])=>`<button class="srow${ok?"":" rgo"}" data-rgo="${v}"${ok?" disabled":""}><span class="rank ${ok?"r1":"ro"}" aria-hidden="true">${ok?"✓":"·"}</span><span class="grow">${t}</span>${ok?"":'<span aria-hidden="true" style="color:var(--muted)">›</span>'}</button>`).join("")}
+    <h3 style="margin:16px 0 4px">When coaches can contact you</h3>
+    <p style="margin:0">${!open?"Add your grad year on your athlete card to see your dates.":Date.now()>=open?"<b>D1 and D2 coaches can contact you now.</b> For most sports, that started June 15 after your sophomore year.":`<b>D1 and D2 coaches can start contacting you June 15, ${y-2}</b>, after your sophomore year. Until then you can still email them, and they can send you camp info.`}</p>
+    <p class="hint" style="margin:6px 0 0">D3 and NAIA coaches can reach out any time. A few D1 sports set their own dates, so check the <a href="https://fs.ncaa.org/Docs/eligibility_center/Student_Resources/CBSA.pdf" target="_blank" rel="noopener noreferrer">NCAA guide for college-bound athletes</a> for yours.</p>`;
+  el.querySelectorAll("[data-rgo]").forEach(b=>b.onclick=()=>go(b.dataset.rgo))}
+
+/* spreadsheet download of the current sport's results and training. Cells that start like a formula are quoted so a
+   spreadsheet app shows them as text instead of running them. */
+function csvCell(v){v=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return/[",\r\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v}
+document.getElementById("dlCsv").onclick=()=>{if(!S)return;const x=curSport(),tr=x.id==="track",st=tr?null:spState(),rows=[["Kind","Date","Event or type","Result",tr?"":x.stat||"","Minutes","Felt (1-5)","Notes"]];
+  (tr?S.races:st.results).forEach(r=>rows.push([tr?"Race":"Result",r.date,r.event,r.mark,tr?"":r.stat??"","","",tr?r.meet||"":r.note||""]));
+  (tr?S.log:st.log).forEach(l=>rows.push(["Training",l.date,l.type,"","",l.mins||"",l.feel||"",l.note||""]));
+  if(rows.length<2){toast("Nothing to download yet");return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n")],{type:"text/csv"}));
+  a.download=`lane4-${x.id}-${isoDay(new Date())}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Spreadsheet downloaded")};
+
+function renderSportAll(){fillOpenSport();renderCheckins();applySport();renderFootage();if(S)renderReady(curSport().id==="track"?"trReady":"spReady");if(!S||curSport().id==="track")return;renderSportHub();renderSpNext();renderSpRecap();renderSPlan();renderWL();renderPos();renderSRes();renderSGoal();renderSCol();renderSGame();renderSLog();renderSLoad();renderRecruit()}
 function renderAll(){renderSportAll();if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits();renderHomeCards();applyFlags();if(S&&curSport().id!=="track"){TITLES.sgame=curSport().day;if(curView==="sgame")document.getElementById("secTitle").textContent=TITLES.sgame}}
 
 if(S&&SPORT_BY[S.openSport])S.sport=S.openSport;
@@ -3379,13 +3530,13 @@ const h=location.hash.slice(1);if(!/^strava/.test(h))go(["times","goals","colleg
 /* back from Strava's sign-in page: the Worker sends #strava=<session id> or #strava-error=<why> */
 (function stravaReturn(){const ok=location.hash.match(/^#strava=([\w-]{20,})$/),bad=location.hash.match(/^#strava-error=(\w+)$/);
   if(ok||bad)history.replaceState(null,"",location.pathname+location.search);
-  if(bad){go("times");toast({denied:"Strava wasn’t connected.",scope:"Lane 4 needs permission to read your activities. Connect again and leave that box checked.",expired:"That took too long. Try connecting again."}[bad[1]]||"Couldn’t connect Strava. Try again.");return}
+  if(bad){go("times");toast({denied:"Strava wasn’t connected.",scope:"Lane 4 needs permission to read your activities. Connect again and leave that box checked.",expired:"That took too long. Try connecting again.",busy:"Lane 4’s Strava link is busy. Try again in a few minutes."}[bad[1]]||"Couldn’t connect Strava. Try again.");return}
   if(ok){if(!S){toast("Set up Lane 4 first, then connect Strava.");return}S.strava={sid:ok[1],last:0};save();go("times");stravaUI();stravaSync(false);return}
   if(S&&S.strava&&Date.now()/1000-(S.strava.last||0)>6*3600)stravaSync(true);})();
 if(S&&S.meet&&S.meet.remind)pushSync();
 /* No times yet? Open the screen where you add them. */
 /* What's new: pops up once per update. New athletes skip it, since everything is new to them. */
-const NOTES_VER="2026-10-29";
+const NOTES_VER="2026-11-03";
 function maybeNotes(){let seen=null;try{seen=localStorage.getItem("lane4-notes")}catch(_){}if(seen===NOTES_VER)return;
   try{localStorage.setItem("lane4-notes",NOTES_VER)}catch(_){}
   if(!S||!document.getElementById("welcome").hidden)return;

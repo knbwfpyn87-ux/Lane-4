@@ -13,6 +13,9 @@ service cloud.firestore {
       return m.status == "accepted" && m.share == true;
     }
     function onlyChanges(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+    // Text someone else will see: a string no longer than n.
+    function str(d, k, n) { return d[k] is string && d[k].size() <= n; }
+    function optStr(d, k, n) { return !(k in d) || str(d, k, n); }
 
     // Each athlete's own data: only they can read or write it.
     match /data/users/{uid}/{rest=**} {
@@ -21,7 +24,14 @@ service cloud.firestore {
     // Submissions for Rankings: athletes can only submit their own, and only as "pending".
     match /subs/{uid} {
       allow read: if isMe(uid) || isAdmin();
-      allow create, update: if (isMe(uid) && request.resource.data.status == "pending") || isAdmin();
+      // Only the fields Lane 4 sends, short text, and a results link that is a web address (never javascript: and the like).
+      allow create, update: if (isMe(uid) && request.resource.data.status == "pending"
+          && request.resource.data.keys().hasOnly(["public", "status", "name", "school", "grad", "state", "gender", "link", "events", "proof", "via", "submittedAt"])
+          && str(request.resource.data, "name", 100) && optStr(request.resource.data, "school", 120) && optStr(request.resource.data, "state", 20)
+          && (!("link" in request.resource.data) || request.resource.data.link == ""
+              || (str(request.resource.data, "link", 500) && request.resource.data.link.matches("https?://[^ <>]+")))
+          && (!("events" in request.resource.data) || request.resource.data.events is map))
+        || isAdmin();
       allow delete: if isMe(uid) || isAdmin();
     }
     // Verified Rankings: every signed-in athlete can read; admins can write.
@@ -30,7 +40,9 @@ service cloud.firestore {
       allow read: if signedIn();
       allow write: if isAdmin();
       allow create, update: if request.resource.data.team is string
-        && isCoach(request.resource.data.team) && sharesWith(request.resource.data.team, uid);
+        && isCoach(request.resource.data.team) && sharesWith(request.resource.data.team, uid)
+        && request.resource.data.keys().hasOnly(["name", "school", "grad", "state", "gender", "events", "team", "approvedAt"])
+        && str(request.resource.data, "name", 100) && request.resource.data.events is map;
     }
     // "Hide me from Rankings" switches.
     match /optout/{uid} {
@@ -41,14 +53,22 @@ service cloud.firestore {
     match /teams/{t} {
       allow get: if signedIn();
       allow list: if isAdmin();
-      allow create: if signedIn() && request.resource.data.coach == request.auth.uid && request.resource.data.status == "pending";
+      // Team codes are 6 letters and numbers made by Lane 4, so a code can never carry anything else onto admin screens.
+      allow create: if signedIn() && request.resource.data.coach == request.auth.uid && request.resource.data.status == "pending"
+        && t.matches("[A-HJ-NP-Z2-9]{6}")
+        && request.resource.data.keys().hasOnly(["name", "school", "state", "coachName", "role", "proof", "coach", "status", "createdAt"])
+        && str(request.resource.data, "name", 120) && str(request.resource.data, "school", 120) && optStr(request.resource.data, "state", 20)
+        && str(request.resource.data, "coachName", 100) && optStr(request.resource.data, "role", 80) && str(request.resource.data, "proof", 500);
       allow update: if isAdmin();
       allow delete: if isAdmin() || (signedIn() && resource.data.coach == request.auth.uid);
       // Athletes ask to join an approved team as "pending". Only the coach (or an admin) accepts them.
       match /members/{uid} {
         allow get: if isMe(uid) || isCoach(t) || isAdmin();
         allow list: if isCoach(t) || isAdmin();
-        allow create: if isMe(uid) && request.resource.data.status == "pending" && team(t).status == "approved";
+        allow create: if isMe(uid) && request.resource.data.status == "pending" && team(t).status == "approved"
+          && request.resource.data.keys().hasOnly(["name", "full", "grad", "gender", "share", "status", "added", "joinedAt"])
+          && str(request.resource.data, "name", 100) && optStr(request.resource.data, "full", 100)
+          && request.resource.data.share is bool && (!("added" in request.resource.data) || request.resource.data.added.size() == 0);
         allow update: if (isMe(uid) && onlyChanges(["share", "added", "name", "full"]))
           || (isCoach(t) && onlyChanges(["status", "added"])) || isAdmin();
         allow delete: if isMe(uid) || isCoach(t) || isAdmin();
