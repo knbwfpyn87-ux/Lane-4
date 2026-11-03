@@ -575,6 +575,54 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
 .ttab td.r{text-align:right}.ttab .ck{color:#1B8A5A;font-weight:900}
 .thl{margin:2.6cqw 4.5cqw 0;font-size:3.4cqw;font-weight:800}
 .tfoot{position:absolute;bottom:2.6cqw;left:4.5cqw;right:4.5cqw;font-weight:800;font-size:2.7cqw;color:#6B5E5C}
+/* ---------- sports: picker, hub hero, standards list, footage, and each sport's own colors ---------- */
+.sportpick{position:fixed;inset:0;z-index:60;background:#141010;color:#fff;overflow-y:auto;padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.sportpick h1{font:800 32px "Barlow",sans-serif;margin:8px auto 4px;max-width:720px}.sportpick p{margin:0 auto 16px;opacity:.8;max-width:720px}
+.sportgrid{margin:0 auto;padding:4px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-width:720px}
+.sportgrid button{border:0;border-radius:16px;padding:16px 12px;min-height:84px;text-align:left;font:700 17px "Barlow",sans-serif;color:#fff;background:var(--sc);cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.sportgrid button span{font-size:26px}.sportgrid button small{font-weight:500;font-size:13px;opacity:.85}
+.sportgrid button[aria-pressed="true"]{outline:3px solid #fff;outline-offset:2px}
+header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{padding-right:96px}header.top.sub .sportbtn{display:none}
+.ftgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.ftgrid figure{margin:0;background:var(--soft);border-radius:12px;overflow:hidden}.ftgrid video,.ftgrid img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#000}
+.ftgrid figcaption{padding:6px 8px;font-size:13px;display:flex;justify-content:space-between;gap:6px;align-items:center}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.sphero{background:var(--track);color:#fff;border-radius:20px;padding:18px;margin-bottom:14px;display:grid;gap:12px}
+.sphero .top{display:flex;align-items:center;gap:12px}.sphero .em{font-size:34px;width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+.sphero h3{margin:0;font:800 26px "Barlow Condensed","Barlow",sans-serif;color:#fff}.sphero p{margin:2px 0 0;opacity:.85;font-size:14px}
+.sphero .st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.sphero .st div{background:rgba(255,255,255,.14);border-radius:12px;padding:10px;text-align:center;min-width:0}
+.sphero .st b{display:block;font:800 22px "Barlow Condensed","Barlow",sans-serif;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.sphero .st span{font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.85}
+.stdm{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.stdm li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:10px 12px;border-radius:12px;background:var(--soft)}
+.stdm .sl{display:flex;gap:10px;align-items:baseline;min-width:0}.stdm .sl b{font-weight:700}.stdm .sl span{font-variant-numeric:tabular-nums;color:var(--muted)}
+.stdm .sg{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.stdm .sb{grid-column:1/-1;height:8px;border-radius:4px;background:var(--line);overflow:hidden;order:3}.stdm .sb i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.stdm li.ok .sb i{background:var(--good)}.stdm li.ok .sg{color:var(--good);font-weight:700}
+.stdm li.next{outline:2px solid var(--accent);outline-offset:-2px}.stdm li.next .sg{color:var(--accent);font-weight:700}
+.stdtab{width:100%;border-collapse:collapse;font-size:15px}.stdtab th,.stdtab td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.entry button.x{background:none;border:0;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 6px}
+:root[data-sport="swim"]{--track:#0B6FB8;--accent:#0B6FB8}:root[data-sport="swim"][data-theme="dark"]{--accent:#4FA6E8}
+:root[data-sport="row"]{--track:#0E7C74;--accent:#0E7C74}:root[data-sport="row"][data-theme="dark"]{--accent:#3CC0B4}
+:root[data-sport="cycle"]{--track:#B86E00;--accent:#B86E00}:root[data-sport="cycle"][data-theme="dark"]{--accent:#F2B04A}
+:root[data-sport="skate"]{--track:#5B3FC4;--accent:#5B3FC4}:root[data-sport="skate"][data-theme="dark"]{--accent:#9A86F0}
+:root[data-sport="tri"]{--track:#C9480F;--accent:#C9480F}:root[data-sport="tri"][data-theme="dark"]{--accent:#F58A57}
+:root[data-sport="gym"]{--track:#B0237A;--accent:#B0237A}:root[data-sport="gym"][data-theme="dark"]{--accent:#E866B4}
+:root[data-sport="wrestle"]{--track:#8A1F1F;--accent:#8A1F1F}:root[data-sport="wrestle"][data-theme="dark"]{--accent:#E06060}
+:root[data-sport="bball"]{--track:#C85A0C;--accent:#C85A0C}:root[data-sport="bball"][data-theme="dark"]{--accent:#F49A55}
+:root[data-sport="soccer"]{--track:#1E7A36;--accent:#1E7A36}:root[data-sport="soccer"][data-theme="dark"]{--accent:#4CC46A}
+:root[data-sport="vball"]{--track:#9A7700;--accent:#9A7700}:root[data-sport="vball"][data-theme="dark"]{--accent:#E8C547}
+:root[data-sport="tennis"]{--track:#5F7D00;--accent:#5F7D00}:root[data-sport="tennis"][data-theme="dark"]{--accent:#B5D93A}
+:root[data-sport="fence"]{--track:#3E4A59;--accent:#3E4A59}:root[data-sport="fence"][data-theme="dark"]{--accent:#9AA8BA}
+:root[data-sport="weights"]{--track:#4A4A4A;--accent:#4A4A4A}:root[data-sport="weights"][data-theme="dark"]{--accent:#B0B0B0}
+/* other sports: the card, buttons and shadows follow the sport's color (track keeps its exact reds) */
+:root[data-sport]:not([data-sport="track"]) .tfront{background:linear-gradient(135deg,color-mix(in srgb,var(--track) 70%,#000),var(--track) 40%,color-mix(in srgb,var(--track) 75%,#fff) 55%,var(--track) 70%,color-mix(in srgb,var(--track) 60%,#000))}
+:root[data-sport]:not([data-sport="track"]) .tev,:root[data-sport]:not([data-sport="track"]) .tpr .lb,:root[data-sport]:not([data-sport="track"]) .tbh .num,:root[data-sport]:not([data-sport="track"]) .tstats b{color:var(--track)}:root[data-sport]:not([data-sport="track"]) .tbh{background:var(--track)}
+:root[data-sport]:not([data-sport="track"]) .go,:root[data-sport]:not([data-sport="track"]) .tile.main{box-shadow:0 4px 14px color-mix(in srgb,var(--track) 25%,transparent)}
+.ckbox h3{margin:0 0 6px}.ckrow{display:grid;grid-template-columns:84px 1fr;align-items:center;gap:8px;margin:6px 0}.ckrow span{font-size:14px;font-weight:600}
+.ckrow .seg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.ckrow .seg button{border:0;border-radius:10px;padding:8px 0;background:var(--soft);color:var(--ink);font:600 14px "Barlow",sans-serif;cursor:pointer}
+.ckrow .seg button[aria-pressed="true"]{background:var(--track);color:#fff}.ckscore{display:flex;align-items:center;gap:12px}.ckscore b{font:800 40px "Barlow Condensed",sans-serif;color:var(--track)}
+.ckspark{display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:8px}.ckspark i{flex:1;background:var(--track);opacity:.7;border-radius:3px 3px 0 0;min-height:3px}
+.ldbars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:90px;margin:8px 0 4px}.ldbars div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--muted);gap:3px}.ldbars i{width:100%;background:var(--track);border-radius:4px 4px 0 0;min-height:2px}
 </style>
 </head>
 <body>
@@ -644,9 +692,14 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
   </div>
 </div>
 
+<div class="sportpick" id="sportPick" hidden role="dialog" aria-modal="true" aria-labelledby="spH">
+  <h1 id="spH">Pick your sport</h1><p>Lane 4 sets up your events, colors, and college standards for it. You can switch anytime.</p>
+  <div class="sportgrid" id="sportGrid"></div>
+</div>
 <div class="app">
   <header class="top">
     <button class="themebtn" id="settingsBtn" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
+    <button class="themebtn sportbtn" id="sportBtn" aria-label="Switch sport"><span id="sportIco" aria-hidden="true">🏃</span></button>
     <h1 class="brandh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="40" height="40" class="logo" aria-hidden="true"><defs><clipPath id="lgh"><rect width="1024" height="1024" rx="228"/></clipPath></defs><g clip-path="url(#lgh)"><rect width="1024" height="1024" fill="#C62832"/><path d="M332 1024 L440.0 -10 L584.0 -10 L692 1024Z" fill="#fff" opacity="0.16"/><path d="M-748.0 1024 L7.7 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-388.0 1024 L151.8 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-28.0 1024 L295.9 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M332.0 1024 L440.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M692.0 1024 L584.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1052.0 1024 L728.1 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1412.0 1024 L872.2 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><rect x="0" y="872" width="1024" height="28" fill="#fff"/><path d="M313.2 -193.2V-109.2Q313.2 -105.0 310.79999999999995 -102.6Q308.4 -100.2 304.2 -100.2H286.2Q282.59999999999997 -100.2 282.59999999999997 -96.6V-9.0Q282.59999999999997 -4.8 280.2 -2.4Q277.8 0.0 273.59999999999997 0.0H178.79999999999998Q174.6 0.0 172.2 -2.4Q169.79999999999998 -4.8 169.79999999999998 -9.0V-96.6Q169.79999999999998 -100.2 166.2 -100.2H13.799999999999999Q9.6 -100.2 7.199999999999999 -102.6Q4.8 -105.0 4.8 -109.2V-175.79999999999998Q4.8 -181.2 6.6 -186.6L79.2 -412.8Q81.6 -420.0 89.39999999999999 -420.0H190.79999999999998Q195.6 -420.0 197.7 -417.29999999999995Q199.79999999999998 -414.59999999999997 198.6 -409.8L136.79999999999998 -206.4Q136.2 -202.2 139.79999999999998 -202.2H166.2Q169.79999999999998 -202.2 169.79999999999998 -205.79999999999998V-246.6Q169.79999999999998 -250.79999999999998 172.2 -253.2Q174.6 -255.6 178.79999999999998 -255.6H273.59999999999997Q277.8 -255.6 280.2 -253.2Q282.59999999999997 -250.79999999999998 282.59999999999997 -246.6V-205.79999999999998Q282.59999999999997 -202.2 286.2 -202.2H304.2Q308.4 -202.2 310.79999999999995 -199.8Q313.2 -197.4 313.2 -193.2Z" transform="translate(353.0 822)" fill="#fff"/></g></svg><span>Lane 4</span></h1>
     <p>Your season, your splits, your race day.</p>
     <span class="demo-pill" id="modePill">Beta</span>
@@ -667,6 +720,7 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
       </div>
       <button class="panel nextmeet" id="nextMeet" data-feat="raceDay" hidden></button>
       <div class="panel recap" id="recap" data-feat="weeklyRecap" hidden></div>
+      <div class="panel ckbox" data-ck></div>
       <nav class="hub" aria-label="Sections">
         <button class="tile main" data-go="times" data-focus="rMark"><span class="ti"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9.5 2h5M12 2v3"/></svg></span><b>Add a race time</b><span id="hubRace"></span></button>
         <button class="tile" data-go="times" data-scroll="planBox"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><b>This week</b><span id="hubPlan"></span></button>
@@ -827,6 +881,10 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
       <div class="tc-wrap"><div class="tcard" id="tcard" role="group" aria-label="Your athlete card"></div></div>
       <div class="btnrow" style="margin-top:12px"><button class="go" id="flipCard">Flip card</button><label class="go alt filebtn" style="margin-top:14px">Card photo<input type="file" id="cardPhotoIn" accept="image/*" hidden></label></div>
       <button class="go alt" id="shareCard">Share my card</button>
+      <div class="panel" id="hlBox" style="margin-top:14px"><h3 style="margin:0 0 4px">Highlight footage</h3>
+        <p class="hint" style="margin:0 0 8px">Add clips or photos for this sport. They stay on this device only, not in your account. Tap Share to send one with your card.</p>
+        <label class="go alt filebtn" style="display:block;text-align:center">Add highlights<input type="file" id="ftIn" accept="video/*,image/*" multiple hidden></label>
+        <div class="ftgrid" id="ftGrid"></div></div>
       <div class="panel" id="finBox" data-feat="cardUpgrades" style="margin-top:14px"><h3 style="margin:0">Card finish</h3><div class="fins" id="fins" role="group" aria-label="Card finish"></div></div>
       <label for="cardPos" id="cardPosLbl" hidden>Move your photo up or down</label><input type="range" id="cardPos" min="0" max="100" value="30" hidden>
       <p class="hint" style="text-align:center">Screenshot your card to post it. ✓ means an admin checked that time against official results.</p>
@@ -921,6 +979,105 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
       <p class="note">Food and timing tips are general guidance. Follow your coach and what works for your body.</p>
       </div>
     </section>
+
+    <!-- SPORT HOME (every sport but track) -->
+    <section class="view" id="v-sport">
+      <div class="sphero" id="spHero"></div>
+      <div class="panel ckbox" data-ck></div>
+      <nav class="hub" aria-label="Sections">
+        <button class="tile main" data-go="sres" data-focus="srMark"><span class="ti"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9.5 2h5M12 2v3"/></svg></span><b>Results &amp; PBs</b><span id="hubSRes"></span></button>
+        <button class="tile" data-go="sgoal"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></span><b>Goals</b><span id="hubSGoal"></span></button>
+        <button class="tile" data-go="scol"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></span><b>Colleges</b><span id="hubSCol"></span></button>
+        <button class="tile" data-go="card"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8.5" cy="11" r="2.5"/><path d="M5 16c.6-1.6 2-2.5 3.5-2.5S11.4 14.4 12 16M14 10h5M14 13h4"/></svg></span><b>Athlete card</b><span id="hubSCard">Share it with highlights</span></button>
+        <button class="tile" data-go="sgame"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/><path d="M9 4v8M13 4v8" stroke-width="1.2"/></svg></span><b id="hubSGameT">Game day</b><span id="hubSGame"></span></button>
+        <button class="tile" data-go="slog"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><b>Training log</b><span id="hubSLog"></span></button>
+        <button class="tile" data-go="team"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9.5" r="2.5"/><path d="M3 19c.6-3 3-4.5 6-4.5s5.4 1.5 6 4.5M15 14.6c2.6-.3 4.8 1 5.5 3.9"/></svg></span><b>Team</b><span id="hubSTeam"></span></button>
+      </nav>
+      <h2>Personal bests</h2>
+      <div class="panel" id="spPBs"></div>
+    </section>
+
+    <!-- SPORT RESULTS & PBs -->
+    <section class="view" id="v-sres">
+      <h2>Add a result</h2>
+      <div class="panel">
+        <div class="row"><div><label for="srEvent">Event</label><select id="srEvent"></select></div><div><label for="srDate">Date</label><input id="srDate" type="date"></div></div>
+        <div class="row"><div><label for="srMark" id="srMarkL">Time</label><input id="srMark" autocomplete="off"></div><div id="srStatBox"><label for="srStat" id="srStatL">Stat</label><input id="srStat" inputmode="decimal" autocomplete="off"></div></div>
+        <label for="srNote">Meet, game, or note (optional)</label><input id="srNote" maxlength="80" autocomplete="off">
+        <button class="go" id="srAdd">Save result</button>
+        <p class="hint" id="srMsg" role="status"></p>
+      </div>
+      <h2 id="srPBh">Personal bests</h2>
+      <div class="panel" id="srPBs"></div>
+      <h2>Progress</h2>
+      <div class="panel"><label for="srChartEv" class="vh">Event for the chart</label><select id="srChartEv"></select><div class="projchart" id="srChart"></div><p class="hint" id="srChartNote"></p></div>
+      <h2>History</h2>
+      <div class="panel" id="srList"></div>
+    </section>
+
+    <!-- SPORT GOALS -->
+    <section class="view" id="v-sgoal">
+      <h2>Set a goal</h2>
+      <div class="panel">
+        <div class="row"><div><label for="sgEvent">Event</label><select id="sgEvent"></select></div><div><label for="sgMark" id="sgMarkL">Goal</label><input id="sgMark" autocomplete="off"></div></div>
+        <button class="go" id="sgSave">Save goal</button><p class="hint" id="sgMsg" role="status"></p>
+      </div>
+      <h2>Projection</h2>
+      <div class="panel"><div class="projchart" id="sgChart"></div><p class="hint" id="sgNote"></p></div>
+      <h2>All goals</h2>
+      <div class="panel" id="sgList"></div>
+    </section>
+
+    <!-- SPORT COLLEGES -->
+    <section class="view" id="v-scol">
+      <div id="scTools">
+        <div class="searchbar"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input id="scSearch" type="search" placeholder="School, state, or conference" aria-label="Search colleges"></div>
+        <div class="chips" id="scChips" role="group" aria-label="Filter"><button data-d="All">All</button><button data-d="D1">D1</button><button data-d="D2">D2</button><button data-d="D3">D3</button><button data-d="NAIA">NAIA</button><button data-d="Mine">★ Mine</button></div>
+        <div class="row" style="margin-bottom:8px"><div><label for="scConf">Conference</label><select id="scConf"></select></div><div><label for="scState">State</label><select id="scState"></select></div></div>
+        <div class="row" style="margin-bottom:8px"><div><label for="sclEvent">Compare event</label><select id="sclEvent"></select></div><div><label for="scGen">Standards for</label><select id="scGen"><option value="Men">Men’s</option><option value="Women">Women’s</option></select></div></div>
+        <p class="hint" id="scCount" style="margin:0 0 8px"></p>
+      </div>
+      <div class="panel" id="scList" style="padding:4px 12px"></div>
+      <div id="scDetail" hidden></div>
+      <h2 style="margin-top:22px">Recruiting tracker</h2>
+      <div class="panel"><p class="hint" style="margin:0 0 8px">Keep track of coaches you’ve reached out to. Only you can see this.</p>
+        <div class="row"><div><label for="rcSchool">School</label><input id="rcSchool" maxlength="60" list="rcSchools" autocomplete="off"><datalist id="rcSchools"></datalist></div><div><label for="rcStatus">Status</label><select id="rcStatus"><option>Emailed</option><option>Replied</option><option>Call or visit</option><option>Offer</option><option>Not a fit</option></select></div></div>
+        <label for="rcNote">Coach and notes (optional)</label><input id="rcNote" maxlength="100" autocomplete="off">
+        <button class="go alt" id="rcAdd">Save</button><div id="rcList"></div></div>
+      <p class="hint" id="scSrc"></p>
+    </section>
+
+    <!-- SPORT GAME / MEET DAY -->
+    <section class="view" id="v-sgame">
+      <div class="board" aria-live="polite"><div class="lbl" id="sgBEvent">Add your next one below</div><div class="clock" id="sgClock">--:--:--</div><div class="next" id="sgBNext">&nbsp;</div></div>
+      <h2>Schedule</h2>
+      <div class="panel">
+        <div class="row"><div><label for="gmWhat" id="gmWhatL">Opponent or meet</label><input id="gmWhat" maxlength="60" autocomplete="off"></div><div><label for="gmWhere">Where</label><input id="gmWhere" maxlength="60" autocomplete="off"></div></div>
+        <div class="row"><div><label for="gmDate">Date</label><input id="gmDate" type="date"></div><div><label for="gmTime">Start time</label><input id="gmTime" type="time" value="10:00"></div></div>
+        <button class="go" id="gmAdd">Add to schedule</button><p class="hint" id="gmMsg" role="status"></p>
+        <div id="gmList"></div>
+      </div>
+      <div class="panel"><h3>Warm-up plan</h3><ul class="tl" id="sgTl"></ul></div>
+      <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><h3 style="margin:0">Packing list</h3><button class="ghost" id="sgResetBag">Reset</button></div><div id="sgBag"></div></div>
+      <p class="note">Warm-ups are standard, premade routines. Follow your coach and what works for your body.</p>
+    </section>
+
+    <!-- SPORT TRAINING LOG -->
+    <section class="view" id="v-slog">
+      <h2>Log a workout</h2>
+      <div class="panel">
+        <div class="row"><div><label for="slType">Type</label><select id="slType"></select></div><div><label for="slDate">Date</label><input id="slDate" type="date"></div></div>
+        <div class="row"><div><label for="slMin">Minutes</label><input id="slMin" inputmode="numeric" placeholder="60" autocomplete="off"></div><div><label for="slFeel">Felt (1–5)</label><select id="slFeel"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div></div>
+        <label for="slNote">What you did</label><input id="slNote" maxlength="140" autocomplete="off">
+        <button class="go" id="slSave">Save workout</button>
+      </div>
+      <h2>This week</h2>
+      <div class="panel" id="slLoad"></div>
+      <h2>Premade workouts</h2>
+      <div class="panel" id="slLib"></div>
+      <h2>History</h2>
+      <div class="panel" id="slList"></div>
+    </section>
   </main>
 </div>
 <div class="celebrate" id="celebrate" hidden><div class="celbox" role="dialog" aria-modal="true" aria-labelledby="celT" aria-describedby="celMsg">
@@ -935,6 +1092,8 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
   <div class="sheethead"><h3 id="setTitle" style="margin:0">Settings</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="panel"><label class="check toggle"><span>Dark mode</span><input type="checkbox" class="switch" id="themeBtn" role="switch"></label>
     <p class="hint" id="syncLine2" style="margin-top:10px"></p></div>
+  <div class="panel"><label for="openSport">Always open to</label><select id="openSport"></select>
+    <p class="hint" style="margin:6px 0 0">Lane 4 opens to this sport every time, even if you switched to another one last time.</p></div>
   <details class="panel" id="backupBox">
         <summary>Back up or move my data</summary>
         <p class="hint" style="margin:0 0 8px">Your data stays on this device. To keep a copy or move it to another phone, copy your backup code and save it somewhere like your Notes app.</p>
@@ -1032,7 +1191,7 @@ const LANE4_WORKER="";
 /* AI workout tweaks: "Adjust for me" asks the Worker's free AI only when LANE4_WORKER is set. It sees just the workout, your events,
    your sore spots, and your part of the season, and its answer is capped by clampAdj(). Set false to use the fixed rules only. */
 const AI_TWEAKS=true;
-const KEY="lane4-data",SCHEMA=5,OLD_KEYS=["lane4-demo-v4","lane4-demo-v3","lane4-demo-v2","lane4-demo-v1"];
+const KEY="lane4-data",SCHEMA=6,OLD_KEYS=["lane4-demo-v4","lane4-demo-v3","lane4-demo-v2","lane4-demo-v1"];
 function migrate(d){
   if(!d||typeof d!=="object")return null;
   if(d.prs&&!d.races){ /* v1: {prs:{event:{pr,goal}}} */
@@ -1046,6 +1205,16 @@ function migrate(d){
   d.log=d.log||[];d.bag=d.bag||{};d.fav=d.fav||[];d.profile=d.profile||{};
   d.gender=d.gender==="Women"?"Women":"Men";d.started=d.started||"fresh";
   if(d.meet&&!d.meet.start)d.meet=null;
+  /* v6: other sports. S.sport is the picked sport ("track" for everyone who had data before), S.sports[id] holds each one's data. */
+  if(typeof d.sport!=="string")d.sport="track";
+  if(typeof d.openSport!=="string")d.openSport="";
+  d.wellness=Array.isArray(d.wellness)?d.wellness.filter(w=>w&&w.date).slice(0,120):[];
+  d.sports=d.sports&&typeof d.sports==="object"?d.sports:{};
+  Object.keys(d.sports).forEach(k=>{const v=d.sports[k];if(!v||typeof v!=="object"){delete d.sports[k];return}
+    v.event=typeof v.event==="string"?v.event:"";["results","fav","log","games"].forEach(f=>{if(!Array.isArray(v[f]))v[f]=[]});
+    if(!Array.isArray(v.recruit))v.recruit=[];
+    v.results=v.results.filter(r=>r&&r.event&&r.mark);v.games=v.games.filter(m=>m&&m.start);
+    ["goals","bag"].forEach(f=>{if(!v[f]||typeof v[f]!=="object")v[f]={}})});
   d.schema=SCHEMA;return d;
 }
 function load(){
@@ -1164,7 +1333,7 @@ function sample(){return{
     {date:"2026-04-20",type:"Workout",note:"4×300, 5 min rest",feel:2},
     {date:"2026-04-15",type:"Run",note:"Easy 3 miles",feel:3,miles:3}
   ],meet:null,bag:{}}}
-function fresh(){return{started:"fresh",gender:"Men",fav:[],races:[],goals:{},log:[],meet:null,bag:{}}}
+function fresh(){return{started:"fresh",gender:"Men",fav:[],races:[],goals:{},log:[],meet:null,bag:{},sport:pendingSport||"track",sports:{}}}
 let S=load();
 
 /* ---------- parsing ---------- */
@@ -1224,7 +1393,7 @@ function isPR(r){return pr(r.event,ioOf(r))===r}
 
 /* ---------- screens: Home is a hub of big buttons; every other screen has a back button to Home.
    Each screen gets a history entry, so the phone's back gesture returns Home too. ---------- */
-const TITLES={times:"Training log",goals:"Goals",colleges:"Colleges",card:"Athlete card",meet:"Race day",team:"Team"};
+const TITLES={times:"Training log",goals:"Goals",colleges:"Colleges",card:"Athlete card",meet:"Race day",team:"Team",sres:"Results & PBs",sgoal:"Goals",scol:"Colleges",sgame:"Game day",slog:"Training log"};
 let curView="home",pushedFromHome=false;
 /* Long screens get a row of jump links built from their headings; the one you're reading lights up. */
 const JUMP_SHORT={"Add a race time":"Add time","Upload a results screenshot":"Screenshot","Import from Athletic.net or MileSplit":"Import","All races":"Races","Set a goal":"Set goal","Progress projections":"Projections","Nationals standards":"Nationals","My colleges":"My colleges","Personal bests":"PRs","Where you stand":"Standing","Latest races":"Latest","Split calculator":"Splits","Meet day mode":"Meet day","My team":"My team","Coach a team":"Coach","Add official results":"Results","Log a workout":"Log","Upload workouts (Strava, Garmin, watch)":"Upload"};
@@ -1239,16 +1408,20 @@ function buildJump(v){const sec=document.getElementById("v-"+v);if(!sec)return;s
   bar.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.j);if(t.tagName==="DETAILS")t.open=true;t.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})});
   jumpObs=()=>{let cur=heads[0].t.id;for(const h of heads)if(h.t.getBoundingClientRect().top<90)cur=h.t.id;bar.querySelectorAll("[data-j]").forEach(b=>{const on=b.dataset.j===cur;if(on&&b.getAttribute("aria-current")!=="true")bar.scrollLeft=b.offsetLeft-16;b.setAttribute("aria-current",on)})};
   addEventListener("scroll",jumpObs,{passive:true});jumpObs()}
+const SPORT_VIEWS={home:"sport",times:"sres",goals:"sgoal",colleges:"scol",meet:"sgame"};
 function go(v,how){
   if(!document.getElementById("v-"+v))v="home";
+  /* other sports use their own versions of these sections; card and team are shared */
+  if(typeof curSport==="function"){const tr=curSport().id==="track";
+    if(!tr&&SPORT_VIEWS[v])v=SPORT_VIEWS[v];else if(tr&&Object.values(SPORT_VIEWS).concat("slog").includes(v))v="home";}
   const vf={colleges:"colleges",meet:"raceDay splitCalc"}[v];if(vf&&featOff(vf)){if(how!=="replace")toast("Turned off for now");v="home"}
-  if(how!=="pop"){const url=location.pathname+location.search+(v==="home"?"":"#"+v);
+  if(how!=="pop"){const url=location.pathname+location.search+(v==="home"||v==="sport"?"":"#"+v);
     if(how==="replace"||v===curView)history.replaceState({v},"",url);else{history.pushState({v},"",url);pushedFromHome=curView==="home"&&v!=="home"}}
   curView=v;
-  const hd=document.querySelector("header.top");hd.classList.toggle("sub",v!=="home");document.getElementById("secTitle").textContent=TITLES[v]||"";
+  const hd=document.querySelector("header.top");hd.classList.toggle("sub",v!=="home"&&v!=="sport");document.getElementById("secTitle").textContent=TITLES[v]||"";
   document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
   document.querySelectorAll('input[type=range]').forEach(r=>typeof rangeFill==="function"&&rangeFill(r));
-  if(v==="team")renderTeam();
+  if(v==="team")renderTeam();if(v==="sgame")sgTick();
   buildJump(v);
   window.scrollTo(0,0);
 }
@@ -1850,6 +2023,32 @@ const DAY=864e5;
 function fmtVal(ev,v){if(EVENTS[ev].field){const ft=Math.floor(v/12);return `${ft}′ ${+(v-ft*12).toFixed(1)}″`}
   return v<60?v.toFixed(2):`${Math.floor(v/60)}:${(v%60).toFixed(2).padStart(5,"0")}`}
 function fmtDay(t){return new Date(t).toLocaleDateString([],{month:"short",day:"numeric"})}
+/* Shared progress chart (track Goals and every sport's Results): your marks over time, a straight-line trend 60 days out,
+   and numbered standard lines. lower=true when a smaller number is better (times). Returns the trend so callers can describe it. */
+function trendChart(box,pts,lines,o){const lower=o.lower,bt=(a,b)=>lower?a<b:a>b;
+  let trend=null;
+  if(pts.length>=3&&new Set(pts.map(p=>p.t)).size>=2){const n=pts.length,mx=pts.reduce((s,p)=>s+p.t,0)/n,my=pts.reduce((s,p)=>s+p.v,0)/n;
+    let sxy=0,sxx=0;pts.forEach(p=>{sxy+=(p.t-mx)*(p.v-my);sxx+=(p.t-mx)**2});const b=sxy/sxx;trend={a:my-b*mx,b}}
+  const last=pts[pts.length-1].t,end=trend?last+60*DAY:last,at=t=>trend.a+trend.b*t;
+  const vs=pts.map(p=>p.v).concat(lines.map(l=>l.v));if(trend)vs.push(at(end));
+  let lo=Math.min(...vs),hi=Math.max(...vs);const pad=(hi-lo)*.1||Math.abs(hi)*.02||1;lo-=pad;hi+=pad;
+  const t0=pts[0].t,t1=Math.max(end,t0+DAY),W=320,H=210,L=30,R=8,T=12,B=22;
+  const x=t=>L+(t-t0)/(t1-t0)*(W-L-R),y=v=>{const f=(v-lo)/(hi-lo);return T+(lower?f:1-f)*(H-T-B)};
+  /* each standard gets a numbered badge in the left gutter (key below the chart), nudged apart so badges never overlap */
+  const lab=lines.map(l=>({...l,y:y(l.v)})).sort((a,b)=>a.y-b.y);lab.forEach((l,i)=>{l.n=i+1;l.ty=Math.max(l.y,i?lab[i-1].ty+16:8)});
+  const path=pts.map((p,i)=>`${i?"L":"M"}${x(p.t).toFixed(1)} ${y(p.v).toFixed(1)}`).join(" ");
+  const pass=trend?lines.filter(l=>!bt(l.v,at(end))&&bt(l.v,pts.reduce((b,p)=>bt(p.v,b)?p.v:b,pts[0].v))):[];
+  box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.name)} marks from ${fmtDay(t0)} to ${fmtDay(last)}${trend?", trend to "+fmtDay(end):""}">
+    <line class="pc-grid" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/>
+    ${lab.map(l=>`<line class="${l.goal?"pc-goal":"pc-std"}" x1="${L}" x2="${W-R}" y1="${l.y.toFixed(1)}" y2="${l.y.toFixed(1)}"/>${Math.abs(l.ty-l.y)>1?`<line class="pc-std" x1="18" x2="${L}" y1="${l.ty.toFixed(1)}" y2="${l.y.toFixed(1)}"/>`:""}<circle class="pc-badge${l.goal?" g":""}" cx="11" cy="${l.ty.toFixed(1)}" r="7.5"/><text class="pc-bn" x="11" y="${(l.ty+3.5).toFixed(1)}" text-anchor="middle">${l.n}</text>`).join("")}
+    ${trend?`<line class="pc-trend" x1="${x(t0).toFixed(1)}" y1="${y(at(t0)).toFixed(1)}" x2="${x(end).toFixed(1)}" y2="${y(at(end)).toFixed(1)}"/>`:""}
+    <path class="pc-line" d="${path}"/>
+    ${pts.map(p=>`<circle class="pc-dot" cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="4"><title>${fmtDay(p.t)}: ${esc(o.fmt(p.v))}</title></circle>`).join("")}
+    ${trend?`<circle class="pc-proj" cx="${x(end).toFixed(1)}" cy="${y(at(end)).toFixed(1)}" r="5"/>`:""}
+    <text class="pc-lbl" x="${L}" y="${H-6}">${fmtDay(t0)}</text>
+    <text class="pc-lbl" x="${W-R}" y="${H-6}" text-anchor="end">${fmtDay(t1)}${trend?" (trend)":""}</text></svg>
+    ${lab.length?`<ul class="pc-key">${lab.map(l=>`<li><span class="pc-n${l.goal?" g":""}">${l.n}</span><span class="pc-kn">${esc(l.l)}</span><b>${esc(o.fmt(l.v))}</b></li>`).join("")}</ul>`:""}`;
+  return{trend,end,at,last,pass}}
 function renderProjections(){
   const sel=document.getElementById("projEvent"),box=document.getElementById("projChart"),note=document.getElementById("projNote");
   const evs=EV_NAMES.filter(e=>S.races.some(r=>r.event===e&&r.date));
@@ -1858,34 +2057,13 @@ function renderProjections(){
   const ev=evs.includes(sel.value)?sel.value:evs[0],E=EVENTS[ev];
   sel.innerHTML=evs.map(e=>`<option${e===ev?" selected":""}>${e}</option>`).join("");
   const pts=S.races.filter(r=>r.event===ev).map(r=>({t:Date.parse(r.date),v:val(ev,r.mark)})).filter(p=>!isNaN(p.t)&&!isNaN(p.v)).sort((a,b)=>a.t-b.t);
-  let trend=null;
-  if(pts.length>=3&&new Set(pts.map(p=>p.t)).size>=2){const n=pts.length,mx=pts.reduce((s,p)=>s+p.t,0)/n,my=pts.reduce((s,p)=>s+p.v,0)/n;
-    let sxy=0,sxx=0;pts.forEach(p=>{sxy+=(p.t-mx)*(p.v-my);sxx+=(p.t-mx)**2});const b=sxy/sxx;trend={a:my-b*mx,b}}
-  const last=pts[pts.length-1].t,end=trend?last+60*DAY:last,at=t=>trend.a+trend.b*t;
   /* standards to draw: your goal, New Balance Nationals, and the easiest Target among your starred colleges */
   const lines=[];
   if(S.goals[ev]){const g=val(ev,S.goals[ev]);if(!isNaN(g))lines.push({v:g,l:"Goal",goal:true})}
   NATS.forEach(n=>{const m=n[S.gender==="Women"?"Women":"Men"][ev];if(m)lines.push({v:val(ev,m),l:n.short})});
   const tg=SCHOOLS.filter(x=>S.fav.includes(x.id)).map(sc=>{const st=schoolStd(sc,ev);return st&&st[0]?{v:val(ev,st[0]),l:"Target · "+sc.name}:null}).filter(x=>x&&!isNaN(x.v));
   if(tg.length)lines.push(tg.reduce((a,b)=>better(ev,a.v,b.v)?b:a));
-  const vs=pts.map(p=>p.v).concat(lines.map(l=>l.v));if(trend)vs.push(at(end));
-  let lo=Math.min(...vs),hi=Math.max(...vs);const pad=(hi-lo)*.1||Math.abs(hi)*.02||1;lo-=pad;hi+=pad;
-  const t0=pts[0].t,t1=Math.max(end,t0+DAY),W=320,H=210,L=30,R=8,T=12,B=22;
-  const x=t=>L+(t-t0)/(t1-t0)*(W-L-R),y=v=>{const f=(v-lo)/(hi-lo);return T+(E.field?1-f:f)*(H-T-B)};
-  /* each standard gets a numbered badge in the left gutter (key below the chart), nudged apart so badges never overlap */
-  const lab=lines.map(l=>({...l,y:y(l.v)})).sort((a,b)=>a.y-b.y);lab.forEach((l,i)=>{l.n=i+1;l.ty=Math.max(l.y,i?lab[i-1].ty+16:8)});
-  const path=pts.map((p,i)=>`${i?"L":"M"}${x(p.t).toFixed(1)} ${y(p.v).toFixed(1)}`).join(" ");
-  const pass=trend?lines.filter(l=>!better(ev,l.v,at(end))&&better(ev,l.v,pts.reduce((b,p)=>better(ev,p.v,b)?p.v:b,pts[0].v))):[];
-  box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(ev)} times from ${fmtDay(t0)} to ${fmtDay(last)}${trend?", trend to "+fmtDay(end):""}">
-    <line class="pc-grid" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/>
-    ${lab.map(l=>`<line class="${l.goal?"pc-goal":"pc-std"}" x1="${L}" x2="${W-R}" y1="${l.y.toFixed(1)}" y2="${l.y.toFixed(1)}"/>${Math.abs(l.ty-l.y)>1?`<line class="pc-std" x1="18" x2="${L}" y1="${l.ty.toFixed(1)}" y2="${l.y.toFixed(1)}"/>`:""}<circle class="pc-badge${l.goal?" g":""}" cx="11" cy="${l.ty.toFixed(1)}" r="7.5"/><text class="pc-bn" x="11" y="${(l.ty+3.5).toFixed(1)}" text-anchor="middle">${l.n}</text>`).join("")}
-    ${trend?`<line class="pc-trend" x1="${x(t0).toFixed(1)}" y1="${y(at(t0)).toFixed(1)}" x2="${x(end).toFixed(1)}" y2="${y(at(end)).toFixed(1)}"/>`:""}
-    <path class="pc-line" d="${path}"/>
-    ${pts.map(p=>`<circle class="pc-dot" cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="4"><title>${fmtDay(p.t)}: ${esc(fmtVal(ev,p.v))}</title></circle>`).join("")}
-    ${trend?`<circle class="pc-proj" cx="${x(end).toFixed(1)}" cy="${y(at(end)).toFixed(1)}" r="5"/>`:""}
-    <text class="pc-lbl" x="${L}" y="${H-6}">${fmtDay(t0)}</text>
-    <text class="pc-lbl" x="${W-R}" y="${H-6}" text-anchor="end">${fmtDay(t1)}${trend?" (trend)":""}</text></svg>
-    ${lab.length?`<ul class="pc-key">${lab.map(l=>`<li><span class="pc-n${l.goal?" g":""}">${l.n}</span><span class="pc-kn">${esc(l.l)}</span><b>${esc(fmtVal(ev,l.v))}</b></li>`).join("")}</ul>`:""}`;
+  const lower=!E.field,{trend,end,at,last,pass}=trendChart(box,pts,lines,{lower,fmt:v=>fmtVal(ev,v),name:ev});
   if(!trend){note.textContent=`Add ${Math.max(1,3-pts.length)} more ${ev} race${3-pts.length===1?"":"s"} on different days to see where your trend is heading.`;return}
   const month=Math.abs(trend.b*30*DAY),up=better(ev,at(last+DAY),at(last));
   note.textContent=`Trend: ${up?"getting better":"getting slower"} by about ${E.field?month.toFixed(1)+" in":month.toFixed(2)+"s"} a month. If it holds: about ${fmtVal(ev,at(end))} by ${fmtDay(end)}.`
@@ -1925,8 +2103,7 @@ function confTough(g){if(TOUGH[g])return TOUGH[g];const score=CONF.map(()=>[]);
   return TOUGH[g]={avg,rank:Object.fromEntries(order.map((ci,i)=>[ci,i+1]))}}
 function fillCollegeFilters(){const cs=document.getElementById("cConf"),ss=document.getElementById("cState");
   if(!cs.options.length){
-    cs.innerHTML=`<option value="">All conferences</option>`+DIVS.map(d=>`<optgroup label="${d}">${CONF.filter(c=>c.d===d).map(c=>c.n).sort().map(n=>`<option>${esc(n)}</option>`).join("")}</optgroup>`).join("");
-    ss.innerHTML=`<option value="">All states</option>`+[...new Set(SCHOOLS.map(s=>s.state))].sort().map(s=>`<option>${esc(s)}</option>`).join("");
+    cs.innerHTML=confOptions();ss.innerHTML=stateOptions();
     cs.onchange=()=>{cConf=cs.value;const c=CONF.find(x=>x.n===cConf);if(c&&DIVS.includes(cDiv)&&c.d!==cDiv)cDiv="All";renderColleges()};
     ss.onchange=()=>{cState=ss.value;renderColleges()}}
   cs.value=cConf;ss.value=cState}
@@ -1936,6 +2113,16 @@ function fitBadge(f){
   if(f.closest)return `<span class="badge none">${gapText(f.closest.ev,f.closest.diff)} in the ${f.closest.ev}</span>`;
   return `<span class="badge none">Not yet</span>`;
 }
+/* Shared school search (track and sport Colleges): text, division (or "Mine" = starred), conference and state. */
+function findSchools(f){return SCHOOLS.filter(sc=>{const c=CONF[sc.ci];
+    if(f.div==="Mine"&&!f.fav.includes(sc.id))return false;
+    if(DIVS.includes(f.div)&&c.d!==f.div)return false;
+    if(f.conf&&c.n!==f.conf)return false;
+    if(f.state&&sc.state!==f.state)return false;
+    if(!f.q)return true;
+    return (sc.name+" "+sc.state+" "+c.n+" "+c.d).toLowerCase().includes(f.q)})}
+function confOptions(){return `<option value="">All conferences</option>`+DIVS.map(d=>`<optgroup label="${d}">${CONF.filter(c=>c.d===d).map(c=>c.n).sort().map(n=>`<option>${esc(n)}</option>`).join("")}</optgroup>`).join("")}
+function stateOptions(){return `<option value="">All states</option>`+[...new Set(SCHOOLS.map(s=>s.state))].sort().map(s=>`<option>${esc(s)}</option>`).join("")}
 function renderColleges(){
   const list=document.getElementById("cList"),detail=document.getElementById("cDetail");
   document.querySelectorAll("#cChips button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===cDiv));
@@ -1944,13 +2131,7 @@ function renderColleges(){
   list.hidden=false;document.getElementById("cTools").hidden=false;detail.hidden=true;fillCollegeFilters();
   document.getElementById("cToughNote").hidden=cSort!=="tough";
   const q=cSearch.value.trim().toLowerCase();
-  let items=SCHOOLS.filter(sc=>{const c=CONF[sc.ci];
-    if(cDiv==="Mine"&&!S.fav.includes(sc.id))return false;
-    if(DIVS.includes(cDiv)&&c.d!==cDiv)return false;
-    if(cConf&&c.n!==cConf)return false;
-    if(cState&&sc.state!==cState)return false;
-    if(!q)return true;
-    return (sc.name+" "+sc.state+" "+c.n+" "+c.d).toLowerCase().includes(q)});
+  let items=findSchools({q,div:cDiv,conf:cConf,state:cState,fav:S.fav});
   const fits=new Map(items.map(sc=>[sc.id,schoolFit(sc)]));
   if(cSort==="fit")items.sort((a,b)=>{const fa=fits.get(a.id),fb=fits.get(b.id);const la=fa.level<0?9:fa.level,lb=fb.level<0?9:fb.level;if(la!==lb)return la-lb;const ga=fa.closest?fa.closest.g:9,gb=fb.closest?fb.closest.g:9;return ga-gb||a.name.localeCompare(b.name)});
   const T=confTough(S.gender);
@@ -2026,6 +2207,10 @@ document.getElementById("buildPlan").onclick=()=>{
 };
 mEvent.addEventListener("change",()=>{if(S&&S.meet){S.meet.event=mEvent.value;save();renderMeet();pushSync()}renderBag()});
 function hhmm(ms){return new Date(ms).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
+/* Shared timeline (track Race day and sport Game day): steps are [minutes before start, what, how], all premade. */
+function timelineHTML(start,P,label){const now=Date.now(),nowIdx=P.findIndex(p=>start+p[0]*60000>now);
+  return `<li class="plantype">Plan for: ${esc(label)}</li>`+P.map((p,i)=>{const at=start+p[0]*60000;const cls=at<=now?"done":(i===nowIdx?"now":"");
+    return `<li class="${cls}"><span class="dot"></span><div class="t">${hhmm(at)} · ${p[1]}</div><div class="w">${p[2]}</div></li>`}).join("")}
 function renderMeet(){
   remindStatus();
   const tl=document.getElementById("tl");
@@ -2034,8 +2219,7 @@ function renderMeet(){
   const st=new Date(S.meet.start);mTime.value=String(st.getHours()).padStart(2,"0")+":"+String(st.getMinutes()).padStart(2,"0");
   document.getElementById("mDate").value=`${st.getFullYear()}-${String(st.getMonth()+1).padStart(2,"0")}-${String(st.getDate()).padStart(2,"0")}`;
   const P=plan(),now=Date.now(),nowIdx=P.findIndex(p=>S.meet.start+p[0]*60000>now);
-  tl.innerHTML=`<li class="plantype">Plan for: ${PLANS[planType(S.meet.event)].label}</li>`+P.map((p,i)=>{const at=S.meet.start+p[0]*60000;const cls=at<=now?"done":(i===nowIdx?"now":"");
-    return `<li class="${cls}"><span class="dot"></span><div class="t">${hhmm(at)} · ${p[1]}</div><div class="w">${p[2]}</div></li>`}).join("");
+  tl.innerHTML=timelineHTML(S.meet.start,P,PLANS[planType(S.meet.event)].label);
   tick();
 }
 function tick(){
@@ -2117,11 +2301,10 @@ document.getElementById("stravaConnect").onclick=()=>{location.href=LANE4_WORKER
 document.getElementById("stravaSync").onclick=()=>stravaSync(false);
 document.getElementById("stravaOff").onclick=async()=>{const sid=S.strava&&S.strava.sid;S.strava=null;save();stravaUI();toast("Strava disconnected");
   if(sid)try{await fetch(LANE4_WORKER+"/strava/disconnect",{method:"POST",headers:{Authorization:"Bearer "+sid}})}catch(_){}};
-function renderBag(){
-  const b=document.getElementById("bag");
-  b.innerHTML=bagList().map((x,i)=>`<label class="check"><input type="checkbox" data-i="${i}" ${S.bag[i]?"checked":""}> ${x}</label>`).join("");
-  b.querySelectorAll("input").forEach(c=>c.onchange=()=>{S.bag[c.dataset.i]=c.checked;save()});
-}
+/* Shared packing checklist (track Race day and sport Game day): ticks live in the given object and save right away. */
+function checklist(el,items,state){el.innerHTML=items.map((x,i)=>`<label class="check"><input type="checkbox" data-i="${i}" ${state[i]?"checked":""}> ${esc(x)}</label>`).join("");
+  el.querySelectorAll("input").forEach(c=>c.onchange=()=>{state[c.dataset.i]=c.checked;save()})}
+function renderBag(){checklist(document.getElementById("bag"),bagList(),S.bag)}
 document.getElementById("resetBag").onclick=()=>{S.bag={};save();renderBag()};
 
 cSearch.oninput=()=>renderColleges();
@@ -2143,11 +2326,13 @@ document.getElementById("saveProf").onclick=()=>{
   const un=pUser.value.trim().replace(/^@/,"");
   if(un&&!/^[A-Za-z0-9_.]{3,20}$/.test(un)){pUser.focus();toast("Username: 3–20 letters, numbers, _ or .");return}S.profile={name:pName.value.trim(),grad:pGrad.value.trim(),state:pState.value.trim(),school:pSchool.value.trim(),email:pEmail.value.trim(),phone:pPhone.value.trim(),link:pLink.value.trim(),username:un,gpa:pGpa.value.trim(),test:pTest.value.trim(),major:pMajor.value.trim(),acc:[...accDraft]};if(accIn.value.trim()){S.profile.acc.push(accIn.value.trim());accIn.value=""}save();renderCard();if(cOpen)renderColleges();document.getElementById("profBox").open=false;toast("Info saved")};
 function fmtDate(d){if(!d)return"";const[y,m,dd]=d.split("-");return `${+m}/${+dd}/${y}`}
-function prLines(){return shownEvents().map(ev=>{const p=pr(ev);return p?{ev,mark:show(ev,p.mark),meet:p.meet,date:p.date}:null}).filter(Boolean)}
+function prLines(){if(curSport().id!=="track")return spPrLines();return shownEvents().map(ev=>{const p=pr(ev);return p?{ev,mark:show(ev,p.mark),meet:p.meet,date:p.date}:null}).filter(Boolean)}
+function cardGoals(){if(curSport().id!=="track"){const x=curSport(),g=spState().goals;return Object.entries(g).map(([e,m])=>[e,spFmtMark(x,m)])}return Object.entries(S.goals).map(([e,m])=>[e,show(e,m)])}
 function cardText(){const p=P(),lines=prLines();
   let t=`${p.name||BL}\n${p.grad?"Class of "+p.grad:"Class of "+BL} · ${p.school||BL}${p.state?", "+p.state:""}\n\nPRs\n`;
   t+=lines.length?lines.map(l=>`${l.ev}: ${l.mark} (${l.meet}, ${fmtDate(l.date)})`).join("\n"):BL;
-  const g=Object.entries(S.goals);if(g.length)t+=`\n\nGoals\n`+g.map(([e,m])=>`${e}: ${show(e,m)}`).join("\n");
+  const g=cardGoals();if(g.length)t+=`\n\nGoals\n`+g.map(([e,m])=>`${e}: ${m}`).join("\n");
+  if(curSport().id!=="track")t=`${curSport().name}\n`+t;
   if(p.acc&&p.acc.length)t+=`\n\nAccomplishments\n`+p.acc.map(a=>"- "+a).join("\n");
   const ac=academics(p);if(ac)t+=`\n\nAcademics: ${ac}`;
   if(p.link)t+=`\n\nResults: ${p.link}`;
@@ -2163,18 +2348,22 @@ function cardStats(){const evs=shownEvents().filter(ev=>pr(ev));let best=null,be
     natStd(ev).forEach(m2=>{const mv=val(ev,m2);if(!better(ev,mv,pv))qual=true;else{const d=Math.abs(pv-mv),rel=d/mv;if(gap==null||rel<gap.rel)gap={rel,d,ev}}})});
   return{evs,bestEv,score:best==null?"—":Math.max(0,Math.min(150,Math.round(50+50*best))),reach:reach.size,nat:qual?"✓":gap?(EVENTS[gap.ev].field?`${+gap.d.toFixed(1)}″`:gap.d.toFixed(2)):"—",natLbl:qual?"NATIONALS":"TO NATIONALS"}}
 function isVerified(ev){let v;try{v=PUB.myVerified&&PUB.myVerified[ev]}catch(_){return false};const p=pr(ev);return!!(v&&p&&String(v.mark)===String(p.mark))}
-function renderTradingCard(){
-  const el=document.getElementById("tcard");if(!el||!S)return;const p=P(),c=cardStats(),ev=c.bestEv,best=ev?pr(ev):null;
+/* The trading card is shared by every sport: src says what goes on it (trackCardSrc() for track, sportCardSrc() for the rest). */
+function trackCardSrc(){const c=cardStats(),ev=c.bestEv,best=ev?pr(ev):null;
+  return{ev,best:best?show(ev,best.mark):"—",bestLbl:"PERSONAL<br>BEST",grp:ev?PLANS[planType(ev)].label.toUpperCase():"",ver:ev&&isVerified(ev),seal:true,
+    rows:c.evs.map(e=>{const r=pr(e);return{e,mark:show(e,r.mark),meet:r.meet||"",ver:isVerified(e)}}),head:["EVENT","PR","MEET","✓"],
+    stats:[[c.score,"LANE 4 SCORE"],[c.reach||"—","COLLEGES"],[c.nat,c.natLbl]],foot:"✓ = checked by a Lane 4 admin against official results"}}
+function renderTradingCard(src){
+  const el=document.getElementById("tcard");if(!el||!S)return;src=src||(curSport().id==="track"?trackCardSrc():sportCardSrc());const p=P(),ev=src.ev;
   const parts=(p.name||"Your Name").trim().split(/\s+/);const first=parts.length>1?parts.slice(0,-1).join(" "):"",last=parts[parts.length-1];
   const ls=Math.max(7,Math.min(13.5,90/Math.max(4,last.length)));
   const photo=p.cardPhoto||p.photo;const pos=p.cardPos??30;
   const logo=document.querySelector(".brandh .logo")?document.querySelector("header.top .brandh .logo").outerHTML.replace('class="logo"','class="tlogo"'):"";
   const yr=(()=>{const d=new Date();const y=d.getMonth()>=7?d.getFullYear():d.getFullYear()-1;return `${y}–${String(y+1).slice(-2)}`})();
   const num="#"+String(Math.abs([...(p.name||"x")].reduce((a,ch)=>a*31+ch.charCodeAt(0)|0,7))%999+1).padStart(3,"0");
-  const grp=ev?PLANS[planType(ev)].label.toUpperCase():"";
-  const sub=[p.grad?"CLASS OF "+p.grad:"",grp].filter(Boolean).join(" · ");
-  const ver=ev&&isVerified(ev);
-  const rows=c.evs.map(e=>{const r=pr(e);return `<tr><td>${esc(e)}</td><td>${esc(show(e,r.mark))}</td><td>${esc((r.meet||"").slice(0,18))}</td><td class="r ${isVerified(e)?"ck":""}">${isVerified(e)?"✓":"—"}</td></tr>`}).slice(0,6).join("");
+  const sub=[p.grad?"CLASS OF "+p.grad:"",src.grp].filter(Boolean).join(" · ");
+  const ver=src.ver;
+  const rows=src.rows.map(r=>`<tr><td>${esc(r.e)}</td><td>${esc(r.mark)}</td><td>${esc((r.meet||"").slice(0,18))}</td><td class="r ${r.ver?"ck":""}">${r.ver?"✓":"—"}</td></tr>`).slice(0,6).join("");
   const acc=(p.acc||[]).slice(0,3).map(a=>`<div>★ ${esc(a)}</div>`).join("");
   el.innerHTML=`<div class="tface tfront" aria-label="Card front"><div class="tin">
     <div class="tphoto">${photo?`<img src="${photo}" alt="" style="object-position:50% ${pos}%">`:""}</div>
@@ -2183,14 +2372,14 @@ function renderTradingCard(){
     <div class="tser">LANE 4 · ${yr}</div>${ev?`<div class="tev">${esc(ev.toUpperCase())}</div>`:""}
     <div class="tname"><div class="tvn"><div class="l" style="--ls:${ls}cqw">${esc(last.toUpperCase())}</div>${first?`<div class="f">${esc(first.toUpperCase())}</div>`:""}</div></div>
     <div class="tbanner"></div><div class="tschool">${esc([(p.school||"YOUR SCHOOL").toUpperCase(),p.state?p.state.toUpperCase():""].filter(Boolean).join(" · "))}</div><div class="tsub">${esc(sub)}</div>
-    <div class="tpr"><div class="lb">PERSONAL<br>BEST</div><div class="v">${best?esc(show(ev,best.mark)):"—"}</div>
-      <div class="tseal ${ver?"":"no"}">${ver?"<b>✓</b>VERIFIED":"<b>·</b>NOT YET<br>VERIFIED"}</div></div></div></div>
+    <div class="tpr"><div class="lb">${src.bestLbl}</div><div class="v">${esc(src.best)}</div>
+      ${src.seal?`<div class="tseal ${ver?"":"no"}">${ver?"<b>✓</b>VERIFIED":"<b>·</b>NOT YET<br>VERIFIED"}</div>`:""}</div></div></div>
   <div class="tface tback" aria-label="Card back">
     <div class="tbh">${logo.replace('class="tlogo"','')}<div style="min-width:0"><div class="n">${esc((p.name||"Your Name").toUpperCase())}</div><div class="s">${esc([p.school,p.state,p.grad?"CLASS OF "+p.grad:""].filter(Boolean).join(" · ").toUpperCase())}</div></div><div class="num">${num}</div></div>
-    <div class="tstats"><div><b>${c.score}</b><span>LANE 4 SCORE</span></div><div><b>${c.reach||"—"}</b><span>COLLEGES</span></div><div><b>${c.nat}</b><span>${c.natLbl}</span></div></div>
-    <table class="ttab"><tr><th>EVENT</th><th>PR</th><th>MEET</th><th style="text-align:right">✓</th></tr>${rows||`<tr><td colspan="4">Add PRs to fill this in</td></tr>`}</table>
+    <div class="tstats">${src.stats.map(x=>`<div><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div>`).join("")}</div>
+    <table class="ttab"><tr><th>${src.head[0]}</th><th>${src.head[1]}</th><th>${src.head[2]}</th><th style="text-align:right">${src.head[3]}</th></tr>${rows||`<tr><td colspan="4">Add results to fill this in</td></tr>`}</table>
     <div class="thl">${acc}</div>
-    <div class="tfoot">✓ = checked by a Lane 4 admin against official results</div></div>`;
+    <div class="tfoot">${esc(src.foot)}</div></div>`;
   const fin=cardFinish();["holo","gold","nat"].forEach(f=>el.classList.toggle("fin-"+f,fin===f));renderFins();
   const pl=document.getElementById("cardPos"),plb=document.getElementById("cardPosLbl");pl.hidden=plb.hidden=!photo;pl.value=pos;
 }
@@ -2206,11 +2395,11 @@ document.getElementById("cardPhotoIn").onchange=e=>{const f=e.target.files[0];if
   img.onerror=()=>{URL.revokeObjectURL(url);toast("Couldn’t read that photo")};img.src=url;e.target.value=""};
 function renderCard(){renderTradingCard();const p=P(),lines=prLines(),el=document.getElementById("acard");
   document.getElementById("profBox").open=!p.name;
-  const goals=Object.entries(S.goals);
+  const goals=cardGoals();
   el.innerHTML=`<div class="top">${p.photo?`<img class="cphoto" src="${p.photo}" alt="">`:""}<div class="nm">${esc(p.name||"Your name")}</div>${p.username?`<div class="sub">@${esc(p.username)}</div>`:""}<div class="sub">${p.grad?"Class of "+esc(p.grad):"Class of —"} · ${esc(p.school||"High school")}${p.state?", "+esc(p.state):""}</div></div>
   <div class="body"><div class="lbl" style="margin-top:0">Personal bests</div>
   ${lines.length?`<table>${lines.map(l=>`<tr><td><strong>${l.ev}</strong><div class="hint" style="margin:0">${esc(l.meet)} · ${fmtDate(l.date)}</div></td><td class="m">${esc(l.mark)}</td></tr>`).join("")}</table>`:`<p class="empty">Add PRs to fill this in.</p>`}
-  ${goals.length?`<div class="lbl">Goals</div><p style="margin:0">${goals.map(([e,m])=>`${e} ${esc(show(e,m))}`).join(" · ")}</p>`:""}
+  ${goals.length?`<div class="lbl">Goals</div><p style="margin:0">${goals.map(([e,m])=>`${esc(e)} ${esc(m)}`).join(" · ")}</p>`:""}
   ${p.acc&&p.acc.length?`<div class="lbl">Accomplishments</div><ul>${p.acc.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>`:""}
   ${academics(p)?`<div class="lbl">Academics</div><p style="margin:0">${esc(academics(p))}</p>`:""}
   ${(p.link||p.email||p.phone)?`<div class="lbl">Contact</div><p style="margin:0;overflow-wrap:anywhere">${[p.email,p.phone].filter(Boolean).map(esc).join(" · ")}${p.link?`<br><a href="${esc(p.link)}" target="_blank" rel="noopener">Full results</a>`:""}</p>`:""}</div>`;
@@ -2833,10 +3022,315 @@ document.getElementById("fins").addEventListener("click",e=>{const b=e.target.cl
   if(b.getAttribute("aria-disabled")==="true"){toast("Locked: "+FINS.find(f=>f.id===b.dataset.fin).how);return}
   S.cardFin=b.dataset.fin;save();renderTradingCard()});
 
-function renderAll(){if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits();renderHomeCards();applyFlags()}
+/* ---------- Sports. Track uses the full app above. Every other sport gets the same sections (Home hub, Results & PBs,
+   Goals, Colleges, Athlete card, Game day, Training log, Team), built on the shared track helpers: trendChart(),
+   findSchools(), checklist(), timelineHTML(), renderTradingCard() and the Team screen itself.
+   Data lives in "lane4-data" under S.sport (picked sport) and S.sports[id] (see migrate()). Warm-ups, packing lists and
+   workouts are fixed, premade lists written here. No AI is used anywhere in the sports screens. ---------- */
+const SPORTS=[
+ {id:"track",name:"Track & field",ico:"🏃",c:"#C62832"},
+ {id:"swim",name:"Swimming",ico:"🏊",c:"#0B6FB8",kind:"time",ev:["50 free","100 free","200 free","500 free","1650 free","100 back","200 back","100 breast","200 breast","100 fly","200 fly","200 IM","400 IM"],unit:"Time (SCY)",day:"Meet day",wu:"swim"},
+ {id:"row",name:"Rowing",ico:"🚣",c:"#0E7C74",kind:"time",ev:["2k erg","6k erg","2k erg (lightweight)","500m erg","Single scull 2000m","Eight 2000m"],unit:"Time",day:"Race day",wu:"row"},
+ {id:"cycle",name:"Cycling",ico:"🚴",c:"#D9870B",kind:"time",ev:["Individual time trial","Road race","Kilo (track)","Individual pursuit","BMX","Mountain bike XC"],unit:"Time",day:"Race day",wu:"ride"},
+ {id:"skate",name:"Speed skating",ico:"⛸️",c:"#5B3FC4",kind:"time",ev:["500m","1000m","1500m","5000m","10000m","Short track 500m","Short track 1000m","Short track 1500m"],unit:"Time",day:"Race day",wu:"skate"},
+ {id:"tri",name:"Triathlon",ico:"🏅",c:"#E0561B",kind:"time",ev:["Sprint","Olympic distance","Swim leg","Bike leg","Run leg"],unit:"Time",day:"Race day",wu:"ride"},
+ {id:"gym",name:"Gymnastics",ico:"🤸",c:"#B0237A",kind:"num",ev:["All-around","Vault","Uneven bars","Balance beam","Floor","Pommel horse","Still rings","Parallel bars","High bar"],unit:"Score",day:"Meet day",wu:"gym"},
+ {id:"weights",name:"Weightlifting",ico:"🏋️",c:"#4A4A4A",kind:"num",ev:["Snatch","Clean & jerk","Total"],unit:"Kilograms",day:"Meet day",wu:"lift"},
+ {id:"wrestle",name:"Wrestling",ico:"🤼",c:"#8A1F1F",kind:"game",ev:["Freestyle","Greco-Roman","Folkstyle"],unit:"Result (like W 7-3)",stat:"Takedowns",day:"Match day",wu:"mat"},
+ {id:"bball",name:"Basketball",ico:"🏀",c:"#E46A12",kind:"game",ev:["Game","3x3","Scrimmage"],unit:"Result (like W 64-58)",stat:"Points",day:"Game day",wu:"court"},
+ {id:"soccer",name:"Soccer",ico:"⚽",c:"#1E8A3A",kind:"game",ev:["Game","Scrimmage","Tournament"],unit:"Result (like W 2-1)",stat:"Goals",day:"Game day",wu:"field"},
+ {id:"vball",name:"Volleyball",ico:"🏐",c:"#C79A00",kind:"game",ev:["Indoor match","Beach match","Scrimmage"],unit:"Result (like W 3-1)",stat:"Kills",day:"Game day",wu:"court"},
+ {id:"tennis",name:"Tennis",ico:"🎾",c:"#7FA400",kind:"game",ev:["Singles","Doubles","Mixed doubles"],unit:"Score (like 6-4 6-3)",stat:"Games won",day:"Match day",wu:"racquet"},
+ {id:"fence",name:"Fencing",ico:"🤺",c:"#3E4A59",kind:"game",ev:["Foil","Épée","Sabre"],unit:"Bout score (like 15-11)",stat:"Touches",day:"Tournament day",wu:"fence"}];
+const SPORT_BY={};SPORTS.forEach(x=>SPORT_BY[x.id]=x);
+/* Rough college recruiting marks by level, in seconds (swimming in SCY). Built from recruiting guides (Futures cuts as the D1 baseline,
+   Sectionals for D2/D3, NAIA near D3; rowing 2k tiers from NCSA and recruiting guides). Estimates for planning only. */
+const SPORT_STD={"swim":{"cols":["D1 Power","D1 Mid-major","D2","D3","NAIA","JUCO"],"Men":{"50 free":[20.19,21.19,21.5,22.3,22.52,23.19],"100 free":[44.33,46.43,47.5,49,49.49,50.96],"200 free":[97.52,101.87,104,108,109.08,112.32],"500 free":[265.95,273.24,285,295,297.95,306.8],"1650 free":[945.6,960,1010,1050,1060.5,1092.0],"100 back":[48.76,50.98,53,55,55.55,57.2],"200 back":[106.38,110.78,115,120,121.2,124.8],"100 breast":[54.67,57.42,59,61.5,62.12,63.96],"200 breast":[119.19,124.25,129,134,135.34,139.36],"100 fly":[47.77,50.39,52,54,54.54,56.16],"200 fly":[107.36,111.77,117,122,123.22,126.88],"200 IM":[108.35,112.76,117,121,122.21,125.84],"400 IM":[231.47,240.57,250,260,262.6,270.4]},"Women":{"50 free":[22.95,23.66,24.5,25.3,25.55,26.31],"100 free":[49.74,51.38,53,55,55.55,57.2],"200 free":[108.35,110.88,115,119,120.19,123.76],"500 free":[290.57,297.0,310,320,323.2,332.8],"1650 free":[1004.7,1020,1070,1110,1121.1,1154.4],"100 back":[54.17,55.94,58,60,60.6,62.4],"200 back":[117.22,119.79,126,130,131.3,135.2],"100 breast":[61.56,63.36,66,68.5,69.19,71.24],"200 breast":[132.97,136.62,143,148,149.48,153.92],"100 fly":[53.19,55.44,57,59.5,60.09,61.88],"200 fly":[117.22,120.78,128,132,133.32,137.28],"200 IM":[119.19,122.76,129,133,134.33,138.32],"400 IM":[252.16,261.36,275,285,287.85,296.4]}},"row":{"cols":["D1 elite","D1","D2 / mid D3","D3 / club"],"Men":{"2k erg":[375,385,395,405],"6k erg":[1155,1185,1215,1245],"2k erg (lightweight)":[385,395,405,415]},"Women":{"2k erg":[435,450,465,475],"6k erg":[1350,1395,1440,1470],"2k erg (lightweight)":[455,470,480,490]}}};
+/* which standard columns apply to a school's division */
+const SPORT_DIV={swim:{D1:[0,1],D2:[2],D3:[3],NAIA:[4]},row:{D1:[0,1],D2:[2],D3:[3],NAIA:[3]}};
+/* Rough national-meet qualifying marks (USA Swimming Futures / Winter Juniors in SCY; gymnastics Level 10 all-around). Cuts change each season. */
+const SPORT_NAT={
+ swim:{cols:["Futures","Winter Juniors"],Men:{"50 free":[21.4,20.6],"100 free":[46.9,45.1],"200 free":[102.9,98.9],"500 free":[276,267],"1650 free":[965,930],"100 back":[51.5,48.9],"200 back":[111.9,106.9],"100 breast":[58,54.9],"200 breast":[125.5,120],"100 fly":[50.9,48.9],"200 fly":[112.9,108],"200 IM":[113.9,109.5],"400 IM":[243,233]},
+       Women:{"50 free":[23.9,23],"100 free":[51.9,49.9],"200 free":[112,108],"500 free":[300,290],"1650 free":[1030,1000],"100 back":[56.5,54],"200 back":[121,116],"100 breast":[64,61],"200 breast":[138,133],"100 fly":[56,53.5],"200 fly":[122,117],"200 IM":[124,119],"400 IM":[264,253]}},
+ gym:{cols:["Regionals (L10)","J.O. Nationals (L10)"],Men:{"All-around":[70,76]},Women:{"All-around":[34,36]}}};
+/* Premade warm-ups: [minutes before the start, step, how]. Written by hand, never generated. */
+const WARMUPS={
+ swim:[[-120,"Eat a light meal","Familiar food, easy to digest."],[-75,"Arrive and check heat sheets","Find your heat and lane."],[-60,"Pool warm-up","400 easy mixed, 4×50 drill, 4×25 build, 2 race-pace 25s."],[-40,"Dryland and stretch","Arm circles, band pulls, leg swings."],[-15,"Suit up and stay warm","Parka on, sip water."],[-5,"Behind the blocks","Breathe, run through your start and first turn."]],
+ row:[[-120,"Eat a light meal","Carbs you know."],[-70,"Arrive and check the schedule","Launch time, lane, and warm-up pattern."],[-50,"Land warm-up","5 minutes easy jog or bike, dynamic stretches."],[-35,"Erg or on-water warm-up","10 minutes easy, 3×20 strokes building, 2 race-start bursts."],[-10,"At the start","Stay loose, review your race plan."]],
+ ride:[[-150,"Eat a meal","Carbs, low fiber."],[-90,"Arrive, check bike and number","Tires, brakes, gears, number pinned."],[-50,"Easy spin","15 minutes easy on the trainer or road."],[-30,"Openers","3×1 minute building to race effort, 2 minutes easy between."],[-10,"Line up","Sip water, clip in, breathe."]],
+ skate:[[-120,"Eat a light meal","Easy to digest."],[-70,"Arrive and check pairings","Heat, lane, and start time."],[-50,"Off-ice warm-up","10 minutes jog or bike, dynamic stretches, imitation drills."],[-30,"On-ice warm-up","Easy laps, then 2–3 short accelerations."],[-8,"Stay warm","Jacket on, review your opener."]],
+ gym:[[-120,"Eat a light meal","Something light and familiar."],[-75,"Arrive and check rotation","Know your first event."],[-60,"General warm-up","Jog, jumping jacks, dynamic stretches."],[-45,"Flexibility and handstands","Splits, bridges, handstand holds."],[-30,"Timed touch warm-up","Your basics on the first event, then your routine skills."],[-5,"Chalk up","Breathe and picture your routine."]],
+ lift:[[-150,"Eat a meal","Carbs and some protein."],[-90,"Weigh-in and check flights","Know your flight and opener."],[-60,"General warm-up","5 minutes bike or row, mobility for hips, ankles, shoulders."],[-40,"Bar warm-up","Empty bar technique, then build in small jumps."],[-15,"Last warm-up lift","About 90% of your opener."],[-3,"Chalk and focus","One cue, then go."]],
+ mat:[[-120,"Weigh in and eat","Light and familiar after weigh-ins."],[-60,"Check brackets","Find your mat and bout number."],[-40,"Get a sweat going","Jog, jump rope, dynamic stretches."],[-25,"Drill with a partner","Stance, motion, shots, sprawls."],[-8,"Stay warm","Headgear on, breathe."]],
+ court:[[-150,"Eat a meal","Carbs and some protein."],[-75,"Arrive and tape up","Ankles, shoes, check the court."],[-45,"Dynamic warm-up","Jog, skips, lunges, lateral shuffles."],[-30,"Ball work","Passing, shooting, or hitting lines with the team."],[-10,"Team huddle","Matchups and game plan."]],
+ field:[[-150,"Eat a meal","Carbs and some protein."],[-75,"Arrive and check the field","Cleats, shin guards, field conditions."],[-45,"Dynamic warm-up","Jog, skips, leg swings, lateral shuffles."],[-30,"Ball work","Rondos, passing patterns, shooting."],[-10,"Team talk","Positions and game plan."]],
+ racquet:[[-120,"Eat a light meal","Easy to digest."],[-60,"Check in and find your court","Know the format and your opponent."],[-40,"Dynamic warm-up","Jog, split steps, lateral shuffles, shoulder bands."],[-20,"Hitting warm-up","Mini tennis, groundstrokes, volleys, serves."],[-5,"Reset","Water, grips, breathe."]],
+ fence:[[-120,"Eat a light meal","Easy to digest."],[-70,"Check pools and strips","Know your pool and first bout."],[-50,"Footwork warm-up","Advances, retreats, lunges, jumps."],[-30,"Bout with a partner","Blade work and a few practice touches."],[-10,"Check gear","Body cord, mask, weapon test."]]};
+const BAGS={
+ swim:["Suits (race and warm-up)","Caps and two pairs of goggles","Towels","Parka or warm clothes","Water and snacks","Flip-flops"],
+ row:["Rowing kit (unisuit)","Warm layers and a rain jacket","Water and snacks","Spare socks","Tools for your rigger if you have them"],
+ cycle:["Helmet, shoes, and kit","Spare tube, pump, and tools","Bottles and race food","Number and safety pins","Trainer for warm-up"],
+ skate:["Skates and blade guards","Skinsuit and helmet","Cut-resistant gear if needed","Warm layers","Water and snacks"],
+ tri:["Wetsuit, goggles, and cap","Bike, helmet, and shoes","Running shoes and race belt","Transition towel","Bottles and race food"],
+ gym:["Leotard or competition kit","Grips and wrist supports","Tape and pre-wrap","Water and snacks","Warm-ups"],
+ weights:["Lifting shoes and singlet","Belt, wraps, and knee sleeves","Chalk","Water and snacks","ID for weigh-in"],
+ wrestle:["Singlet and shoes","Headgear","Mouthguard","Warm-ups","Water and snacks"],
+ bball:["Jersey and shorts","Basketball shoes","Ankle tape or braces","Water and snacks","Warm-ups"],
+ soccer:["Jersey, shorts, and socks","Cleats and shin guards","Water and snacks","Warm layer","Ball"],
+ vball:["Jersey and spandex","Court shoes","Knee pads","Water and snacks","Warm-ups"],
+ tennis:["Racquets (at least two)","Balls and grips","Court shoes","Water and snacks","Hat and sunscreen"],
+ fence:["Mask, jacket, and glove","Two weapons and body cords","Breeches and socks","Water and snacks","Tools and spare parts"]};
+const LOG_TYPES=["Practice","Workout","Strength","Recovery","Game or meet"];
+/* Premade workout library, one tap to log. Fixed text written here, never generated. [name, type, minutes, what] */
+const SPORT_WK={
+ swim:[["Aerobic base","Workout",75,"10×200 free on a steady interval"],["Race-pace 50s","Workout",60,"16×50 at race pace, 30s rest"],["Kick and pull","Practice",60,"8×100 kick, 8×100 pull"],["Easy recovery swim","Recovery",30,"1500 easy mixed strokes"]],
+ row:[["Steady state","Workout",60,"3×20 minutes at rate 20"],["2k pieces","Workout",60,"4×500m at 2k pace, 3 min rest"],["Strength circuit","Strength",45,"Deadlifts, rows, core"],["Easy row","Recovery",30,"30 minutes very easy"]],
+ cycle:[["Endurance ride","Workout",120,"2 hours easy, steady"],["Threshold intervals","Workout",75,"3×10 minutes at threshold"],["Sprint efforts","Workout",60,"8×15 second sprints, full rest"],["Spin recovery","Recovery",40,"Easy spin, high cadence"]],
+ skate:[["Ice laps","Practice",60,"Technique laps and starts"],["Dryland intervals","Workout",50,"Slide board and low walks"],["Leg strength","Strength",45,"Squats, lunges, jumps"],["Easy bike","Recovery",30,"Easy spin"]],
+ tri:[["Brick","Workout",90,"60 minute ride, then 20 minute run"],["Swim intervals","Workout",60,"10×100 at race pace"],["Long run","Workout",70,"Easy aerobic run"],["Recovery swim","Recovery",30,"Easy swim with drills"]],
+ gym:[["Skill practice","Practice",120,"Rotations with your coach"],["Conditioning","Workout",45,"Rope climbs, presses, core holds"],["Flexibility","Recovery",30,"Splits, bridges, shoulders"],["Routine run-throughs","Practice",90,"Full routines on each event"]],
+ weights:[["Snatch day","Workout",75,"Snatch, snatch pulls, front squat"],["Clean & jerk day","Workout",75,"Clean & jerk, clean pulls, back squat"],["Accessory work","Strength",45,"Presses, rows, core"],["Mobility","Recovery",30,"Hips, ankles, shoulders"]],
+ wrestle:[["Live wrestling","Practice",90,"Drill, then live goes"],["Conditioning","Workout",45,"Sprints, rope, partner carries"],["Strength","Strength",45,"Pull-ups, squats, grip"],["Technique only","Practice",60,"Drilling at half speed"]],
+ bball:[["Team practice","Practice",90,"Drills and scrimmage"],["Shooting workout","Workout",45,"Form, spot-ups, free throws"],["Conditioning","Workout",30,"Suicides and defensive slides"],["Strength","Strength",45,"Squats, jumps, core"]],
+ soccer:[["Team practice","Practice",90,"Possession and small-sided games"],["Finishing","Workout",45,"Shooting from both feet"],["Speed and agility","Workout",40,"Sprints, cuts, ladder"],["Recovery jog","Recovery",30,"Easy jog and stretch"]],
+ vball:[["Team practice","Practice",120,"Serve receive and scrimmage"],["Serving and passing","Workout",45,"Target serving and passing reps"],["Jump training","Workout",40,"Approach jumps and plyos"],["Strength","Strength",45,"Squats, shoulders, core"]],
+ tennis:[["Drilling","Practice",90,"Crosscourt and down-the-line patterns"],["Serve practice","Workout",45,"Basket of serves to targets"],["Match play","Practice",90,"Practice sets"],["Footwork","Workout",30,"Split steps and recovery"]],
+ fence:[["Club practice","Practice",120,"Footwork, lessons, bouts"],["Footwork","Workout",40,"Advances, lunges, fleches"],["Lesson","Practice",30,"Private lesson with your coach"],["Strength","Strength",40,"Legs and core"]]};
+let pendingSport=null,scDiv="All",scConf="",scState="",scOpen=null;
+function curSport(){return SPORT_BY[(S&&S.sport)||pendingSport||"track"]||SPORT_BY.track}
+function spState(){const id=curSport().id;if(!S.sports)S.sports={};return S.sports[id]||(S.sports[id]=spBlank())}
+function spBlank(){return{event:"",results:[],goals:{},fav:[],log:[],games:[],bag:{}}}
+function spLower(x){return x.kind==="time"}
+function spFmt(x,v){return x.kind==="time"?fmtT(v):x.kind==="num"?(+v).toFixed(2).replace(/\.00$/,""):String(+v)}
+function spVal(x,r){return x.kind==="time"?toSec(r.mark):x.kind==="num"?parseFloat(r.mark):r.stat==null||r.stat===""?NaN:+r.stat}
+function spGoalVal(x,m){return x.kind==="time"?toSec(m):parseFloat(m)}
+function spFmtMark(x,m){const v=spGoalVal(x,m);return isNaN(v)?String(m):spFmt(x,v)+(x.kind==="game"?" "+x.stat.toLowerCase():"")}
+function spBetter(x,a,b){return spLower(x)?a<b:a>b}
+function spBestR(x,ev){let b=null;spState().results.forEach(r=>{if(r.event!==ev)return;const v=spVal(x,r);if(isNaN(v))return;if(!b||spBetter(x,v,b.v))b={v,r}});return b}
+function spEvents(){const x=curSport(),st=spState(),have=new Set(st.results.map(r=>r.event).concat(Object.keys(st.goals)));return x.ev.filter(e=>have.has(e))}
+function spStd(x,g,ev){const L=SPORT_STD[x.id];return L&&L[g]&&L[g][ev]}
+function spNat(x,g,ev){const L=SPORT_NAT[x.id];return L&&L[g]&&L[g][ev]}
+function spPrLines(){const x=curSport();return spEvents().map(ev=>{const b=spBestR(x,ev);return b?{ev,mark:spFmt(x,b.v)+(x.kind==="game"?" "+x.stat.toLowerCase():""),meet:b.r.note||"",date:b.r.date}:null}).filter(Boolean)}
+/* the easiest level not reached yet */
+function spNext(row,best,hi){let k=-1;if(best==null)return-1;row.forEach((t,i)=>{if(hi?best>=t:best<=t)return;if(k<0||(hi?t<row[k]:t>row[k]))k=i});return k}
+function stdList(cols,row,best,x){const hi=!spLower(x),next=spNext(row,best,hi);
+  return`<ul class="stdm">`+row.map((t,k)=>{const ok=best!=null&&(hi?best>=t:best<=t),pct=best==null?0:Math.max(4,Math.min(100,hi?best/t*100:t/best*100)),gap=best==null?"":hi?(t-best).toFixed(2):(best-t).toFixed(2)+"s";
+    return`<li class="${ok?"ok":k===next?"next":""}"><div class="sl"><b>${esc(cols[k])}</b><span>${spFmt(x,t)}</span></div><div class="sb" role="img" aria-label="${ok?"Reached":best==null?"No result yet":gap+" to go"}"><i style="width:${pct.toFixed(0)}%"></i></div><div class="sg">${best==null?"Add a result":ok?"✓ Reached":k===next?"Next goal · "+gap+" to go":gap+" to go"}</div></li>`}).join("")+"</ul>"}
+function evSelect(el,evs,keep){const v=keep&&evs.includes(keep)?keep:evs.includes(el.value)?el.value:evs[0];el.innerHTML=evs.map(e=>`<option>${esc(e)}</option>`).join("");el.value=v;return v}
+function markHint(x){return x.kind==="time"?"Use a time like 52.31 or 1:52.40.":x.kind==="num"?"Use a number like 13.45.":"Add a result like W 7-3."}
 
-if(!S){welcome.hidden=false;S=fresh();renderAll();S=null}else{if(!S.gender)S.gender="Men";if(!S.fav)S.fav=[];renderAll()}
-const h=location.hash.slice(1);if(!/^strava/.test(h))go(["times","goals","colleges","card","meet","team"].includes(h)?h:"home","replace");
+/* picker */
+function applySport(){const x=curSport();document.documentElement.dataset.sport=x.id;document.getElementById("sportIco").textContent=x.ico;
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=x.c}
+function renderSportPick(){document.getElementById("sportGrid").innerHTML=SPORTS.map(x=>`<button data-sp="${x.id}" style="--sc:${x.c}" aria-pressed="${x.id===curSport().id}"><span aria-hidden="true">${x.ico}</span>${esc(x.name)}<small>${x.id==="track"?"Full Lane 4":SPORT_STD[x.id]?"Times + college standards":SPORT_NAT[x.id]?"Scores + national cuts":x.kind==="game"?"Results + stats":"Results + PBs"}</small></button>`).join("")}
+function openSportPick(){renderSportPick();document.getElementById("sportPick").hidden=false;const b=document.querySelector('#sportGrid [aria-pressed="true"]')||document.querySelector("#sportGrid button");b&&b.focus()}
+document.getElementById("sportGrid").onclick=e=>{const b=e.target.closest("[data-sp]");if(!b)return;const id=b.dataset.sp;
+  document.getElementById("sportPick").hidden=true;
+  if(!S){pendingSport=id;if(id!=="track"){S=fresh();S.sport=id;save();welcome.hidden=true;renderAll()}}
+  else{S.sport=id;save();renderAll()}
+  applySport();go("home","replace")};
+document.getElementById("sportBtn").onclick=openSportPick;
+
+/* home hub */
+function renderSportHub(){const x=curSport(),st=spState(),g=S.gender==="Women"?"Women":"Men",ev=st.event&&x.ev.includes(st.event)?st.event:(spEvents()[0]||x.ev[0]),b=spBestR(x,ev);
+  let nx="—";{const L=SPORT_STD[x.id]||SPORT_NAT[x.id],rw=L&&L[g]&&L[g][ev];if(rw&&b){const k=spNext(rw,b.v,!spLower(x));nx=k<0?"All ✓":L.cols[k]}}
+  document.getElementById("spHero").innerHTML=`<div class="top"><span class="em" aria-hidden="true">${x.ico}</span><div><h3>${esc(x.name)}</h3><p>${esc(ev)} · ${esc(x.kind==="game"?x.stat:x.unit)}</p></div></div><div class="st"><div><b>${b?esc(spFmt(x,b.v)):"—"}</b><span>Best</span></div><div><b>${st.results.length}</b><span>Results</span></div><div><b>${esc(nx)}</b><span>Next level</span></div></div>`;
+  const set=(id,t)=>document.getElementById(id).textContent=t,last=st.results[0],up=st.games.filter(m=>m.start>Date.now()).sort((a,b)=>a.start-b.start)[0];
+  set("hubSRes",last?`Last: ${last.event} ${last.mark}`:"Add your first result");
+  const gn=Object.keys(st.goals).length;set("hubSGoal",gn?`${gn} goal${gn===1?"":"s"} set`:"Set your targets");
+  set("hubSCol",st.fav.length?`${st.fav.length} starred`:"Find your fit");
+  set("hubSGameT",x.day);set("hubSGame",up?`${new Date(up.start).toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})} · ${up.what||"Next up"}`:"Plan your schedule");
+  set("hubSLog",st.log.length?`${st.log.length} workout${st.log.length===1?"":"s"} logged`:"Log your training");
+  set("hubSTeam",S.team?S.team.name:S.coach?"Your team":"Join or coach a team");
+  const L=spPrLines();document.getElementById("spPBs").innerHTML=L.length?L.map(l=>`<div class="entry"><div class="grow"><span class="tag pb">PB</span><span class="tag">${esc(l.ev)}</span><div class="d">${esc(l.date)}${l.meet?" · "+esc(l.meet):""}</div></div><div class="num">${esc(l.mark)}</div></div>`).join(""):`<p class="empty">Add results and your PBs show up here.</p>`}
+
+/* results & PBs */
+const srEvent=document.getElementById("srEvent"),srChartEv=document.getElementById("srChartEv");
+function renderSRes(){const x=curSport(),st=spState();const ev=evSelect(srEvent,x.ev,st.event);
+  document.getElementById("srMarkL").textContent=x.unit;const mk=document.getElementById("srMark");mk.inputMode=x.kind==="game"?"text":"decimal";
+  {const R=spStd(x,"Men",ev)||spNat(x,"Men",ev);mk.placeholder=R?spFmt(x,spLower(x)?Math.max(...R):Math.min(...R)):x.kind==="time"?"1:52.40":x.kind==="num"?"13.45":"W 7-3"}
+  document.getElementById("srStatBox").hidden=x.kind!=="game";if(x.stat)document.getElementById("srStatL").textContent=x.stat+" (for PBs)";
+  const dt=document.getElementById("srDate");if(!dt.value)dt.value=today();
+  document.getElementById("srPBh").textContent=x.kind==="game"?"Bests ("+x.stat.toLowerCase()+")":"Personal bests";
+  const L=spPrLines();document.getElementById("srPBs").innerHTML=L.length?`<table class="stdtab">${L.map(l=>`<tr><td>${esc(l.ev)}</td><td><b>${esc(l.mark)}</b></td><td class="hint">${esc(l.date)}</td></tr>`).join("")}</table>`:`<p class="empty">No PBs yet.</p>`;
+  const evs=x.ev.filter(e=>st.results.some(r=>r.event===e&&!isNaN(spVal(x,r))));const box=document.getElementById("srChart"),note=document.getElementById("srChartNote");
+  srChartEv.hidden=!evs.length;
+  if(!evs.length){box.innerHTML="";note.textContent=x.kind==="game"?`Add results with ${x.stat.toLowerCase()} to see your progress chart.`:"Add results with dates and your progress chart shows up here."}
+  else{const ce=evSelect(srChartEv,evs,evs.includes(ev)?ev:null);spChart(box,note,ce)}
+  const list=st.results;document.getElementById("srList").innerHTML=list.length?list.map((r,i)=>{const b=spBestR(x,r.event),pb=b&&b.r===r;
+    return`<div class="entry"><div class="grow"><div>${pb?'<span class="tag pb">PB</span>':""}<span class="tag">${esc(r.event)}</span></div><div class="d">${esc(r.date)}${r.note?" · "+esc(r.note):""}</div></div><div class="num">${esc(r.mark)}${x.kind==="game"&&r.stat!=null&&r.stat!==""?`<div class="hint" style="margin:0">${esc(r.stat)} ${esc(x.stat.toLowerCase())}</div>`:""}</div><button class="x" data-srdel="${i}" aria-label="Delete result">✕</button></div>`}).join(""):`<p class="empty">No results yet.</p>`}
+/* the shared chart with this sport's goal and the easiest standard as lines */
+function spChart(box,note,ev){const x=curSport(),st=spState(),g=S.gender==="Women"?"Women":"Men";
+  const pts=st.results.filter(r=>r.event===ev).map(r=>({t:Date.parse(r.date),v:spVal(x,r)})).filter(p=>!isNaN(p.t)&&!isNaN(p.v)).sort((a,b)=>a.t-b.t);
+  if(!pts.length){box.innerHTML="";note.textContent="Add a result for this event to see a projection.";return}
+  const lines=[];if(st.goals[ev]){const v=spGoalVal(x,st.goals[ev]);if(!isNaN(v))lines.push({v,l:"Goal",goal:true})}
+  const sd=spStd(x,g,ev);if(sd){const k=SPORT_STD[x.id].cols.length-1;lines.push({v:sd[k],l:SPORT_STD[x.id].cols[k]})}
+  const nt=spNat(x,g,ev);if(nt)lines.push({v:nt[0],l:SPORT_NAT[x.id].cols[0]});
+  const {trend,end,at,last,pass}=trendChart(box,pts,lines,{lower:spLower(x),fmt:v=>spFmt(x,v),name:ev});
+  if(!trend){note.textContent=`Add ${Math.max(1,3-pts.length)} more ${ev} result${3-pts.length===1?"":"s"} on different days to see where your trend is heading.`;return}
+  const up=spBetter(x,at(last+DAY),at(last));
+  note.textContent=`Trend: ${up?"getting better":"not improving yet"}. If it holds: about ${spFmt(x,at(end))} by ${fmtDay(end)}.`+(pass.length?` That would reach ${pass.map(l=>l.goal?"your goal":l.l).join(" and ")}.`:"")+" It’s a straight line through your own results, so treat it as a rough guide."}
+srEvent.onchange=()=>{spState().event=srEvent.value;save();renderSRes()};
+srChartEv.onchange=()=>spChart(document.getElementById("srChart"),document.getElementById("srChartNote"),srChartEv.value);
+document.getElementById("srAdd").onclick=()=>{const x=curSport(),m=document.getElementById("srMark").value.trim(),msg=document.getElementById("srMsg"),sv=document.getElementById("srStat").value.trim();
+  if(!m){msg.textContent="Add a result first.";return}
+  if(x.kind!=="game"&&!(spVal(x,{mark:m})>0)){msg.textContent=markHint(x);return}
+  if(x.kind==="game"&&sv&&!(+sv>=0)){msg.textContent=`${x.stat} should be a number.`;return}
+  const st=spState(),r={event:srEvent.value,mark:m.slice(0,40),date:document.getElementById("srDate").value||today(),note:document.getElementById("srNote").value.trim().slice(0,80)};
+  if(x.kind==="game"&&sv)r.stat=+sv;
+  const before=spBestR(x,r.event);st.results.unshift(r);st.results.sort((a,b)=>b.date.localeCompare(a.date));st.event=r.event;save();
+  const after=spBestR(x,r.event);msg.textContent=after&&after.r===r&&before?"New PB! Saved.":"Saved.";
+  ["srMark","srNote","srStat"].forEach(i=>document.getElementById(i).value="");renderAll()};
+document.getElementById("srList").onclick=e=>{const b=e.target.closest("[data-srdel]");if(!b)return;spState().results.splice(+b.dataset.srdel,1);save();renderAll()};
+
+/* goals */
+const sgEvent=document.getElementById("sgEvent");
+function renderSGoal(){const x=curSport(),st=spState(),ev=evSelect(sgEvent,x.ev,st.event);
+  document.getElementById("sgMarkL").textContent=x.kind==="game"?"Goal ("+x.stat.toLowerCase()+")":"Goal "+x.unit.toLowerCase();
+  const mk=document.getElementById("sgMark");mk.inputMode="decimal";mk.placeholder=x.kind==="time"?"1:50.00":x.kind==="num"?"14.00":"20";mk.value=st.goals[ev]||"";
+  spChart(document.getElementById("sgChart"),document.getElementById("sgNote"),ev);
+  const g=Object.entries(st.goals);document.getElementById("sgList").innerHTML=g.length?g.map(([e,m])=>{const b=spBestR(x,e),gv=spGoalVal(x,m);let bar="";
+    if(b&&!isNaN(gv)){const start=spLower(x)?gv*1.15:gv*.7;let pct=spLower(x)?(start-b.v)/(start-gv):(b.v-start)/(gv-start);pct=Math.max(0,Math.min(1,pct));
+      bar=`<div class="bar" role="progressbar" aria-valuenow="${Math.round(pct*100)}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(e)} goal progress"><i style="width:${pct*100}%"></i></div><div class="hint" style="margin:0 0 4px">${Math.round(pct*100)}% of the way</div>`}
+    return`<div class="goalrow"><div class="goalhead"><h3 style="margin:0">${esc(e)}</h3><span class="num">${esc(spFmtMark(x,m))}</span></div><div class="hint" style="margin:0">Best: ${b?esc(spFmt(x,b.v)):"—"}</div>${bar}<button class="linkbtn" data-sgdel="${esc(e)}">Remove goal</button></div>`}).join(""):`<p class="empty">No goals yet.</p>`}
+sgEvent.onchange=()=>{spState().event=sgEvent.value;save();renderSGoal()};
+document.getElementById("sgSave").onclick=()=>{const x=curSport(),m=document.getElementById("sgMark").value.trim(),msg=document.getElementById("sgMsg");
+  if(!(spGoalVal(x,m)>0)){msg.textContent=x.kind==="game"?"Use a number, like 20.":markHint(x);return}
+  spState().goals[sgEvent.value]=m.slice(0,20);save();msg.textContent="Goal saved.";renderAll()};
+document.getElementById("sgList").onclick=e=>{const b=e.target.closest("[data-sgdel]");if(!b)return;delete spState().goals[b.dataset.sgdel];save();renderAll()};
+
+/* colleges: the same school list and filters as track, compared against this sport's standards by division */
+const scSearch=document.getElementById("scSearch"),scEventSel=document.getElementById("sclEvent");
+function spFit(x,sc,ev){const g=S.gender==="Women"?"Women":"Men",row=spStd(x,g,ev),idx=SPORT_DIV[x.id]&&SPORT_DIV[x.id][CONF[sc.ci].d],b=spBestR(x,ev);
+  if(!row||!idx)return null;const lv=idx.map(i=>({c:SPORT_STD[x.id].cols[i],t:row[i]}));if(!b)return{lv,state:"none"};
+  const ok=lv.filter(l=>spLower(x)?b.v<=l.t:b.v>=l.t);return{lv,best:b.v,state:ok.length?"in":"out",gap:Math.min(...lv.map(l=>Math.abs(b.v-l.t)))}}
+function renderSCol(){const x=curSport(),st=spState(),list=document.getElementById("scList"),det=document.getElementById("scDetail");
+  const cs=document.getElementById("scConf"),ss=document.getElementById("scState");if(!cs.options.length){cs.innerHTML=confOptions();ss.innerHTML=stateOptions()}cs.value=scConf;ss.value=scState;
+  document.getElementById("scGen").value=S.gender==="Women"?"Women":"Men";
+  const hasStd=!!SPORT_STD[x.id];scEventSel.parentNode.hidden=document.getElementById("scGen").parentNode.hidden=!hasStd;const ev=evSelect(scEventSel,x.ev,st.event);
+  document.querySelectorAll("#scChips button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===scDiv));
+  document.getElementById("scSrc").textContent=(hasStd?"Standards are rough recruiting estimates by level, not official cuts. ":"Lane 4 doesn’t have college standards for "+x.name.toLowerCase()+" yet, so compare with each school’s roster and coaches. ")+"The school list is Lane 4’s college list, so check that each school has a "+x.name.toLowerCase()+" team.";
+  if(scOpen){const sc=SCHOOLS.find(s=>s.id===scOpen);list.hidden=document.getElementById("scTools").hidden=true;det.hidden=false;const c=CONF[sc.ci],fav=st.fav.includes(sc.id);
+    const g=S.gender==="Women"?"Women":"Men",idx=SPORT_DIV[x.id]&&SPORT_DIV[x.id][c.d];
+    const rows=hasStd&&idx?spEvents().concat(x.ev).filter((e,i,a)=>a.indexOf(e)===i).filter(e=>spStd(x,g,e)).slice(0,8).map(e=>{const row=spStd(x,g,e),b=spBestR(x,e);return`<h3 style="margin:14px 0 4px">${esc(e)}${b?` <span class="hint">· your best ${esc(spFmt(x,b.v))}</span>`:""}</h3>`+stdList(idx.map(i=>SPORT_STD[x.id].cols[i]),idx.map(i=>row[i]),b?b.v:null,x)}).join(""):`<p class="hint">No ${esc(x.name.toLowerCase())} standards to compare yet.</p>`;
+    det.innerHTML=`<button class="ghost" id="scBack">‹ All colleges</button><div class="panel" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><h2 style="margin:0">${esc(sc.name)}</h2><p class="hint" style="margin:2px 0 0">${c.d} · ${esc(c.n)} · ${esc(sc.state)}</p></div><button class="fav ${fav?"on":""}" data-scfav="${esc(sc.id)}" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>${rows}</div>`;
+    document.getElementById("scBack").onclick=()=>{scOpen=null;renderSCol()};return}
+  list.hidden=document.getElementById("scTools").hidden=false;det.hidden=true;
+  const items=findSchools({q:scSearch.value.trim().toLowerCase(),div:scDiv,conf:scConf,state:scState,fav:st.fav}).sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById("scCount").textContent=`${items.length} college${items.length===1?"":"s"}`;
+  list.innerHTML=items.length?items.slice(0,150).map(sc=>{const c=CONF[sc.ci],fav=st.fav.includes(sc.id),f=hasStd?spFit(x,sc,ev):null;
+    const badge=!f?"":f.state==="none"?"":f.state==="in"?`<span class="badge lv0">✓ In range for the ${esc(ev)}</span>`:`<span class="badge none">${spLower(x)?f.gap.toFixed(2)+"s":f.gap.toFixed(2)} to go in the ${esc(ev)}</span>`;
+    return`<div class="crow"><button class="cmain" data-scid="${esc(sc.id)}"><span class="cname">${esc(sc.name)}</span><span class="cmeta">${c.d} · ${esc(c.n)} · ${sc.state}</span>${badge}</button><button class="fav ${fav?"on":""}" data-scfav="${esc(sc.id)}" aria-pressed="${fav}" aria-label="${fav?"Remove from":"Add to"} my colleges">${fav?"★":"☆"}</button></div>`}).join("")+(items.length>150?`<p class="hint">Showing 150. Search or filter to narrow it down.</p>`:""):`<p class="empty" style="padding:8px 0">No colleges match.</p>`}
+document.getElementById("v-scol").addEventListener("click",e=>{const o=e.target.closest("[data-scid]");if(o){scOpen=o.dataset.scid;renderSCol();window.scrollTo(0,0);return}
+  const f=e.target.closest("[data-scfav]");if(f){const st=spState(),i=st.fav.indexOf(f.dataset.scfav);if(i>=0)st.fav.splice(i,1);else st.fav.push(f.dataset.scfav);save();renderSCol();renderSportHub();toast(i>=0?"Removed from my colleges":"Added to my colleges")}});
+scSearch.oninput=()=>renderSCol();
+document.querySelectorAll("#scChips button").forEach(b=>b.onclick=()=>{scDiv=b.dataset.d;renderSCol()});
+document.getElementById("scConf").onchange=e=>{scConf=e.target.value;renderSCol()};document.getElementById("scState").onchange=e=>{scState=e.target.value;renderSCol()};
+scEventSel.onchange=()=>{spState().event=scEventSel.value;save();renderSCol()};
+document.getElementById("scGen").onchange=e=>{S.gender=e.target.value;save();renderAll()};
+
+/* athlete card: the shared trading card, filled from this sport */
+function sportCardSrc(){const x=curSport(),st=spState(),L=spPrLines(),g=S.gender==="Women"?"Women":"Men";
+  const ev=st.event&&L.some(l=>l.ev===st.event)?st.event:L[0]?L[0].ev:null,b=ev?spBestR(x,ev):null;
+  let nx="—";{const Lv=SPORT_STD[x.id]||SPORT_NAT[x.id],rw=Lv&&Lv[g]&&ev&&Lv[g][ev];if(rw&&b){const k=spNext(rw,b.v,!spLower(x));nx=k<0?"ALL ✓":Lv.cols[k]}}
+  return{ev,best:b?spFmt(x,b.v):"—",bestLbl:x.kind==="game"?"BEST<br>"+x.stat.toUpperCase():"PERSONAL<br>BEST",grp:x.name.toUpperCase(),ver:false,seal:false,
+    rows:L.map(l=>({e:l.ev,mark:l.mark,meet:l.meet,ver:false})),head:["EVENT",x.kind==="game"?"BEST":"PB","WHERE",""],
+    stats:[[st.results.length,"RESULTS"],[st.fav.length||"—","COLLEGES"],[nx,"NEXT LEVEL"]],foot:`${x.ico} Lane 4 · ${x.name}`}}
+
+/* highlight footage: kept on this device in IndexedDB (videos are too big for the account), one list per sport */
+const FT={db:null,urls:[]};
+function ftDB(){return FT.db||(FT.db=new Promise((ok,no)=>{try{const r=indexedDB.open("lane4-footage",1);r.onupgradeneeded=()=>r.result.createObjectStore("clips",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}}))}
+async function ftTx(mode,fn){const db=await ftDB();return new Promise((ok,no)=>{const t=db.transaction("clips",mode),q=fn(t.objectStore("clips"));t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>no(t.error)})}
+let ftClips=[];
+async function renderFootage(){const el=document.getElementById("ftGrid");if(!el)return;let all=[];try{all=await ftTx("readonly",s=>s.getAll())}catch(_){el.innerHTML='<p class="hint">Footage can’t be saved in this browser.</p>';return}
+  FT.urls.forEach(u=>URL.revokeObjectURL(u));FT.urls=[];ftClips=all.filter(c=>c.sport===curSport().id).sort((a,b)=>b.at-a.at);
+  el.innerHTML=ftClips.length?ftClips.map(c=>{const u=URL.createObjectURL(c.blob);FT.urls.push(u);
+    return`<figure>${c.type.startsWith("video")?`<video src="${u}" controls playsinline preload="metadata"></video>`:`<img src="${u}" alt="${esc(c.name)}">`}<figcaption><span>${esc(new Date(c.at).toLocaleDateString())}</span><span><button class="linkbtn" data-ftshare="${c.id}">Share</button> <button class="linkbtn" data-ftdel="${c.id}" aria-label="Delete footage">Delete</button></span></figcaption></figure>`}).join(""):`<p class="hint" style="margin:0">No highlights yet.</p>`}
+document.getElementById("ftIn").onchange=async e=>{const files=[...e.target.files];e.target.value="";let n=0;
+  for(const f of files){if(!/^(video|image)\//.test(f.type))continue;if(f.size>500*1024*1024){toast("That file is over 500 MB.");continue}
+    try{await ftTx("readwrite",s=>s.put({id:Date.now()+"-"+Math.random().toString(36).slice(2,8),sport:curSport().id,name:f.name.slice(0,80),type:f.type,blob:f,at:Date.now()}));n++}catch(_){toast("Not enough room on this device.")}}
+  if(n)toast(n===1?"Highlight saved.":n+" clips saved.");renderFootage()};
+document.getElementById("ftGrid").onclick=async e=>{const d=e.target.closest("[data-ftdel]"),sh=e.target.closest("[data-ftshare]");
+  if(d){try{await ftTx("readwrite",s=>s.delete(d.dataset.ftdel))}catch(_){}renderFootage();return}
+  if(sh){const c=ftClips.find(k=>k.id===sh.dataset.ftshare);if(!c)return;const file=new File([c.blob],c.name||"highlight",{type:c.type});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:"My highlight",text:cardText()})}catch(_){}}else toast("This browser can’t share videos. Save it from your camera roll instead.")}};
+
+/* game / meet day: schedule, premade warm-up for the next start, packing list */
+function renderSGame(){const x=curSport(),st=spState(),now=Date.now();
+  document.getElementById("gmWhatL").textContent=x.kind==="game"?"Opponent":"Meet or race";const gd=document.getElementById("gmDate");if(!gd.value)gd.value=today();
+  const list=[...st.games].sort((a,b)=>a.start-b.start),next=list.find(m=>m.start+3*3600e3>now);
+  document.getElementById("gmList").innerHTML=list.length?list.map(m=>`<div class="entry"><div class="grow"><b>${esc(m.what||x.day)}</b><div class="d">${new Date(m.start).toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})} · ${hhmm(m.start)}${m.where?" · "+esc(m.where):""}</div></div>${m===next?'<span class="tag pb">Next</span>':m.start<now?'<span class="tag">Done</span>':""}<button class="x" data-gmdel="${st.games.indexOf(m)}" aria-label="Remove">✕</button></div>`).join(""):`<p class="empty">Nothing on your schedule yet.</p>`;
+  const W=WARMUPS[x.wu]||[];document.getElementById("sgTl").innerHTML=next?timelineHTML(next.start,W,x.name+" warm-up"):`<li class="plantype">Plan for: ${esc(x.name)} warm-up</li>`+W.map(p=>`<li><span class="dot"></span><div class="t">${-p[0]} min before · ${p[1]}</div><div class="w">${p[2]}</div></li>`).join("");
+  checklist(document.getElementById("sgBag"),BAGS[x.id]||[],st.bag);sgTick()}
+function sgTick(){if(!S||curSport().id==="track")return;const st=spState(),now=Date.now(),next=[...st.games].sort((a,b)=>a.start-b.start).find(m=>m.start+3*3600e3>now),clk=document.getElementById("sgClock");
+  if(!next){document.getElementById("sgBEvent").textContent="Add your next one below";clk.textContent="--:--:--";document.getElementById("sgBNext").innerHTML="&nbsp;";return}
+  document.getElementById("sgBEvent").textContent=`${next.what||curSport().day} · ${hhmm(next.start)}`;const diff=next.start-now;
+  if(diff<=0){clk.textContent="GO";document.getElementById("sgBNext").textContent="Good luck. Add your result after.";return}
+  const s=Math.floor(diff/1000),dd=Math.floor(s/86400);clk.classList.toggle("days",dd>0);clk.textContent=(dd?dd+"d ":"")+[Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,"0")).join(":");
+  const W=WARMUPS[curSport().wu]||[],nx=W.find(p=>next.start+p[0]*60000>now);document.getElementById("sgBNext").textContent=nx?`Next: ${nx[1]} at ${hhmm(next.start+nx[0]*60000)}`:"Warm-up done. You’re ready."}
+setInterval(()=>{if(curView==="sgame")sgTick()},1000);
+document.getElementById("gmAdd").onclick=()=>{const ds=document.getElementById("gmDate").value,t=document.getElementById("gmTime").value||"10:00",msg=document.getElementById("gmMsg");
+  if(!ds){msg.textContent="Pick a date.";return}const[h,m]=t.split(":").map(Number),d=new Date(+ds.slice(0,4),+ds.slice(5,7)-1,+ds.slice(8,10),h,m);
+  spState().games.push({start:d.getTime(),what:document.getElementById("gmWhat").value.trim().slice(0,60),where:document.getElementById("gmWhere").value.trim().slice(0,60)});save();
+  document.getElementById("gmWhat").value=document.getElementById("gmWhere").value="";msg.textContent="Added.";renderAll()};
+document.getElementById("gmList").onclick=e=>{const b=e.target.closest("[data-gmdel]");if(!b)return;spState().games.splice(+b.dataset.gmdel,1);save();renderAll()};
+document.getElementById("sgResetBag").onclick=()=>{spState().bag={};save();renderSGame()};
+
+/* training log */
+function renderSLog(){const x=curSport(),st=spState(),ty=document.getElementById("slType");if(!ty.options.length)ty.innerHTML=LOG_TYPES.map(t=>`<option>${t}</option>`).join("");
+  const sd=document.getElementById("slDate");if(!sd.value)sd.value=today();
+  document.getElementById("slLib").innerHTML=(SPORT_WK[x.id]||[]).map((w,i)=>`<div class="entry"><div class="grow"><b>${esc(w[0])}</b> <span class="tag">${esc(w[1])}</span><div class="d">${w[2]} min · ${esc(w[3])}</div></div><button class="ghost" data-slpick="${i}">Use</button></div>`).join("");
+  document.getElementById("slList").innerHTML=st.log.length?st.log.map((e,i)=>`<div class="entry"><div class="grow"><span class="tag">${esc(e.type)}</span><span class="d">${esc(e.date)}${e.mins?" · "+e.mins+" min":""} · felt ${e.feel}/5</span><div>${esc(e.note||"")}</div></div><button class="x" data-sldel="${i}" aria-label="Delete workout">✕</button></div>`).join(""):`<p class="empty">No workouts yet.</p>`}
+document.getElementById("slLib").onclick=e=>{const b=e.target.closest("[data-slpick]");if(!b)return;const w=SPORT_WK[curSport().id][+b.dataset.slpick];
+  document.getElementById("slType").value=w[1];document.getElementById("slMin").value=w[2];document.getElementById("slNote").value=w[0]+": "+w[3];window.scrollTo(0,0);toast("Filled in. Change anything, then save.")};
+document.getElementById("slSave").onclick=()=>{const mins=parseInt(document.getElementById("slMin").value,10);
+  spState().log.unshift({date:document.getElementById("slDate").value||today(),type:document.getElementById("slType").value,mins:mins>0&&mins<1000?mins:undefined,feel:+document.getElementById("slFeel").value,note:document.getElementById("slNote").value.trim().slice(0,140)});
+  spState().log.sort((a,b)=>b.date.localeCompare(a.date));save();document.getElementById("slNote").value=document.getElementById("slMin").value="";toast("Workout saved");renderAll()};
+document.getElementById("slList").onclick=e=>{const b=e.target.closest("[data-sldel]");if(!b)return;spState().log.splice(+b.dataset.sldel,1);save();renderAll()};
+
+/* Settings: S.openSport ("" = the sport you used last) is the sport Lane 4 always opens to */
+function fillOpenSport(){const el=document.getElementById("openSport");el.innerHTML=`<option value="">The sport I used last</option>`+SPORTS.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");el.value=(S&&S.openSport)||""}
+document.getElementById("openSport").onchange=e=>{if(!S)return;S.openSport=SPORT_BY[e.target.value]?e.target.value:"";if(S.openSport){S.sport=S.openSport}save();renderAll();go("home","replace");toast(S.openSport?"Lane 4 will open to "+curSport().name:"Lane 4 will open to your last sport")};
+/* ---------- Daily check-in (all sports): sleep, soreness, energy, stress, mood on 1–5 taps. Readiness 1–9 is a fixed average,
+   not AI, and never leaves the device except in your own backup or account save. S.wellness = [{date,sleep,sore,energy,stress,mood}]. ---------- */
+const CK=[["sleep","Sleep",["<5h","5–6h","6–7h","7–8h","8h+"]],["sore","Soreness",["None","Light","Some","Sore","Very"]],["energy","Energy",["1","2","3","4","5"]],["stress","Stress",["1","2","3","4","5"]],["mood","Mood",["1","2","3","4","5"]]];
+let ckDraft={};
+function ckScore(w){const v=[w.sleep,6-w.sore,w.energy,6-w.stress,w.mood];if(v.some(x=>!(x>=1)))return null;return Math.round(1+(v.reduce((a,b)=>a+b,0)/5-1)*2)}
+function ckWord(n){return n>=8?"Ready to go":n>=6?"Good":n>=4?"Take it a bit easier":"Rest and recover"}
+function renderCheckins(){if(!S)return;const W=S.wellness||(S.wellness=[]),t=W.find(w=>w.date===today());
+  document.querySelectorAll("[data-ck]").forEach(el=>{
+    if(t&&!ckDraft.edit){const n=ckScore(t),last=W.slice(0,14).reverse();
+      el.innerHTML=`<h3>Today’s check-in</h3><div class="ckscore"><b>${n}</b><div><strong>${ckWord(n)}</strong><div class="hint" style="margin:0">Readiness out of 9 · from your own answers</div></div></div><div class="ckspark" role="img" aria-label="Readiness for the last ${last.length} check-ins">${last.map(w=>`<i style="height:${ckScore(w)/9*100}%" title="${w.date}: ${ckScore(w)}"></i>`).join("")}</div><button class="linkbtn" data-ckedit>Change today’s answers</button>`;return}
+    const d=ckDraft.v||(ckDraft.v=t?{...t}:{});
+    el.innerHTML=`<h3>How do you feel today?</h3>`+CK.map(([k,l,o])=>`<div class="ckrow"><span>${l}</span><div class="seg" role="group" aria-label="${l}">${o.map((x,i)=>`<button data-ck-k="${k}" data-ck-v="${i+1}" aria-pressed="${d[k]===i+1}">${x}</button>`).join("")}</div></div>`).join("")+`<button class="go" data-cksave>Save check-in</button>`})}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-ck-k],[data-cksave],[data-ckedit]");if(!b||!S)return;
+  if(b.dataset.ckedit!=null){ckDraft={edit:true};renderCheckins();return}
+  if(b.dataset.ckK){ckDraft.v=ckDraft.v||{};ckDraft.v[b.dataset.ckK]=+b.dataset.ckV;ckDraft.edit=true;renderCheckins();return}
+  const v=ckDraft.v||{};if(CK.some(([k])=>!v[k])){toast("Answer all five first");return}
+  S.wellness=(S.wellness||[]).filter(w=>w.date!==today());S.wellness.unshift({date:today(),sleep:v.sleep,sore:v.sore,energy:v.energy,stress:v.stress,mood:v.mood});S.wellness=S.wellness.slice(0,120);
+  ckDraft={};save();renderCheckins();toast("Check-in saved")});
+/* weekly training load: minutes × how hard it felt (a session-RPE style number), from the sport's log */
+function renderSLoad(){const st=spState(),days=[...Array(7)].map((_,i)=>today(i-6));
+  const by=days.map(d=>st.log.filter(e=>e.date===d).reduce((a,e)=>a+(e.mins||0)*(e.feel||3),0)),mins=days.map(d=>st.log.filter(e=>e.date===d).reduce((a,e)=>a+(e.mins||0),0));
+  const prev=[...Array(7)].map((_,i)=>today(i-13)).map(d=>st.log.filter(e=>e.date===d).reduce((a,e)=>a+(e.mins||0)*(e.feel||3),0)).reduce((a,b)=>a+b,0),tot=by.reduce((a,b)=>a+b,0),mx=Math.max(...by,1);
+  let streak=0;for(let i=0;;i++){if(st.log.some(e=>e.date===today(-i)))streak++;else if(i>0)break;if(i>365)break}
+  const ch=prev?Math.round((tot-prev)/prev*100):null;
+  document.getElementById("slLoad").innerHTML=`<div class="ldbars" role="img" aria-label="Training load for the last 7 days">${by.map((v,i)=>`<div><i style="height:${v/mx*100}%"></i>${new Date(days[i]+"T12:00").toLocaleDateString([],{weekday:"narrow"})}</div>`).join("")}</div>
+   <p class="hint" style="margin:0">${mins.reduce((a,b)=>a+b,0)} min this week · load ${tot}${ch!=null?` · ${ch>=0?"+":""}${ch}% vs last week`:""} · ${streak}-day streak</p>${ch!=null&&ch>30?`<p class="hint" style="margin:4px 0 0">That’s a big jump from last week. Big jumps can raise injury risk, so check with your coach.</p>`:""}`}
+/* recruiting tracker, per sport: S.sports[id].recruit = [{school,status,note,date}] */
+function renderRecruit(){const st=spState(),R=st.recruit||(st.recruit=[]);
+  document.getElementById("rcSchools").innerHTML=st.fav.map(f=>`<option value="${esc(f)}">`).join("");
+  document.getElementById("rcList").innerHTML=R.length?R.map((r,i)=>`<div class="entry"><div class="grow"><b>${esc(r.school)}</b> <span class="tag${r.status==="Offer"?" pb":""}">${esc(r.status)}</span><div class="d">${esc(r.date)}${r.note?" · "+esc(r.note):""}</div></div><button class="x" data-rcdel="${i}" aria-label="Remove">✕</button></div>`).join(""):`<p class="empty" style="margin-top:8px">No coaches tracked yet.</p>`}
+document.getElementById("rcAdd").onclick=()=>{const sc=document.getElementById("rcSchool").value.trim();if(!sc){toast("Add a school");return}
+  const st=spState();st.recruit=(st.recruit||[]).filter(r=>r.school!==sc);st.recruit.unshift({school:sc.slice(0,60),status:document.getElementById("rcStatus").value,note:document.getElementById("rcNote").value.trim().slice(0,100),date:today()});
+  document.getElementById("rcSchool").value=document.getElementById("rcNote").value="";save();renderRecruit();toast("Saved")};
+document.getElementById("rcList").onclick=e=>{const b=e.target.closest("[data-rcdel]");if(!b)return;spState().recruit.splice(+b.dataset.rcdel,1);save();renderRecruit()};
+function renderSportAll(){fillOpenSport();renderCheckins();applySport();renderFootage();if(!S||curSport().id==="track")return;renderSportHub();renderSRes();renderSGoal();renderSCol();renderSGame();renderSLog();renderSLoad();renderRecruit()}
+function renderAll(){renderSportAll();if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits();renderHomeCards();applyFlags();if(S&&curSport().id!=="track"){TITLES.sgame=curSport().day;if(curView==="sgame")document.getElementById("secTitle").textContent=TITLES.sgame}}
+
+if(S&&SPORT_BY[S.openSport])S.sport=S.openSport;
+if(!S){welcome.hidden=false;S=fresh();renderAll();S=null;openSportPick()}else{if(!S.gender)S.gender="Men";if(!S.fav)S.fav=[];renderAll()}
+const h=location.hash.slice(1);if(!/^strava/.test(h))go(["times","goals","colleges","card","meet","team","sres","sgoal","scol","sgame","slog"].includes(h)?h:"home","replace");
 /* back from Strava's sign-in page: the Worker sends #strava=<session id> or #strava-error=<why> */
 (function stravaReturn(){const ok=location.hash.match(/^#strava=([\w-]{20,})$/),bad=location.hash.match(/^#strava-error=(\w+)$/);
   if(ok||bad)history.replaceState(null,"",location.pathname+location.search);
@@ -2853,7 +3347,7 @@ function maybeNotes(){let seen=null;try{seen=localStorage.getItem("lane4-notes")
   document.getElementById("notesSoon").innerHTML=[...document.querySelectorAll("#comingSheet .coming .ci")].map(c=>c.outerHTML).join("");
   openSheet("notesSheet")}
 function autoRoute(){
-  if(!S||!document.getElementById("welcome").hidden||S.races.length)return;
+  if(!S||!document.getElementById("welcome").hidden||S.races.length||curSport().id!=="track")return;
   go("times");
   const m=document.getElementById("addMsg");m.textContent="Add your first race time, or paste your results below, to get started.";
   document.getElementById("rMark").focus({preventScroll:true});
@@ -2861,6 +3355,7 @@ function autoRoute(){
 autoRoute();maybeNotes();
 setSync("checking");initCloud();
 </script>
+
 <script type="module" src="lane4-firebase.js"></script>
 </body>
 </html>
