@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
-<title>Lane 4 — Track & Field Recruiting</title>
+<title>Lane 4 — Every sport. Every stat. Your shot.</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lane 4">
-<meta property="og:title" content="Lane 4 — Track & Field Recruiting">
-<meta property="og:description" content="Track your PRs, compare them to college and nationals standards, and plan race day.">
+<meta property="og:title" content="Lane 4 — Every sport. Every stat. Your shot.">
+<meta property="og:description" content="Training programs, full game stats and college recruiting for 14 sports. Free, no ads.">
 <meta property="og:image" content="lane4-share-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="Lane 4: track your PRs, compare them to college and nationals standards, and plan race day.">
+<meta name="description" content="Lane 4: training programs, full game stats and college recruiting for 14 sports. Free, no ads.">
 <meta name="theme-color" content="#C62832">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -53,6 +53,7 @@ input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and
 input[type=range]{padding:0;border:0;background:none;min-height:30px}
 input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--board);outline-offset:2px}
 .row{display:flex;gap:10px}.row>*{flex:1 1 0;min-width:0}
+.stgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 8px}.stgrid label{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:380px){.row{flex-direction:column;gap:0}}
 .go{margin-top:14px;width:100%;font:700 18px "Barlow Condensed",sans-serif;background:var(--track);color:#fff;border:0;border-radius:10px;padding:12px;cursor:pointer}
 .go.alt{background:none;color:var(--track);border:2px solid var(--track)}
@@ -318,7 +319,8 @@ input[hidden],.avatar input{display:none!important}
 @media (max-width:360px){.avatar{width:68px;height:68px}.pn{font-size:22px}.pm{font-size:12px}.pstats span{font-size:10px;letter-spacing:0}.pstats b{font-size:20px}}
 .grpchips svg{width:30px!important;height:30px!important;flex:none}
 .brandh{display:flex;align-items:center;gap:10px}
-.brandh .logo{flex:none;border-radius:22%;box-shadow:0 0 0 2px #fff}
+.brandh .logo{flex:none;border-radius:22%}
+.sportpick .pklogo{display:block;border-radius:22%;margin:0 0 8px}.sportpick .motto{margin:0 0 6px;font:700 15px "Barlow Condensed",sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
 header.top .brandh .logo{width:40px;height:40px}
 .welcome .brandh .logo{width:56px;height:56px}
 .themebtn svg{display:block}
@@ -547,7 +549,7 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
 .tholo{position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.18) 42%,rgba(120,200,255,.18) 48%,rgba(255,120,220,.14) 54%,transparent 66%);mix-blend-mode:screen;background-size:250% 100%;animation:holo 6s ease-in-out infinite}
 @keyframes holo{0%,100%{background-position:100% 0}50%{background-position:0 0}}
 @media (prefers-reduced-motion:reduce){.tholo{animation:none}}
-.tlogo{position:absolute;left:3.5cqw;top:3.5cqw;width:12cqw;height:12cqw;border-radius:22%;box-shadow:0 0 0 .6cqw #fff}
+.tlogo{position:absolute;left:3.5cqw;top:3.5cqw;width:12cqw;height:12cqw;border-radius:22%}
 .tser{position:absolute;left:18cqw;top:6.4cqw;color:#fff;font-weight:800;font-size:3.6cqw;letter-spacing:.4cqw;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .tev{position:absolute;right:3.5cqw;top:4cqw;background:#fff;color:#C62832;font-weight:900;font-size:5.4cqw;padding:.4cqw 2.4cqw;border-radius:1.6cqw}
 .tname{position:absolute;right:0;top:17cqw;bottom:34cqw;width:20cqw;background:linear-gradient(180deg,#141010ee,#141010cc);clip-path:polygon(28% 0,100% 0,100% 100%,0 100%,0 6%);display:flex;align-items:center;justify-content:center}
@@ -577,7 +579,7 @@ input[type=range][max="5"]::-webkit-slider-runnable-track{height:10px;background
 .thl{margin:2.6cqw 4.5cqw 0;font-size:3.4cqw;font-weight:800}
 .tfoot{position:absolute;bottom:2.6cqw;left:4.5cqw;right:4.5cqw;font-weight:800;font-size:2.7cqw;color:#6B5E5C}
 /* ---------- sports: picker, hub hero, standards list, footage, and each sport's own colors ---------- */
-.sportpick{position:fixed;inset:0;z-index:60;background:#141010;color:#fff;overflow-y:auto;padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.sportpick{position:fixed;inset:0;z-index:60;background:#0E1016;color:#fff;overflow-y:auto;padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
 .sportpick h1{font:800 32px "Barlow",sans-serif;margin:8px auto 4px;max-width:720px}.sportpick p{margin:0 auto 16px;opacity:.8;max-width:720px}
 .sportgrid{margin:0 auto;padding:4px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-width:720px}
 .sportgrid button{border:0;border-radius:16px;padding:16px 12px;min-height:84px;text-align:left;font:700 17px "Barlow",sans-serif;color:#fff;background:var(--sc);cursor:pointer;display:flex;flex-direction:column;gap:4px}
@@ -645,7 +647,7 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
 
 <div class="authgate" id="authGate" hidden>
   <div class="authcard" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-    <h1 id="authTitle" class="brandh"><img src="lane4-icon-512.png" alt="" width="56" height="56" class="logo"><span>Lane 4</span></h1>
+    <h1 id="authTitle" class="brandh"><img src="lane4-icon-192.png" alt="" width="56" height="56" class="logo"><span>Lane 4</span></h1>
     <p id="authSub">Sign in to save your data to your account and use Rankings.</p>
     <div id="authForm">
       <button class="gbtn" id="gGo"><svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.2-13.5-10l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg><span>Continue with Google</span></button>
@@ -680,8 +682,8 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
 <div class="welcome" id="welcome" hidden>
   <div class="card">
     <div class="step" id="step1">
-      <h1 class="brandh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="56" height="56" class="logo" aria-hidden="true"><defs><clipPath id="lgw"><rect width="1024" height="1024" rx="228"/></clipPath></defs><g clip-path="url(#lgw)"><rect width="1024" height="1024" fill="#C62832"/><path d="M332 1024 L440.0 -10 L584.0 -10 L692 1024Z" fill="#fff" opacity="0.16"/><path d="M-748.0 1024 L7.7 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-388.0 1024 L151.8 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-28.0 1024 L295.9 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M332.0 1024 L440.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M692.0 1024 L584.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1052.0 1024 L728.1 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1412.0 1024 L872.2 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><rect x="0" y="872" width="1024" height="28" fill="#fff"/><path d="M313.2 -193.2V-109.2Q313.2 -105.0 310.79999999999995 -102.6Q308.4 -100.2 304.2 -100.2H286.2Q282.59999999999997 -100.2 282.59999999999997 -96.6V-9.0Q282.59999999999997 -4.8 280.2 -2.4Q277.8 0.0 273.59999999999997 0.0H178.79999999999998Q174.6 0.0 172.2 -2.4Q169.79999999999998 -4.8 169.79999999999998 -9.0V-96.6Q169.79999999999998 -100.2 166.2 -100.2H13.799999999999999Q9.6 -100.2 7.199999999999999 -102.6Q4.8 -105.0 4.8 -109.2V-175.79999999999998Q4.8 -181.2 6.6 -186.6L79.2 -412.8Q81.6 -420.0 89.39999999999999 -420.0H190.79999999999998Q195.6 -420.0 197.7 -417.29999999999995Q199.79999999999998 -414.59999999999997 198.6 -409.8L136.79999999999998 -206.4Q136.2 -202.2 139.79999999999998 -202.2H166.2Q169.79999999999998 -202.2 169.79999999999998 -205.79999999999998V-246.6Q169.79999999999998 -250.79999999999998 172.2 -253.2Q174.6 -255.6 178.79999999999998 -255.6H273.59999999999997Q277.8 -255.6 280.2 -253.2Q282.59999999999997 -250.79999999999998 282.59999999999997 -246.6V-205.79999999999998Q282.59999999999997 -202.2 286.2 -202.2H304.2Q308.4 -202.2 310.79999999999995 -199.8Q313.2 -197.4 313.2 -193.2Z" transform="translate(353.0 822)" fill="#fff"/></g></svg><span>Lane 4</span></h1>
-      <p>A training app for track athletes: track your PRs, compare them to real college standards, and get a race-day plan.</p>
+      <h1 class="brandh"><img src="lane4-icon-192.png" alt="" width="56" height="56" class="logo"><span>Lane 4</span></h1>
+      <p>Lane 4 for track & field: log your PRs, compare them to real college standards, and get a race-day plan.</p>
       <p style="font-size:14px;opacity:.8">Early demo. Anything you enter stays on your own device.</p>
       <button class="w1" id="startFresh">Set up with my PRs</button>
       <button class="w2" id="startSample">Look around with a sample athlete</button>
@@ -709,6 +711,7 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
 </div>
 
 <div class="sportpick" id="sportPick" hidden role="dialog" aria-modal="true" aria-labelledby="spH">
+  <img src="lane4-icon-192.png" alt="" width="64" height="64" class="pklogo"><p class="motto">Every sport. Every stat. Your shot.</p>
   <h1 id="spH">Pick your sport</h1><p>Lane 4 sets up your events, colors, and college standards for it. You can switch anytime.</p>
   <div class="sportgrid" id="sportGrid"></div>
 </div>
@@ -716,8 +719,8 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
   <header class="top">
     <button class="themebtn" id="settingsBtn" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
     <button class="themebtn sportbtn" id="sportBtn" aria-label="Switch sport"><span id="sportIco" aria-hidden="true">🏃</span></button>
-    <h1 class="brandh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="40" height="40" class="logo" aria-hidden="true"><defs><clipPath id="lgh"><rect width="1024" height="1024" rx="228"/></clipPath></defs><g clip-path="url(#lgh)"><rect width="1024" height="1024" fill="#C62832"/><path d="M332 1024 L440.0 -10 L584.0 -10 L692 1024Z" fill="#fff" opacity="0.16"/><path d="M-748.0 1024 L7.7 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-388.0 1024 L151.8 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M-28.0 1024 L295.9 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M332.0 1024 L440.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M692.0 1024 L584.0 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1052.0 1024 L728.1 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><path d="M1412.0 1024 L872.2 -10" stroke="#fff" stroke-width="18" stroke-linecap="butt" opacity="0.9"/><rect x="0" y="872" width="1024" height="28" fill="#fff"/><path d="M313.2 -193.2V-109.2Q313.2 -105.0 310.79999999999995 -102.6Q308.4 -100.2 304.2 -100.2H286.2Q282.59999999999997 -100.2 282.59999999999997 -96.6V-9.0Q282.59999999999997 -4.8 280.2 -2.4Q277.8 0.0 273.59999999999997 0.0H178.79999999999998Q174.6 0.0 172.2 -2.4Q169.79999999999998 -4.8 169.79999999999998 -9.0V-96.6Q169.79999999999998 -100.2 166.2 -100.2H13.799999999999999Q9.6 -100.2 7.199999999999999 -102.6Q4.8 -105.0 4.8 -109.2V-175.79999999999998Q4.8 -181.2 6.6 -186.6L79.2 -412.8Q81.6 -420.0 89.39999999999999 -420.0H190.79999999999998Q195.6 -420.0 197.7 -417.29999999999995Q199.79999999999998 -414.59999999999997 198.6 -409.8L136.79999999999998 -206.4Q136.2 -202.2 139.79999999999998 -202.2H166.2Q169.79999999999998 -202.2 169.79999999999998 -205.79999999999998V-246.6Q169.79999999999998 -250.79999999999998 172.2 -253.2Q174.6 -255.6 178.79999999999998 -255.6H273.59999999999997Q277.8 -255.6 280.2 -253.2Q282.59999999999997 -250.79999999999998 282.59999999999997 -246.6V-205.79999999999998Q282.59999999999997 -202.2 286.2 -202.2H304.2Q308.4 -202.2 310.79999999999995 -199.8Q313.2 -197.4 313.2 -193.2Z" transform="translate(353.0 822)" fill="#fff"/></g></svg><span>Lane 4</span></h1>
-    <p id="tagline">Your season, your splits, your race day.</p>
+    <h1 class="brandh"><img src="lane4-icon-192.png" alt="" width="40" height="40" class="logo"><span>Lane 4</span></h1>
+    <p id="tagline">Every hundredth counts.</p>
     <span class="demo-pill" id="modePill">Beta</span>
     <button class="themebtn backbtn" id="backBtn" aria-label="Back to Home"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
     <h1 class="sectitle" id="secTitle"></h1>
@@ -1025,13 +1028,16 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
       <div class="panel">
         <div class="row"><div><label for="srEvent">Event</label><select id="srEvent"></select></div><div><label for="srDate">Date</label><input id="srDate" type="date"></div></div>
         <div class="chips small" id="srWL" role="group" aria-label="Win or loss" hidden style="margin:10px 0 0"></div>
-        <div class="row"><div><label for="srMark" id="srMarkL">Time</label><input id="srMark" autocomplete="off"></div><div id="srStatBox"><label for="srStat" id="srStatL">Stat</label><input id="srStat" inputmode="decimal" autocomplete="off"></div></div>
+        <label for="srMark" id="srMarkL">Time</label><input id="srMark" autocomplete="off">
+        <div id="srStats"></div>
         <label for="srNote">Meet, game, or note (optional)</label><input id="srNote" maxlength="80" autocomplete="off">
         <button class="go" id="srAdd">Save result</button>
         <p class="hint" id="srMsg" role="status"></p>
       </div>
       <h2 id="srPBh">Personal bests</h2>
       <div class="panel" id="srPBs"></div>
+      <h2 id="srToth" hidden>Season stats</h2>
+      <div class="panel" id="srTot" hidden></div>
       <h2>Progress</h2>
       <div class="panel"><label for="srChartEv" class="vh">Event for the chart</label><select id="srChartEv"></select><div class="projchart" id="srChart"></div><p class="hint" id="srChartNote"></p></div>
       <h2>History</h2>
@@ -1185,6 +1191,8 @@ header.top .themebtn.sportbtn{right:68px;font-size:22px}header.top:not(.sub)>p{p
 <div class="sheet" id="notesSheet" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
   <div class="sheethead"><h3 id="notesTitle" style="margin:0">What’s new in Lane 4</h3><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="panel notes"><ul>
+    <li><strong>A new look.</strong> A new Lane 4 logo, and every sport gets its own motto. Every sport. Every stat. Your shot.</li>
+    <li><strong>Full stat sheets.</strong> Log more than one number per game: goals, assists, shots and minutes in soccer (saves, goals allowed and clean sheets for keepers), points, rebounds and assists in basketball, kills, digs and aces in volleyball, and more. See your season totals and per-game averages.</li>
     <li><strong>13 more sports.</strong> Swimming, rowing, cycling, speed skating, triathlon, gymnastics, weightlifting, wrestling, basketball, soccer, volleyball, tennis and fencing, each with its own look. Tap the sport icon at the top to switch.</li>
     <li><strong>Training programs.</strong> Fill your week with an off-season, preseason or in-season plan. In season, it builds around your game days.</li>
     <li><strong>Win, loss and position.</strong> Log a game in two taps, and add your position or weight class to your card.</li>
@@ -3071,21 +3079,22 @@ const SPORTS=[
  {id:"tennis",name:"Tennis",ico:"🎾",c:"#7FA400",kind:"game",ev:["Singles","Doubles","Mixed doubles"],unit:"Score (like 6-4 6-3)",stat:"Games won",day:"Match day",wu:"racquet"},
  {id:"fence",name:"Fencing",ico:"🤺",c:"#3E4A59",kind:"game",ev:["Foil","Épée","Sabre"],unit:"Bout score (like 15-11)",stat:"Touches",day:"Tournament day",wu:"fence"}];
 const SPORT_BY={};SPORTS.forEach(x=>SPORT_BY[x.id]=x);
-/* Each sport's own words: header tagline, Results and log names, and what one game is called. Fixed text, written here. */
+function spMotto(x){return SPORT_UI[x.id]?SPORT_UI[x.id].tag:"Every hundredth counts."}
+/* Each sport's own words: its motto (shown in the header), Results and log names, and what one game is called. Fixed text, written here. */
 const SPORT_UI={
- swim:{tag:"Your season, your splits, your meet day.",res:"Times & PBs",log:"Swim log"},
- row:{tag:"Your erg scores, your splits, your race day.",res:"Erg & race times",log:"Rowing log"},
- cycle:{tag:"Your rides, your times, your race day.",res:"Results & PBs",log:"Ride log"},
- skate:{tag:"Your laps, your times, your race day.",res:"Times & PBs",log:"Ice log"},
- tri:{tag:"Swim, bike, run: your whole season.",res:"Results & PBs",log:"Training log"},
- gym:{tag:"Your routines, your scores, your meet day.",res:"Scores & PBs",log:"Practice log"},
- weights:{tag:"Your lifts, your PRs, your meet day.",res:"Lifts & PRs",log:"Lift log"},
- wrestle:{tag:"Your matches, your record, your match day.",res:"Matches & stats",log:"Practice log",one:"Matches"},
- bball:{tag:"Your games, your stats, your game day.",res:"Games & stats",log:"Practice log",one:"Games"},
- soccer:{tag:"Your games, your goals, your game day.",res:"Games & stats",log:"Practice log",one:"Games"},
- vball:{tag:"Your matches, your kills, your game day.",res:"Matches & stats",log:"Practice log",one:"Matches"},
- tennis:{tag:"Your matches, your record, your match day.",res:"Matches & stats",log:"Practice log",one:"Matches"},
- fence:{tag:"Your bouts, your touches, your tournament day.",res:"Bouts & stats",log:"Practice log",one:"Bouts"}};
+ swim:{tag:"Chase the wall.",res:"Times & PBs",log:"Swim log"},
+ row:{tag:"Pull together. Finish strong.",res:"Erg & race times",log:"Rowing log"},
+ cycle:{tag:"Ride your own race.",res:"Results & PBs",log:"Ride log"},
+ skate:{tag:"Low, long and fast.",res:"Times & PBs",log:"Ice log"},
+ tri:{tag:"Three sports. One finish line.",res:"Results & PBs",log:"Training log"},
+ gym:{tag:"Stick the landing.",res:"Scores & PBs",log:"Practice log"},
+ weights:{tag:"Lift heavy. Lift right.",res:"Lifts & PRs",log:"Lift log"},
+ wrestle:{tag:"Win every position.",res:"Matches & stats",log:"Practice log",one:"Matches"},
+ bball:{tag:"Earn every bucket.",res:"Games & stats",log:"Practice log",one:"Games"},
+ soccer:{tag:"Every touch matters.",res:"Games & stats",log:"Practice log",one:"Games"},
+ vball:{tag:"Next ball.",res:"Matches & stats",log:"Practice log",one:"Matches"},
+ tennis:{tag:"One point at a time.",res:"Matches & stats",log:"Practice log",one:"Matches"},
+ fence:{tag:"Find the touch.",res:"Bouts & stats",log:"Practice log",one:"Bouts"}};
 /* Results tile icon by kind: stopwatch for times, medal for scores and lifts, scoreboard for games */
 const SP_ICO={time:'<circle cx="12" cy="13" r="8"/><path d="M12 13V9M9.5 2h5M12 2v3"/>',
  num:'<circle cx="12" cy="15" r="6"/><path d="M8.5 10.5L5 3h4l3 6 3-6h4l-3.5 7.5M12 13v4"/>',
@@ -3145,19 +3154,45 @@ const SPORT_WK={
  fence:[["Club practice","Practice",120,"Footwork, lessons, bouts"],["Footwork","Workout",40,"Advances, lunges, fleches"],["Lesson","Practice",30,"Private lesson with your coach"],["Strength","Strength",40,"Legs and core"]]};
 let pendingSport=null,scDiv="All",scConf="",scState="",scOpen=null;
 function curSport(){return SPORT_BY[(S&&S.sport)||pendingSport||"track"]||SPORT_BY.track}
+/* Box-score stats for game sports: [key, name, short]. The first one is the headline stat used for bests, charts and
+   averages. Keepers get their own set. Results saved before this only have r.stat, which is the sport's first stat. */
+const SPORT_STATS={
+ soccer:[["g","Goals","G"],["a","Assists","A"],["sh","Shots","SH"],["sot","Shots on target","SOT"],["min","Minutes","MIN"]],
+ soccerGK:[["sv","Saves","SV"],["ga","Goals allowed","GA"],["min","Minutes","MIN"]],
+ bball:[["pts","Points","PTS"],["reb","Rebounds","REB"],["ast","Assists","AST"],["stl","Steals","STL"],["blk","Blocks","BLK"],["tpm","3-pointers made","3PM"],["min","Minutes","MIN"]],
+ vball:[["k","Kills","K"],["ast","Assists","AST"],["dig","Digs","DIG"],["ace","Aces","ACE"],["blk","Blocks","BLK"]],
+ wrestle:[["td","Takedowns","TD"],["esc","Escapes","E"],["rev","Reversals","R"],["nf","Near-fall points","NF"]],
+ tennis:[["gw","Games won","GW"],["ace","Aces","ACE"],["df","Double faults","DF"]],
+ fence:[["ts","Touches","TS"],["tr","Touches received","TR"]]};
+function spStatList(x){return x.id==="soccer"&&spPos()==="Goalkeeper"?SPORT_STATS.soccerGK:SPORT_STATS[x.id]||[]}
+function spAllStats(x){const out=[],seen=new Set();(SPORT_STATS[x.id]||[]).concat(x.id==="soccer"?SPORT_STATS.soccerGK:[]).forEach(s=>{if(!seen.has(s[0])){seen.add(s[0]);out.push(s)}});return out.filter(s=>s[0]!=="min").concat(out.filter(s=>s[0]==="min"))}
+function spMain(x){const L=spStatList(x);return L.length?L[0][1]:x.stat||""}
+function spRStat(x,r,k){if(r.stats&&r.stats[k]!=null&&r.stats[k]!=="")return +r.stats[k];const d=SPORT_STATS[x.id];return d&&d[0][0]===k&&r.stat!=null&&r.stat!==""?+r.stat:NaN}
+function spStatLine(x,r){return spAllStats(x).map(([k,,s])=>{const v=spRStat(x,r,k);return isNaN(v)?"":v+" "+s}).filter(Boolean).join(" · ")}
+/* season totals and per-game averages for each stat, counting only games where it was filled in */
+function spTotals(x,st){return spStatList(x).map(([k,l])=>{const v=st.results.map(r=>spRStat(x,r,k)).filter(v=>!isNaN(v)),t=v.reduce((a,b)=>a+b,0);
+  return{k,l,n:v.length,tot:t,avg:v.length?(t/v.length).toFixed(1).replace(/\.0$/,""):"—"}}).filter(s=>s.n)}
+function renderSTot(){const x=curSport(),el=document.getElementById("srTot"),h=document.getElementById("srToth");if(!el)return;
+  const show=x.kind==="game";el.hidden=h.hidden=!show;if(!show)return;const st=spState(),T=spTotals(x,st),per={Games:"game",Matches:"match",Bouts:"bout"}[SPORT_UI[x.id].one];
+  const cs=x.id==="soccer"&&spPos()==="Goalkeeper"?st.results.filter(r=>spRStat(x,r,"ga")===0).length:null;
+  el.innerHTML=T.length?`<table class="stdtab"><tr><th>Stat</th><th>Total</th><th>Per ${per}</th></tr>${T.map(s=>`<tr><td>${esc(s.l)}</td><td><b>${s.tot}</b></td><td>${s.avg}</td></tr>`).join("")}${cs!=null?`<tr><td>Clean sheets</td><td><b>${cs}</b></td><td></td></tr>`:""}</table>`:`<p class="empty">Add your stats with each result and your season totals show up here.</p>`}
+/* the stat boxes in Add a result; rebuilt only when the set of stats changes, so typed numbers stay put */
+function renderStatInputs(){const x=curSport(),el=document.getElementById("srStats"),L=spStatList(x),key=x.id+":"+L.map(s=>s[0]).join(",");
+  el.hidden=x.kind!=="game";if(el.dataset.keys===key)return;el.dataset.keys=key;
+  el.innerHTML=L.length?`<p class="hint" style="margin:10px 0 4px">Your stats (fill in what you track)</p><div class="stgrid">${L.map(([k,l])=>`<div><label for="srS-${k}">${esc(l)}</label><input id="srS-${k}" data-st="${k}" inputmode="numeric" maxlength="4" autocomplete="off"></div>`).join("")}</div>`:""}
 function spState(){const id=curSport().id;if(!S.sports)S.sports={};return S.sports[id]||(S.sports[id]=spBlank())}
 function spBlank(){return{event:"",results:[],goals:{},fav:[],log:[],games:[],bag:{}}}
 function spLower(x){return x.kind==="time"}
-function spFmt(x,v){return x.kind==="time"?fmtT(v):x.kind==="num"?(+v).toFixed(2).replace(/\.00$/,""):String(+v)}
-function spVal(x,r){return x.kind==="time"?toSec(r.mark):x.kind==="num"?parseFloat(r.mark):r.stat==null||r.stat===""?NaN:+r.stat}
+function spFmt(x,v){return x.kind==="time"?fmtT(v):x.kind==="num"?(+v).toFixed(2).replace(/\.00$/,""):(+v).toFixed(1).replace(/\.0$/,"")}
+function spVal(x,r){return x.kind==="time"?toSec(r.mark):x.kind==="num"?parseFloat(r.mark):spRStat(x,r,(spStatList(x)[0]||[])[0])}
 function spGoalVal(x,m){return x.kind==="time"?toSec(m):parseFloat(m)}
-function spFmtMark(x,m){const v=spGoalVal(x,m);return isNaN(v)?String(m):spFmt(x,v)+(x.kind==="game"?" "+x.stat.toLowerCase():"")}
+function spFmtMark(x,m){const v=spGoalVal(x,m);return isNaN(v)?String(m):spFmt(x,v)+(x.kind==="game"?" "+spMain(x).toLowerCase():"")}
 function spBetter(x,a,b){return spLower(x)?a<b:a>b}
 function spBestR(x,ev){let b=null;spState().results.forEach(r=>{if(r.event!==ev)return;const v=spVal(x,r);if(isNaN(v))return;if(!b||spBetter(x,v,b.v))b={v,r}});return b}
 function spEvents(){const x=curSport(),st=spState(),have=new Set(st.results.map(r=>r.event).concat(Object.keys(st.goals)));return x.ev.filter(e=>have.has(e))}
 function spStd(x,g,ev){const L=SPORT_STD[x.id];return L&&L[g]&&L[g][ev]}
 function spNat(x,g,ev){const L=SPORT_NAT[x.id];return L&&L[g]&&L[g][ev]}
-function spPrLines(){const x=curSport();return spEvents().map(ev=>{const b=spBestR(x,ev);return b?{ev,mark:spFmt(x,b.v)+(x.kind==="game"?" "+x.stat.toLowerCase():""),meet:b.r.note||"",date:b.r.date}:null}).filter(Boolean)}
+function spPrLines(){const x=curSport();return spEvents().map(ev=>{const b=spBestR(x,ev);return b?{ev,mark:spFmt(x,b.v)+(x.kind==="game"?" "+spMain(x).toLowerCase():""),meet:b.r.note||"",date:b.r.date}:null}).filter(Boolean)}
 /* the easiest level not reached yet */
 function spNext(row,best,hi){let k=-1;if(best==null)return-1;row.forEach((t,i)=>{if(hi?best>=t:best<=t)return;if(k<0||(hi?t<row[k]:t>row[k]))k=i});return k}
 function stdList(cols,row,best,x){const hi=!spLower(x),next=spNext(row,best,hi);
@@ -3169,7 +3204,7 @@ function markHint(x){return x.kind==="time"?"Use a time like 52.31 or 1:52.40.":
 /* picker */
 function applySport(){const x=curSport(),u=SPORT_UI[x.id];document.documentElement.dataset.sport=x.id;document.getElementById("sportIco").textContent=x.ico;
   const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=x.c;
-  document.getElementById("tagline").textContent=u?u.tag:"Your season, your splits, your race day.";
+  document.getElementById("tagline").textContent=spMotto(x);
   if(!u)return;TITLES.sres=u.res;TITLES.slog=u.log;TITLES.sgame=x.day;
   document.getElementById("hubSResT").textContent=u.res;document.getElementById("hubSLogT").textContent=u.log;
   document.getElementById("spPBh").textContent=x.kind==="game"?"Bests":x.id==="weights"?"Personal records":"Personal bests";
@@ -3178,7 +3213,7 @@ function applySport(){const x=curSport(),u=SPORT_UI[x.id];document.documentEleme
 function spRecord(st){const n={W:0,L:0,T:0};st.results.forEach(r=>{const k=/^\s*([WLT])\b/i.exec(r.mark||"");if(k)n[k[1].toUpperCase()]++});
   return n.W+n.L+n.T?`${n.W}-${n.L}${n.T?"-"+n.T:""}`:"—"}
 function spAvg(x,st){const v=st.results.map(r=>spVal(x,r)).filter(v=>!isNaN(v));return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1).replace(/\.0$/,""):"—"}
-function renderSportPick(){document.getElementById("sportGrid").innerHTML=SPORTS.map(x=>`<button data-sp="${x.id}" style="--sc:${x.c}" aria-pressed="${x.id===curSport().id}"><span aria-hidden="true">${x.ico}</span>${esc(x.name)}<small>${x.id==="track"?"Full Lane 4":SPORT_STD[x.id]?"Times + college standards":SPORT_NAT[x.id]?"Scores + national cuts":x.kind==="game"?"Results + stats":"Results + PBs"}</small></button>`).join("")}
+function renderSportPick(){document.getElementById("sportGrid").innerHTML=SPORTS.map(x=>`<button data-sp="${x.id}" style="--sc:${x.c}" aria-pressed="${x.id===curSport().id}"><span aria-hidden="true">${x.ico}</span>${esc(x.name)}<small>${esc(spMotto(x))}</small></button>`).join("")}
 function openSportPick(){renderSportPick();document.getElementById("sportPick").hidden=false;const b=document.querySelector('#sportGrid [aria-pressed="true"]')||document.querySelector("#sportGrid button");b&&b.focus()}
 document.getElementById("sportGrid").onclick=e=>{const b=e.target.closest("[data-sp]");if(!b)return;const id=b.dataset.sp;
   document.getElementById("sportPick").hidden=true;
@@ -3190,7 +3225,7 @@ document.getElementById("sportBtn").onclick=openSportPick;
 /* home hub */
 function renderSportHub(){const x=curSport(),st=spState(),g=S.gender==="Women"?"Women":"Men",ev=st.event&&x.ev.includes(st.event)?st.event:(spEvents()[0]||x.ev[0]),b=spBestR(x,ev);
   let nx="—";{const L=SPORT_STD[x.id]||SPORT_NAT[x.id],rw=L&&L[g]&&L[g][ev];if(rw&&b){const k=spNext(rw,b.v,!spLower(x));nx=k<0?"All ✓":L.cols[k]}}
-  document.getElementById("spHero").innerHTML=`<div class="top"><span class="em" aria-hidden="true">${x.ico}</span><div><h3>${esc(x.name)}</h3><p>${esc(spPos()||ev)} · ${esc(x.kind==="game"?x.stat:x.unit)}</p></div></div><div class="st">${x.kind==="game"
+  document.getElementById("spHero").innerHTML=`<div class="top"><span class="em" aria-hidden="true">${x.ico}</span><div><h3>${esc(x.name)}</h3><p>${esc(spPos()||ev)} · ${esc(x.kind==="game"?spMain(x):x.unit)}</p></div></div><div class="st">${x.kind==="game"
     ?`<div><b>${spRecord(st)}</b><span>Record</span></div><div><b>${spAvg(x,st)}</b><span>Per ${{Games:"game",Matches:"match",Bouts:"bout"}[SPORT_UI[x.id].one]}</span></div><div><b>${st.results.length}</b><span>${esc(SPORT_UI[x.id].one)}</span></div>`
     :`<div><b>${b?esc(spFmt(x,b.v)):"—"}</b><span>${x.id==="weights"?"PR":"Best"}</span></div><div><b>${st.results.length}</b><span>${x.kind==="num"?"Meets":"Results"}</span></div><div><b>${esc(nx)}</b><span>Next level</span></div>`}</div>`;
   const set=(id,t)=>document.getElementById(id).textContent=t,last=st.results[0],up=st.games.filter(m=>m.start>Date.now()).sort((a,b)=>a.start-b.start)[0];
@@ -3207,16 +3242,16 @@ const srEvent=document.getElementById("srEvent"),srChartEv=document.getElementBy
 function renderSRes(){const x=curSport(),st=spState();const ev=evSelect(srEvent,x.ev,st.event);
   document.getElementById("srMarkL").textContent=x.unit;const mk=document.getElementById("srMark");mk.inputMode=x.kind==="game"?"text":"decimal";
   {const R=spStd(x,"Men",ev)||spNat(x,"Men",ev);mk.placeholder=R?spFmt(x,spLower(x)?Math.max(...R):Math.min(...R)):x.kind==="time"?"1:52.40":x.kind==="num"?"13.45":"W 7-3"}
-  document.getElementById("srStatBox").hidden=x.kind!=="game";if(x.stat)document.getElementById("srStatL").textContent=x.stat+" (for PBs)";
+  renderStatInputs();
   const dt=document.getElementById("srDate");if(!dt.value)dt.value=today();
-  document.getElementById("srPBh").textContent=x.kind==="game"?"Bests ("+x.stat.toLowerCase()+")":"Personal bests";
+  document.getElementById("srPBh").textContent=x.kind==="game"?"Bests ("+spMain(x).toLowerCase()+")":"Personal bests";
   const L=spPrLines();document.getElementById("srPBs").innerHTML=L.length?`<table class="stdtab">${L.map(l=>`<tr><td>${esc(l.ev)}</td><td><b>${esc(l.mark)}</b></td><td class="hint">${esc(l.date)}</td></tr>`).join("")}</table>`:`<p class="empty">No PBs yet.</p>`;
   const evs=x.ev.filter(e=>st.results.some(r=>r.event===e&&!isNaN(spVal(x,r))));const box=document.getElementById("srChart"),note=document.getElementById("srChartNote");
   srChartEv.hidden=!evs.length;
-  if(!evs.length){box.innerHTML="";note.textContent=x.kind==="game"?`Add results with ${x.stat.toLowerCase()} to see your progress chart.`:"Add results with dates and your progress chart shows up here."}
+  if(!evs.length){box.innerHTML="";note.textContent=x.kind==="game"?`Add results with ${spMain(x).toLowerCase()} to see your progress chart.`:"Add results with dates and your progress chart shows up here."}
   else{const ce=evSelect(srChartEv,evs,evs.includes(ev)?ev:null);spChart(box,note,ce)}
   const list=st.results;document.getElementById("srList").innerHTML=list.length?list.map((r,i)=>{const b=spBestR(x,r.event),pb=b&&b.r===r;
-    return`<div class="entry"><div class="grow"><div>${pb?'<span class="tag pb">PB</span>':""}<span class="tag">${esc(r.event)}</span></div><div class="d">${esc(r.date)}${r.note?" · "+esc(r.note):""}</div></div><div class="num">${esc(r.mark)}${x.kind==="game"&&r.stat!=null&&r.stat!==""?`<div class="hint" style="margin:0">${esc(r.stat)} ${esc(x.stat.toLowerCase())}</div>`:""}</div><button class="x" data-srdel="${i}" aria-label="Delete result">✕</button></div>`}).join(""):`<p class="empty">No results yet.</p>`}
+    return`<div class="entry"><div class="grow"><div>${pb?'<span class="tag pb">PB</span>':""}<span class="tag">${esc(r.event)}</span></div><div class="d">${esc(r.date)}${r.note?" · "+esc(r.note):""}</div></div><div class="num">${esc(r.mark)}${x.kind==="game"&&spStatLine(x,r)?`<div class="hint" style="margin:0">${esc(spStatLine(x,r))}</div>`:""}</div><button class="x" data-srdel="${i}" aria-label="Delete result">✕</button></div>`}).join(""):`<p class="empty">No results yet.</p>`}
 /* the shared chart with this sport's goal and the easiest standard as lines */
 function spChart(box,note,ev){const x=curSport(),st=spState(),g=S.gender==="Women"?"Women":"Men";
   const pts=st.results.filter(r=>r.event===ev).map(r=>({t:Date.parse(r.date),v:spVal(x,r)})).filter(p=>!isNaN(p.t)&&!isNaN(p.v)).sort((a,b)=>a.t-b.t);
@@ -3230,21 +3265,22 @@ function spChart(box,note,ev){const x=curSport(),st=spState(),g=S.gender==="Wome
   note.textContent=`Trend: ${up?"getting better":"not improving yet"}. If it holds: about ${spFmt(x,at(end))} by ${fmtDay(end)}.`+(pass.length?` That would reach ${pass.map(l=>l.goal?"your goal":l.l).join(" and ")}.`:"")+" It’s a straight line through your own results, so treat it as a rough guide."}
 srEvent.onchange=()=>{spState().event=srEvent.value;save();renderSRes()};
 srChartEv.onchange=()=>spChart(document.getElementById("srChart"),document.getElementById("srChartNote"),srChartEv.value);
-document.getElementById("srAdd").onclick=()=>{const x=curSport(),m=document.getElementById("srMark").value.trim(),msg=document.getElementById("srMsg"),sv=document.getElementById("srStat").value.trim();
+document.getElementById("srAdd").onclick=()=>{const x=curSport(),m=document.getElementById("srMark").value.trim(),msg=document.getElementById("srMsg"),sv={};let bad="";
+  document.querySelectorAll("#srStats [data-st]").forEach(i=>{const t=i.value.trim();if(!t)return;const n=+t;if(!(n>=0&&n<=999))bad=i.previousElementSibling.textContent;else sv[i.dataset.st]=n});
   if(!m){msg.textContent="Add a result first.";return}
   if(x.kind!=="game"&&!(spVal(x,{mark:m})>0)){msg.textContent=markHint(x);return}
-  if(x.kind==="game"&&sv&&!(+sv>=0)){msg.textContent=`${x.stat} should be a number.`;return}
+  if(x.kind==="game"&&bad){msg.textContent=`${bad} should be a number from 0 to 999.`;return}
   const st=spState(),r={event:srEvent.value,mark:m.slice(0,40),date:document.getElementById("srDate").value||today(),note:document.getElementById("srNote").value.trim().slice(0,80)};
-  if(x.kind==="game"&&sv)r.stat=+sv;
+  if(x.kind==="game"&&Object.keys(sv).length){r.stats=sv;const d=SPORT_STATS[x.id];if(d&&sv[d[0][0]]!=null)r.stat=sv[d[0][0]]}
   const before=spBestR(x,r.event);st.results.unshift(r);st.results.sort((a,b)=>b.date.localeCompare(a.date));st.event=r.event;save();
   const after=spBestR(x,r.event);msg.textContent=after&&after.r===r&&before?"New PB! Saved.":"Saved.";
-  ["srMark","srNote","srStat"].forEach(i=>document.getElementById(i).value="");renderAll()};
+  ["srMark","srNote"].forEach(i=>document.getElementById(i).value="");document.querySelectorAll("#srStats [data-st]").forEach(i=>i.value="");renderAll()};
 document.getElementById("srList").onclick=e=>{const b=e.target.closest("[data-srdel]");if(!b)return;spState().results.splice(+b.dataset.srdel,1);save();renderAll()};
 
 /* goals */
 const sgEvent=document.getElementById("sgEvent");
 function renderSGoal(){const x=curSport(),st=spState(),ev=evSelect(sgEvent,x.ev,st.event);
-  document.getElementById("sgMarkL").textContent=x.kind==="game"?"Goal ("+x.stat.toLowerCase()+")":"Goal "+x.unit.toLowerCase();
+  document.getElementById("sgMarkL").textContent=x.kind==="game"?"Goal ("+spMain(x).toLowerCase()+")":"Goal "+x.unit.toLowerCase();
   const mk=document.getElementById("sgMark");mk.inputMode="decimal";mk.placeholder=x.kind==="time"?"1:50.00":x.kind==="num"?"14.00":"20";mk.value=st.goals[ev]||"";
   spChart(document.getElementById("sgChart"),document.getElementById("sgNote"),ev);
   const g=Object.entries(st.goals);document.getElementById("sgList").innerHTML=g.length?g.map(([e,m])=>{const b=spBestR(x,e),gv=spGoalVal(x,m);let bar="";
@@ -3291,7 +3327,7 @@ document.getElementById("scGen").onchange=e=>{S.gender=e.target.value;save();ren
 function sportCardSrc(){const x=curSport(),st=spState(),L=spPrLines(),g=S.gender==="Women"?"Women":"Men";
   const ev=st.event&&L.some(l=>l.ev===st.event)?st.event:L[0]?L[0].ev:null,b=ev?spBestR(x,ev):null;
   let nx="—";{const Lv=SPORT_STD[x.id]||SPORT_NAT[x.id],rw=Lv&&Lv[g]&&ev&&Lv[g][ev];if(rw&&b){const k=spNext(rw,b.v,!spLower(x));nx=k<0?"ALL ✓":Lv.cols[k]}}
-  return{ev,best:b?spFmt(x,b.v):"—",bestLbl:x.kind==="game"?"BEST<br>"+x.stat.toUpperCase():"PERSONAL<br>BEST",grp:x.name.toUpperCase()+(spPos()?" · "+spPos().toUpperCase():""),ver:false,seal:false,
+  return{ev,best:b?spFmt(x,b.v):"—",bestLbl:x.kind==="game"?"BEST<br>"+spMain(x).toUpperCase():"PERSONAL<br>BEST",grp:x.name.toUpperCase()+(spPos()?" · "+spPos().toUpperCase():""),ver:false,seal:false,
     rows:L.map(l=>({e:l.ev,mark:l.mark,meet:l.meet,ver:false})),head:["EVENT",x.kind==="game"?"BEST":"PB","WHERE",""],
     stats:[[st.results.length,"RESULTS"],[st.fav.length||"—","COLLEGES"],[nx,"NEXT LEVEL"]],foot:`${x.ico} Lane 4 · ${x.name}`}}
 
@@ -3464,13 +3500,13 @@ document.getElementById("slPlan").onclick=e=>{const st=spState(),x=curSport(),td
 let spMailFor=null;
 function spCoachEmail(sc){const p=P(),x=curSport(),st=spState(),L=spPrLines(),name=p.name||BL,pos=spPos(),u=SPORT_UI[x.id];
   const role=pos?(x.id==="wrestle"?pos+" wrestler":pos.toLowerCase()):x.name.toLowerCase()+" athlete";
-  const rec=x.kind==="game"?spRecord(st):"—",avg=x.kind==="game"?spAvg(x,st):"—";
+  const rec=x.kind==="game"?spRecord(st):"—",T=x.kind==="game"?spTotals(x,st).filter(s=>s.k!=="min").slice(0,4):[],avg=T.length?T.map(s=>s.avg+" "+s.l.toLowerCase()).join(", "):"—";
   const up=[...st.games].filter(g=>g.start>Date.now()).sort((a,b)=>a.start-b.start).slice(0,3);
   const subject=`${name} | Class of ${p.grad||BL} | ${pos||x.name} | ${p.school||BL}`;
   const body=`Coach ${BL},
 
 My name is ${name}, and I’m a Class of ${p.grad||BL} ${role} at ${p.school||BL}${p.state?" in "+p.state:""}. I’m interested in ${sc.name} because ${BL}.
-${rec!=="—"||avg!=="—"?`\nThis season: ${[rec!=="—"?rec+" record":"",avg!=="—"?avg+" "+x.stat.toLowerCase()+" per "+{Games:"game",Matches:"match",Bouts:"bout"}[u.one]:""].filter(Boolean).join(", ")}.\n`:""}
+${rec!=="—"||avg!=="—"?`\nThis season: ${[rec!=="—"?rec+" record":"",avg!=="—"?avg+" per "+{Games:"game",Matches:"match",Bouts:"bout"}[u.one]:""].filter(Boolean).join(", ")}.\n`:""}
 My ${x.kind==="game"?"bests":"best marks"}:
 ${L.length?L.map(l=>`- ${l.ev}: ${l.mark}${l.meet?` (${l.meet}, ${fmtDate(l.date)})`:` (${fmtDate(l.date)})`}`).join("\n"):"- "+BL}
 
@@ -3514,14 +3550,14 @@ function renderReady(id){const el=document.getElementById(id);if(!el||!S)return;
 /* spreadsheet download of the current sport's results and training. Cells that start like a formula are quoted so a
    spreadsheet app shows them as text instead of running them. */
 function csvCell(v){v=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return/[",\r\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v}
-document.getElementById("dlCsv").onclick=()=>{if(!S)return;const x=curSport(),tr=x.id==="track",st=tr?null:spState(),rows=[["Kind","Date","Event or type","Result",tr?"":x.stat||"","Minutes","Felt (1-5)","Notes"]];
-  (tr?S.races:st.results).forEach(r=>rows.push([tr?"Race":"Result",r.date,r.event,r.mark,tr?"":r.stat??"","","",tr?r.meet||"":r.note||""]));
-  (tr?S.log:st.log).forEach(l=>rows.push(["Training",l.date,l.type,"","",l.mins||"",l.feel||"",l.note||""]));
+document.getElementById("dlCsv").onclick=()=>{if(!S)return;const x=curSport(),tr=x.id==="track",st=tr?null:spState(),SL=tr?[]:spAllStats(x),blank=SL.map(()=>""),rows=[["Kind","Date","Event or type","Result",...SL.map(s=>s[1]==="Minutes"?"Minutes played":s[1]),"Training minutes","Felt (1-5)","Notes"]];
+  (tr?S.races:st.results).forEach(r=>rows.push([tr?"Race":"Result",r.date,r.event,r.mark,...SL.map(([k])=>{const v=spRStat(x,r,k);return isNaN(v)?"":v}),"","",tr?r.meet||"":r.note||""]));
+  (tr?S.log:st.log).forEach(l=>rows.push(["Training",l.date,l.type,"",...blank,l.mins||"",l.feel||"",l.note||""]));
   if(rows.length<2){toast("Nothing to download yet");return}
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n")],{type:"text/csv"}));
   a.download=`lane4-${x.id}-${isoDay(new Date())}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Spreadsheet downloaded")};
 
-function renderSportAll(){fillOpenSport();renderCheckins();applySport();renderFootage();if(S)renderReady(curSport().id==="track"?"trReady":"spReady");if(!S||curSport().id==="track")return;renderSportHub();renderSpNext();renderSpRecap();renderSPlan();renderWL();renderPos();renderSRes();renderSGoal();renderSCol();renderSGame();renderSLog();renderSLoad();renderRecruit()}
+function renderSportAll(){fillOpenSport();renderCheckins();applySport();renderFootage();if(S)renderReady(curSport().id==="track"?"trReady":"spReady");if(!S||curSport().id==="track")return;renderSportHub();renderSpNext();renderSpRecap();renderSPlan();renderWL();renderPos();renderSRes();renderSTot();renderSGoal();renderSCol();renderSGame();renderSLog();renderSLoad();renderRecruit()}
 function renderAll(){renderSportAll();if(S){fillProf();const m=shownEvents();if(!gTouched&&m.length&&!m.includes(gEvent.value))gEvent.value=m[0];if(m.length&&!m.includes(rEvent.value))rEvent.value=m[0]}renderHome();renderRaces();renderLog();renderGoals();renderNationals();renderColleges();renderMeet();renderBag();if(!gTouched)fillGoal();renderGoalChips();renderCard();stravaUI();if(S&&!scMin.value&&!scSec.value&&S.goals[scEvent.value])setSc(S.goals[scEvent.value]);renderSplits();renderHomeCards();applyFlags();if(S&&curSport().id!=="track"){TITLES.sgame=curSport().day;if(curView==="sgame")document.getElementById("secTitle").textContent=TITLES.sgame}}
 
 if(S&&SPORT_BY[S.openSport])S.sport=S.openSport;
@@ -3536,7 +3572,7 @@ const h=location.hash.slice(1);if(!/^strava/.test(h))go(["times","goals","colleg
 if(S&&S.meet&&S.meet.remind)pushSync();
 /* No times yet? Open the screen where you add them. */
 /* What's new: pops up once per update. New athletes skip it, since everything is new to them. */
-const NOTES_VER="2026-11-03";
+const NOTES_VER="2026-11-03b";
 function maybeNotes(){let seen=null;try{seen=localStorage.getItem("lane4-notes")}catch(_){}if(seen===NOTES_VER)return;
   try{localStorage.setItem("lane4-notes",NOTES_VER)}catch(_){}
   if(!S||!document.getElementById("welcome").hidden)return;
